@@ -12,14 +12,39 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 export class AppComponent {
   public appPages = [
     {
-      title: 'Home',
+      title: 'SIP Calculator',
       url: '/home',
-      icon: 'home'
+      icon: 'calculator'
     },
     {
-      title: 'List',
-      url: '/list',
-      icon: 'list'
+      title: 'Lump Sum Calculator',
+      url: '/lumpsum',
+      icon: 'cash'
+    },
+    // {
+    //   title: 'Settings',
+    //   url: '/settings',
+    //   icon: 'cog'
+    // },
+    // {
+    //   title: 'Share this App',
+    //   url: '/share',
+    //   icon: 'share'
+    // },
+    // {
+    //   title: 'Rate this App',
+    //   url: 'https://learn.vrdnation.com/',
+    //   icon: 'star'
+    // },
+    // {
+    //   title: 'Feedback',
+    //   url: '/feedback',
+    //   icon: 'send'
+    // },
+    {
+      title: 'About Us',
+      url: '/about',
+      icon: 'information-circle'
     }
   ];
 

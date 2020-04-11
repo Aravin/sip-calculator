@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Lumpsum Calculator
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-card>
+
+    <ion-grid>
+
+      <form [formGroup]="lumpsumForm" (ngSubmit)="calculateLumpsum()">
+
+        <ion-row>
+          <ion-col>
+            <!-- Monthly Investment -->
+            <ion-item>
+              <ion-label position="floating">Investment Amount* (INR)</ion-label>
+              <ion-input type="number" inputmode="numeric" placeholder="10000" formControlName="amount" clearInput>
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <!-- Investment Period -->
+            <ion-item>
+              <ion-label position="floating">Investment Duration* (in Years)</ion-label>
+              <ion-input type="number" inputmode="numeric" placeholder="25" formControlName="duration" clearInput>
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <!-- Expected Return -->
+            <ion-item>
+              <ion-label position="floating">Expected Rate of Return* (yearly) in %</ion-label>
+              <ion-input type="number" inputmode="numeric" placeholder="12" formControlName="rateOfReturn" clearInput>
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <ion-button [disabled]="lumpsumForm.invalid" type="submit" color="secondary" expand="full">Calculate
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+      </form>
+
+    </ion-grid>
+
+  </ion-card>
+
+  <ion-card *ngIf="sip">
+    <ion-card-header>
+      <ion-card-subtitle>
+        Calculations
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>
+        <ion-chip color="primary">
+          <ion-label class="text-highlight">Your Total Investment is {{ totalAmount | currency:'INR' }}</ion-label>
+        </ion-chip>
+      </p>
+      <p>
+        <ion-chip color="secondary">
+          <ion-label class="text-highlight">Your Future Return is {{ sip  | currency:'INR' }}</ion-label>
+        </ion-chip>
+      </p>
+      <p>
+        <ion-chip color="success">
+          <ion-label class="text-highlight">Your Profit is {{ sip - totalAmount | currency:'INR' }}</ion-label>
+        </ion-chip>
+      </p>
+
+      <br>
+      <div style="display: block;" *ngIf="sip">
+        <canvas baseChart 
+          [datasets]="barChartData"
+          [options]="barChartOptions"
+          [plugins]="barChartPlugins"
+          [legend]="barChartLegend"
+          [chartType]="barChartType">
+        </canvas>
+      </div>
+      
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<!-- Reference from https://www.thecalculatorsite.com/articles/finance/compound-interest-formula.php -->

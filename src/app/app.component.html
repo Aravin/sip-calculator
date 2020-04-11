@@ -2,17 +2,23 @@
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
       <ion-header>
-        <ion-toolbar>
+        <ion-toolbar color="secondary">
           <ion-title>Menu</ion-title>
         </ion-toolbar>
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
-            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
+          <ion-menu-toggle auto-hide="false">
+            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]" *ngFor="let p of appPages">
               <ion-icon slot="start" [name]="p.icon"></ion-icon>
               <ion-label>
                 {{p.title}}
+              </ion-label>
+            </ion-item>
+            <ion-item href="https://play.google.com/store/apps/details?id=io.epix.sip" target="_blank">
+              <ion-icon slot="start" name="star"></ion-icon>
+              <ion-label>
+                Rate this App
               </ion-label>
             </ion-item>
           </ion-menu-toggle>

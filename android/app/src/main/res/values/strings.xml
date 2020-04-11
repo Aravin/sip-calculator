@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SIP Calculator</string>
+    <string name="title_activity_main">SIP Calculator</string>
+    <string name="package_name">io.epix.sip</string>
+    <string name="custom_url_scheme">io.epix.sip</string>
+</resources>
