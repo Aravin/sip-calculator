@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "696641025032",
+    "project_id": "sip-lumpsum-calculator",
+    "storage_bucket": "sip-lumpsum-calculator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696641025032:android:8793f459e58a37f54ecdbd",
+        "android_client_info": {
+          "package_name": "io.epix.sip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "696641025032-23o3qo00qest2pojkd1eabnhn6ap9pd3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU0IpiAdIrXCPeQuGKIJo71eTqvrbh70M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "696641025032-23o3qo00qest2pojkd1eabnhn6ap9pd3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
