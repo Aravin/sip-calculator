@@ -6,6 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:sip_calculator/shared/ads.dart';
 import 'package:velocity_x/velocity_x.dart';
 
+const LUMPSUM_MIN_AMT = 10000.00;
+const LUMPSUM_MAX_AMT = 1000000.00;
+const LUMPSUM_AVG_AMT = 25000.00;
+
 class LumpSumScreen extends StatefulWidget {
   @override
   _LumpSumScreenState createState() => _LumpSumScreenState();
@@ -13,10 +17,11 @@ class LumpSumScreen extends StatefulWidget {
 
 class _LumpSumScreenState extends State<LumpSumScreen> {
   final _formKey = GlobalKey<FormState>();
-  double _monthlyInvestmentSliderValue = 5000;
+  double _monthlyInvestmentSliderValue = LUMPSUM_AVG_AMT;
   double _expectedReturnSliderValue = 12;
   double _timePeriodSliderValue = 2;
-  final _monthlyInvestmentController = TextEditingController(text: '5000');
+  final _monthlyInvestmentController =
+      TextEditingController(text: LUMPSUM_AVG_AMT.toString());
   final _expectedReturnSController = TextEditingController(text: '12');
   final _timePeriodController = TextEditingController(text: '2');
 
@@ -90,8 +95,8 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                             onChanged: (value) => {
                               if (value != null &&
                                   value != '' &&
-                                  double.parse(value) >= 500 &&
-                                  double.parse(value) <= 50000)
+                                  double.parse(value) >= LUMPSUM_MIN_AMT &&
+                                  double.parse(value) <= LUMPSUM_MAX_AMT)
                                 {
                                   setState(() {
                                     _monthlyInvestmentSliderValue =
@@ -106,9 +111,9 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                     ),
                     Slider(
                       value: _monthlyInvestmentSliderValue,
-                      min: 500,
-                      max: 50000,
-                      divisions: 495,
+                      min: LUMPSUM_MIN_AMT,
+                      max: LUMPSUM_MAX_AMT,
+                      // divisions: 495,
                       label: _monthlyInvestmentSliderValue.round().toString(),
                       onChanged: (double value) {
                         setState(() {
