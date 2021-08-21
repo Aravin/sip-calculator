@@ -1,10 +1,17 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sip_calculator/shared/ads.dart';
+import 'package:sip_calculator/shared/donut_chart.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+
+late BannerAd _bannerAd;
+bool _isBannerAdReady = false;
+final curFormat = new NumberFormat.simpleCurrency();
 
 class SIPScreen extends StatefulWidget {
   @override
@@ -20,21 +27,14 @@ class _SIPScreenState extends State<SIPScreen> {
   final _expectedReturnSController = TextEditingController(text: '12');
   final _timePeriodController = TextEditingController(text: '2');
 
-  int touchedIndex;
-
   double sip = 0.0;
   double totalAmount = 0.0;
 
   void calculateSip() {
-    print('calculate sip');
     // getting values from form
     double amount = _monthlyInvestmentSliderValue;
     double duration = _timePeriodSliderValue;
     double rateOfReturn = _expectedReturnSliderValue;
-
-    if (amount.isNull || duration.isNull || rateOfReturn.isNull) {
-      return;
-    }
 
     double r = rateOfReturn / 100 / 12;
     sip = amount * ((pow(1 + r, 12 * duration) - 1) / (r)) * (1 + r);
@@ -44,9 +44,30 @@ class _SIPScreenState extends State<SIPScreen> {
   void initState() {
     super.initState();
     calculateSip();
+
+    _bannerAd = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.leaderboard,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd.load();
   }
 
   void dispose() {
+    _bannerAd.dispose();
     super.dispose();
   }
 
@@ -83,14 +104,13 @@ class _SIPScreenState extends State<SIPScreen> {
                               new LengthLimitingTextInputFormatter(6),
                             ],
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.isEmptyOrNull) {
                                 return 'Please enter some text';
                               }
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value != null &&
-                                  value != '' &&
+                              if (value.isEmptyOrNull &&
                                   double.parse(value) >= 500 &&
                                   double.parse(value) <= 50000)
                                 {
@@ -141,14 +161,13 @@ class _SIPScreenState extends State<SIPScreen> {
                               new LengthLimitingTextInputFormatter(2),
                             ],
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.isEmptyOrNull) {
                                 return 'Please enter some text';
                               }
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value != null &&
-                                  value != '' &&
+                              if (value.isEmptyOrNull &&
                                   double.parse(value) >= 1 &&
                                   double.parse(value) <= 30)
                                 {
@@ -167,7 +186,7 @@ class _SIPScreenState extends State<SIPScreen> {
                       value: _expectedReturnSliderValue,
                       min: 1,
                       max: 30,
-                      divisions: 30,
+                      divisions: 29,
                       label: _expectedReturnSliderValue.round().toString(),
                       onChanged: (double value) {
                         setState(() {
@@ -195,14 +214,13 @@ class _SIPScreenState extends State<SIPScreen> {
                               new LengthLimitingTextInputFormatter(2),
                             ],
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.isEmptyOrNull) {
                                 return 'Please enter some text';
                               }
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value != null &&
-                                  value != '' &&
+                              if (value.isEmptyOrNull &&
                                   double.parse(value) >= 1 &&
                                   double.parse(value) <= 30)
                                 {
@@ -221,7 +239,7 @@ class _SIPScreenState extends State<SIPScreen> {
                       value: _timePeriodSliderValue,
                       min: 1,
                       max: 30,
-                      divisions: 30,
+                      divisions: 29,
                       label: _timePeriodSliderValue.round().toString(),
                       onChanged: (double value) {
                         setState(() {
@@ -233,43 +251,40 @@ class _SIPScreenState extends State<SIPScreen> {
                       },
                     ),
                     HeightBox(20),
-                    'Total Investment is ₹${totalAmount.toStringAsFixed(2)}'
+                    'Total Investment is ₹${curFormat.format(totalAmount)}'
                         .text
                         .xl
                         .bold
                         .purple600
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Future Return is ₹${sip.toStringAsFixed(2)}'
+                    'Future Return is ₹${curFormat.format(sip)}'
                         .text
                         .xl
                         .bold
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Profit is ₹${(sip - totalAmount).toStringAsFixed(2)}'
+                    'Profit is ₹${curFormat.format((sip - totalAmount))}'
                         .text
                         .xl
                         .bold
                         .green600
                         .makeCentered()
                         .pOnly(top: 5.0),
+                    if (_isBannerAdReady)
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          width: _bannerAd.size.width.toDouble(),
+                          height: _bannerAd.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd),
+                        ),
+                      ).py20(),
+                    SizedBox(
+                      height: 250,
+                      child: DonutPieChart(_createRandomData(), true),
+                    ),
                   ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(bottom: 20.0),
-                child: AdmobBanner(
-                  adUnitId: AdManager.bannerAdUnitId,
-                  adSize: AdmobBannerSize.LARGE_BANNER,
-                  listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-                    print([event, args, 'Banner']);
-                  },
-                  onBannerCreated: (AdmobBannerController controller) {
-                    // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
-                    // Normally you don't need to worry about disposing this yourself, it's handled.
-                    // If you need direct access to dispose, this is your guy!
-                    // controller.dispose();
-                  },
                 ),
               ),
             ],
@@ -278,4 +293,41 @@ class _SIPScreenState extends State<SIPScreen> {
       ),
     );
   }
+
+  /// Create random data.
+  List<charts.Series<LinearSales, num>> _createRandomData() {
+    final data = [
+      new LinearSales(
+        'Investment',
+        double.parse(totalAmount.toStringAsFixed(2)),
+        charts.MaterialPalette.purple.shadeDefault,
+      ),
+      new LinearSales(
+        'Returns',
+        double.parse((sip - totalAmount).toStringAsFixed(2)),
+        charts.MaterialPalette.green.shadeDefault,
+      ),
+    ];
+
+    return [
+      new charts.Series<LinearSales, num>(
+        id: 'SIP',
+        domainFn: (LinearSales sales, _) => sales.amount,
+        measureFn: (LinearSales sales, _) => sales.amount,
+        colorFn: (_, __) => _.color,
+        areaColorFn: (_, __) =>
+            charts.MaterialPalette.green.shadeDefault.lighter,
+        data: data,
+      )
+    ];
+  }
+}
+
+/// Sample linear data type.
+class LinearSales {
+  final String label;
+  final num amount;
+  final charts.Color color;
+
+  LinearSales(this.label, this.amount, this.color);
 }

@@ -1,10 +1,15 @@
 import 'dart:math';
+import 'package:intl/intl.dart';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sip_calculator/shared/ads.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+late BannerAd _bannerAd;
+bool _isBannerAdReady = false;
+final curFormat = new NumberFormat.simpleCurrency();
 
 const LUMPSUM_MIN_AMT = 10000.00;
 const LUMPSUM_MAX_AMT = 1000000.00;
@@ -24,8 +29,6 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
       TextEditingController(text: LUMPSUM_AVG_AMT.toString());
   final _expectedReturnSController = TextEditingController(text: '12');
   final _timePeriodController = TextEditingController(text: '2');
-
-  int touchedIndex;
 
   double sip = 0.0;
   double totalAmount = 0.0;
@@ -48,9 +51,30 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
   void initState() {
     super.initState();
     calculateSip();
+
+    _bannerAd = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.leaderboard,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd.load();
   }
 
   void dispose() {
+    _bannerAd.dispose();
     super.dispose();
   }
 
@@ -87,14 +111,13 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               new LengthLimitingTextInputFormatter(6),
                             ],
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.isEmptyOrNull) {
                                 return 'Please enter some text';
                               }
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value != null &&
-                                  value != '' &&
+                              if (value.isEmptyOrNotNull &&
                                   double.parse(value) >= LUMPSUM_MIN_AMT &&
                                   double.parse(value) <= LUMPSUM_MAX_AMT)
                                 {
@@ -145,14 +168,13 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               new LengthLimitingTextInputFormatter(2),
                             ],
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.isEmptyOrNotNull) {
                                 return 'Please enter some text';
                               }
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value != null &&
-                                  value != '' &&
+                              if (value.isEmptyOrNull &&
                                   double.parse(value) >= 1 &&
                                   double.parse(value) <= 30)
                                 {
@@ -199,14 +221,13 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               new LengthLimitingTextInputFormatter(2),
                             ],
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value.isEmptyOrNotNull) {
                                 return 'Please enter some text';
                               }
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value != null &&
-                                  value != '' &&
+                              if (value.isEmptyOrNull &&
                                   double.parse(value) >= 1 &&
                                   double.parse(value) <= 30)
                                 {
@@ -237,43 +258,36 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                       },
                     ),
                     HeightBox(20),
-                    'Total Investment is ₹${totalAmount.toStringAsFixed(2)}'
+                    'Total Investment is ₹${curFormat.format(totalAmount)}'
                         .text
                         .xl
                         .bold
                         .purple600
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Future Return is ₹${sip.toStringAsFixed(2)}'
+                    'Future Return is ₹${curFormat.format(sip)}'
                         .text
                         .xl
                         .bold
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Profit is ₹${(sip - totalAmount).toStringAsFixed(2)}'
+                    'Profit is ₹${curFormat.format(sip - totalAmount)}'
                         .text
                         .xl
                         .bold
                         .green600
                         .makeCentered()
                         .pOnly(top: 5.0),
+                    if (_isBannerAdReady)
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          width: _bannerAd.size.width.toDouble(),
+                          height: _bannerAd.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd),
+                        ),
+                      ).py20(),
                   ],
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(bottom: 20.0),
-                child: AdmobBanner(
-                  adUnitId: AdManager.bannerAdUnitId,
-                  adSize: AdmobBannerSize.LARGE_BANNER,
-                  listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-                    print([event, args, 'Banner']);
-                  },
-                  onBannerCreated: (AdmobBannerController controller) {
-                    // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
-                    // Normally you don't need to worry about disposing this yourself, it's handled.
-                    // If you need direct access to dispose, this is your guy!
-                    // controller.dispose();
-                  },
                 ),
               ),
             ],

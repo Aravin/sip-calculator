@@ -7,9 +7,46 @@ import 'package:sip_calculator/shared/ads.dart';
 import 'package:sip_calculator/shared/constants.dart';
 import 'package:sip_calculator/shared/drawer.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:admob_flutter/admob_flutter.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-class HomeScreen extends StatelessWidget {
+late BannerAd _bannerAd;
+bool _isBannerAdReady = false;
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  void initState() {
+    super.initState();
+
+    _bannerAd = BannerAd(
+      adUnitId: AdManager.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.leaderboard,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBannerAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd.load();
+  }
+
+  void dispose() {
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,22 +143,15 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(bottom: 20.0),
-            child: AdmobBanner(
-              adUnitId: AdManager.bannerAdUnitId,
-              adSize: AdmobBannerSize.LARGE_BANNER,
-              listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-                print([event, args, 'Banner']);
-              },
-              onBannerCreated: (AdmobBannerController controller) {
-                // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
-                // Normally you don't need to worry about disposing this yourself, it's handled.
-                // If you need direct access to dispose, this is your guy!
-                // controller.dispose();
-              },
-            ),
-          ),
+          if (_isBannerAdReady)
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                width: _bannerAd.size.width.toDouble(),
+                height: _bannerAd.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd),
+              ),
+            ).py20(),
         ],
       ),
     );
