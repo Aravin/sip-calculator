@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:sip_calculator/screens/lumpsum.dart';
+import 'package:sip_calculator/screens/ppf.dart';
 import 'package:sip_calculator/screens/sip.dart';
 import 'package:sip_calculator/screens/stp.dart';
 import 'package:sip_calculator/shared/constants.dart';
@@ -69,6 +70,15 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
               Navigator.pop(context);
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => STPScreen()));
+            },
+          ),
+          ListTile(
+            title: Text('PPF Calculator'),
+            subtitle: 'Public Provident Fund'.text.make(),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => PPFScreen()));
             },
           ),
           // ListTile(

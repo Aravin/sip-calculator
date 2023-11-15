@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sip_calculator/screens/lumpsum.dart';
+import 'package:sip_calculator/screens/ppf.dart';
 import 'package:sip_calculator/screens/sip.dart';
 import 'package:sip_calculator/screens/stp.dart';
 import 'package:sip_calculator/screens/swp.dart';
@@ -119,7 +120,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (context) => STPScreen())),
                 ),
-
+                GestureDetector(
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        'PPF Calculator'.text.bold.center.make(),
+                        'Public Provident Fund'.text.center.make(),
+                      ],
+                    ),
+                  ),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => PPFScreen())),
+                ),
                 // Card(
                 //   child: Column(
                 //     mainAxisAlignment: MainAxisAlignment.center,
