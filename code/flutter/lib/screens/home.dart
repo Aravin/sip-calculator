@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: 'Home'.text.make(),
+        backgroundColor: kPrimaryColor,
       ),
       drawer: CustomAppDrawer(),
       body: Column(

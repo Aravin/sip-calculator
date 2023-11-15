@@ -9,7 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 late BannerAd _bannerAd;
 bool _isBannerAdReady = false;
-final curFormat = new NumberFormat.simpleCurrency();
+final curFormat = new NumberFormat.simpleCurrency(locale: 'en_IN');
 
 const LUMPSUM_MIN_AMT = 10000.00;
 const LUMPSUM_MAX_AMT = 1000000.00;
@@ -117,7 +117,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               return null;
                             },
                             onChanged: (value) => {
-                              if (value.isEmptyOrNotNull &&
+                              if (value.isEmptyOrNull &&
                                   double.parse(value) >= LUMPSUM_MIN_AMT &&
                                   double.parse(value) <= LUMPSUM_MAX_AMT)
                                 {
@@ -168,7 +168,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               new LengthLimitingTextInputFormatter(2),
                             ],
                             validator: (value) {
-                              if (value.isEmptyOrNotNull) {
+                              if (value!.isEmptyOrNull) {
                                 return 'Please enter some text';
                               }
                               return null;
@@ -221,7 +221,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               new LengthLimitingTextInputFormatter(2),
                             ],
                             validator: (value) {
-                              if (value.isEmptyOrNotNull) {
+                              if (value!.isEmptyOrNull) {
                                 return 'Please enter some text';
                               }
                               return null;
@@ -258,20 +258,20 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                       },
                     ),
                     HeightBox(20),
-                    'Total Investment is ₹${curFormat.format(totalAmount)}'
+                    'Total Investment is ${curFormat.format(totalAmount)}'
                         .text
                         .xl
                         .bold
                         .purple600
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Future Return is ₹${curFormat.format(sip)}'
+                    'Future Return is ${curFormat.format(sip)}'
                         .text
                         .xl
                         .bold
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Profit is ₹${curFormat.format(sip - totalAmount)}'
+                    'Profit is ${curFormat.format(sip - totalAmount)}'
                         .text
                         .xl
                         .bold

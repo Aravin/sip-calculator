@@ -10,7 +10,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 late BannerAd _bannerAd;
 bool _isBannerAdReady = false;
-final curFormat = new NumberFormat.simpleCurrency();
+final curFormat = new NumberFormat.simpleCurrency(locale: 'en_IN');
 
 class STPScreen extends StatefulWidget {
   @override
@@ -252,7 +252,7 @@ class _STPScreenState extends State<STPScreen> {
                       },
                     ),
                     HeightBox(20),
-                    'Total Investment is ₹${curFormat.format(totalAmount)}'
+                    'Total Investment is ${curFormat.format(totalAmount)}'
                         .text
                         .xl
                         .bold
@@ -265,7 +265,7 @@ class _STPScreenState extends State<STPScreen> {
                     //     .bold
                     //     .makeCentered()
                     //     .pOnly(top: 5.0),
-                    'STP Amount is ₹${curFormat.format(stpAmount)}/month'
+                    'STP Amount is ${curFormat.format(stpAmount)}/month'
                         .text
                         .xl
                         .bold

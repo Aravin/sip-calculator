@@ -9,7 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 late BannerAd _bannerAd;
 bool _isBannerAdReady = false;
-final curFormat = new NumberFormat.simpleCurrency();
+final curFormat = new NumberFormat.simpleCurrency(locale: 'en_IN');
 
 class SWPScreen extends StatefulWidget {
   @override
@@ -314,20 +314,20 @@ class _SWPScreenState extends State<SWPScreen> {
                       },
                     ),
                     HeightBox(20),
-                    'Total Investment is ₹${curFormat.format(totalAmount)}'
+                    'Total Investment is ${curFormat.format(totalAmount)}'
                         .text
                         .xl
                         .bold
                         .purple600
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Future Return is ₹${curFormat.format(sip)}'
+                    'Future Return is ${curFormat.format(sip)}'
                         .text
                         .xl
                         .bold
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Withdrawn Amount is ₹${curFormat.format(withdrawn)}'
+                    'Withdrawn Amount is ${curFormat.format(withdrawn)}'
                         .text
                         .xl
                         .bold

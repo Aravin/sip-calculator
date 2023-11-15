@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         primaryColor: kPrimaryColor,
         secondaryHeaderColor: kSecondaryColor,
-        accentColor: kSecondaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'IBM Plex Mono',
+        appBarTheme: AppBarTheme(color: kPrimaryColor),
         sliderTheme: SliderThemeData(
           activeTrackColor: kPrimaryLiteColor,
           inactiveTrackColor: kPrimaryColor,

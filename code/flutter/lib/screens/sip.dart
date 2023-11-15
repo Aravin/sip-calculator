@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sip_calculator/shared/ads.dart';
-import 'package:sip_calculator/shared/donut_chart.dart';
+import 'package:sip_calculator/shared/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:fl_chart/fl_chart.dart';
 
 late BannerAd _bannerAd;
 bool _isBannerAdReady = false;
-final curFormat = new NumberFormat.simpleCurrency();
+final curFormat = new NumberFormat.simpleCurrency(locale: 'en_IN');
 
 class SIPScreen extends StatefulWidget {
   @override
@@ -251,26 +251,40 @@ class _SIPScreenState extends State<SIPScreen> {
                       },
                     ),
                     HeightBox(20),
-                    'Total Investment is ₹${curFormat.format(totalAmount)}'
+                    'Total Investment is ${curFormat.format(totalAmount)}'
                         .text
                         .xl
                         .bold
                         .purple600
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Future Return is ₹${curFormat.format(sip)}'
-                        .text
-                        .xl
-                        .bold
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    'Profit is ₹${curFormat.format((sip - totalAmount))}'
+                    'Return is ${curFormat.format((sip - totalAmount))}'
                         .text
                         .xl
                         .bold
                         .green600
                         .makeCentered()
                         .pOnly(top: 5.0),
+                    'Total value is ${curFormat.format(sip)}'
+                        .text
+                        .xl
+                        .bold
+                        .makeCentered()
+                        .pOnly(top: 5.0),
+                    HeightBox(50),
+                    SizedBox(
+                      height: 250,
+                      child: BarChart(
+                        BarChartData(
+                          titlesData: titlesData,
+                          borderData: FlBorderData(show: false),
+                          barGroups: barGroups,
+                          gridData: const FlGridData(show: false),
+                          barTouchData: barTouchData,
+                          alignment: BarChartAlignment.spaceAround,
+                        ),
+                      ),
+                    ),
                     if (_isBannerAdReady)
                       Align(
                         alignment: Alignment.topCenter,
@@ -280,10 +294,6 @@ class _SIPScreenState extends State<SIPScreen> {
                           child: AdWidget(ad: _bannerAd),
                         ),
                       ).py20(),
-                    SizedBox(
-                      height: 250,
-                      child: DonutPieChart(_createRandomData(), true),
-                    ),
                   ],
                 ),
               ),
@@ -294,40 +304,109 @@ class _SIPScreenState extends State<SIPScreen> {
     );
   }
 
-  /// Create random data.
-  List<charts.Series<LinearSales, num>> _createRandomData() {
-    final data = [
-      new LinearSales(
-        'Investment',
-        double.parse(totalAmount.toStringAsFixed(2)),
-        charts.MaterialPalette.purple.shadeDefault,
-      ),
-      new LinearSales(
-        'Returns',
-        double.parse((sip - totalAmount).toStringAsFixed(2)),
-        charts.MaterialPalette.green.shadeDefault,
-      ),
-    ];
+  List<BarChartGroupData> get barGroups => [
+        BarChartGroupData(
+          x: 0,
+          barRods: [
+            BarChartRodData(
+              toY: double.parse(totalAmount.toStringAsFixed(2)),
+              color: Vx.purple600,
+              width: 12.5,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+        BarChartGroupData(
+          x: 1,
+          barRods: [
+            BarChartRodData(
+              toY: double.parse((sip - totalAmount).toStringAsFixed(2)),
+              color: Vx.green600,
+              width: 12.5,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+        BarChartGroupData(
+          x: 2,
+          barRods: [
+            BarChartRodData(
+              toY: double.parse((sip).toStringAsFixed(2)),
+              color: Vx.gray600,
+              width: 12.5,
+            )
+          ],
+          showingTooltipIndicators: [0],
+        ),
+      ];
 
-    return [
-      new charts.Series<LinearSales, num>(
-        id: 'SIP',
-        domainFn: (LinearSales sales, _) => sales.amount,
-        measureFn: (LinearSales sales, _) => sales.amount,
-        colorFn: (_, __) => _.color,
-        areaColorFn: (_, __) =>
-            charts.MaterialPalette.green.shadeDefault.lighter,
-        data: data,
-      )
-    ];
+  Widget getTitles(double value, TitleMeta meta) {
+    final style = TextStyle(
+      color: kSecondaryDartColor,
+      fontWeight: FontWeight.bold,
+    );
+    String text;
+    switch (value.toInt()) {
+      case 0:
+        text = 'Investment';
+        break;
+      case 1:
+        text = 'Returns';
+        break;
+      case 2:
+        text = 'Total Value';
+        break;
+      default:
+        text = '';
+        break;
+    }
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 4,
+      child: Text(text, style: style),
+    );
   }
-}
 
-/// Sample linear data type.
-class LinearSales {
-  final String label;
-  final num amount;
-  final charts.Color color;
+  FlTitlesData get titlesData => FlTitlesData(
+        show: true,
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 30,
+            getTitlesWidget: getTitles,
+          ),
+        ),
+        leftTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+      );
 
-  LinearSales(this.label, this.amount, this.color);
+  BarTouchData get barTouchData => BarTouchData(
+        enabled: false,
+        touchTooltipData: BarTouchTooltipData(
+          tooltipBgColor: Colors.yellow,
+          tooltipPadding: EdgeInsets.zero,
+          tooltipMargin: 8,
+          getTooltipItem: (
+            BarChartGroupData group,
+            int groupIndex,
+            BarChartRodData rod,
+            int rodIndex,
+          ) {
+            return BarTooltipItem(
+              rod.toY.round().toString(),
+              const TextStyle(
+                color: kSecondaryColor,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
+        ),
+      );
 }
