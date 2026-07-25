@@ -1,8 +1,0 @@
-{
-  "appId": "io.epix.sip",
-  "appName": "sip-calculator",
-  "bundledWebRuntime": false,
-  "npmClient": "npm",
-  "webDir": "www",
-  "cordova": {}
-}
