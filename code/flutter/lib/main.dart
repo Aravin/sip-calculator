@@ -6,30 +6,37 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  static _MyAppState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_MyAppState>();
+  }
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void toggleTheme() {
+    setState(() {
+      _themeMode = _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SIP Calculator',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        primaryColor: kPrimaryColor,
-        secondaryHeaderColor: kSecondaryColor,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: 'IBM Plex Mono',
-        appBarTheme: AppBarTheme(backgroundColor: kPrimaryColor),
-        sliderTheme: SliderThemeData(
-          activeTrackColor: kPrimaryLiteColor,
-          inactiveTrackColor: kPrimaryColor,
-          thumbColor: kSecondaryLiteColor,
-        ),
-      ),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: _themeMode,
       home: HomeScreen(),
     );
   }

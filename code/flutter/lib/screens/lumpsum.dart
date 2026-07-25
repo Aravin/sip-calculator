@@ -1,296 +1,194 @@
-import 'dart:math';
-import 'package:intl/intl.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sip_calculator/shared/ads.dart';
-import 'package:velocity_x/velocity_x.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:intl/intl.dart';
+import 'package:sip_calculator/models/calculator_models.dart';
+import 'package:sip_calculator/services/calculator_service.dart';
+import 'package:sip_calculator/services/export_service.dart';
+import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/widgets/ad_banner.dart';
+import 'package:sip_calculator/widgets/input_row.dart';
+import 'package:sip_calculator/widgets/year_table.dart';
 
-late BannerAd _bannerAd;
-bool _isBannerAdReady = false;
-final curFormat = new NumberFormat.simpleCurrency(locale: 'en_IN');
-
-const LUMPSUM_MIN_AMT = 10000.00;
-const LUMPSUM_MAX_AMT = 1000000.00;
-const LUMPSUM_AVG_AMT = 25000.00;
+final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
+final _service = CalculatorService();
 
 class LumpSumScreen extends StatefulWidget {
+  const LumpSumScreen({super.key});
+
   @override
-  _LumpSumScreenState createState() => _LumpSumScreenState();
+  State<LumpSumScreen> createState() => _LumpSumScreenState();
 }
 
 class _LumpSumScreenState extends State<LumpSumScreen> {
-  final _formKey = GlobalKey<FormState>();
-  double _investmentSliderValue = LUMPSUM_AVG_AMT;
-  double _expectedReturnSliderValue = 12;
-  double _timePeriodSliderValue = 2;
-  final _investmentController =
-      TextEditingController(text: LUMPSUM_AVG_AMT.toString());
-  final _expectedReturnSController = TextEditingController(text: '12');
-  final _timePeriodController = TextEditingController(text: '2');
+  double _investment = 100000;
+  double _return = 12;
+  double _years = 5;
+  bool _showYearTable = false;
+  bool _showPostTax = false;
 
-  double futureValue = 0.0;
-  double totalAmount = 0.0;
+  final _investmentCtrl = TextEditingController(text: '100000');
+  final _returnCtrl = TextEditingController(text: '12');
+  final _yearsCtrl = TextEditingController(text: '5');
 
-  void calculateLumpsum() {
-    double amount = _investmentSliderValue;
-    double duration = _timePeriodSliderValue;
-    double rateOfReturn = _expectedReturnSliderValue;
+  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult? _postTax;
 
-    double r = rateOfReturn / 100;
-    futureValue = amount * pow(1 + r, duration);
-    totalAmount = amount;
-  }
-
+  @override
   void initState() {
     super.initState();
-    calculateLumpsum();
-
-    _bannerAd = BannerAd(
-      adUnitId: AdManager.bannerAdUnitId,
-      request: AdRequest(),
-      size: AdSize.leaderboard,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
-          _isBannerAdReady = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _bannerAd.load();
+    _recalculate();
   }
 
+  void _recalculate() {
+    setState(() {
+      _result = _service.calculateLumpsum(
+        investment: _investment,
+        rateOfReturn: _return,
+        years: _years.round(),
+      );
+      if (_showPostTax) {
+        _postTax = _service.calculateLtcgTax(result: _result);
+      }
+    });
+  }
+
+  void _save() {
+    final calc = SavedCalculation(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: 'Lumpsum - ${_curFormat.format(_investment)}',
+      type: 'Lumpsum',
+      params: '₹${_investment.toInt()}, ${_return}%, ${_years.toInt()}y',
+      result: _result,
+      savedAt: DateTime.now(),
+    );
+    PersistenceService.save(calc);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+    );
+  }
+
+  void _shareCsv() {
+    ExportService.shareAsCsv(_result, 'Lumpsum Calculator');
+  }
+
+  @override
   void dispose() {
-    _bannerAd.dispose();
+    _investmentCtrl.dispose();
+    _returnCtrl.dispose();
+    _yearsCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: 'Lump-sum Calculator'.text.make()),
-      body: Container(
-        // padding: kAppPadding,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'One Time Investment'
-                              .text
-                              .lg
-                              .make()
-                              .pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _investmentController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(prefix: Text('₹ ')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(6),
-                            ],
-                            validator: (value) {
-                              if (value.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= LUMPSUM_MIN_AMT && v <= LUMPSUM_MAX_AMT) {
-                                    setState(() {
-                                      _investmentSliderValue = v;
-                                      calculateLumpsum();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _investmentSliderValue,
-                      min: LUMPSUM_MIN_AMT,
-                      max: LUMPSUM_MAX_AMT,
-                      // divisions: 495,
-                      label: _investmentSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _investmentSliderValue = value;
-                          _investmentController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateLumpsum();
-                        });
-                      },
-                    ),
-                    HeightBox(20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'Expected Return Rate'
-                              .text
-                              .lg
-                              .make()
-                              .pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _expectedReturnSController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(suffix: Text(' %')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(2),
-                            ],
-                            validator: (value) {
-                              if (value!.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= 1 && v <= 30) {
-                                    setState(() {
-                                      _expectedReturnSliderValue = v;
-                                      calculateLumpsum();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _expectedReturnSliderValue,
-                      min: 1,
-                      max: 30,
-                      divisions: 30,
-                      label: _expectedReturnSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _expectedReturnSliderValue = value;
-                          _expectedReturnSController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateLumpsum();
-                        });
-                      },
-                    ),
-                    HeightBox(20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'Time Period'.text.lg.make().pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _timePeriodController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(suffix: Text(' Year')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(2),
-                            ],
-                            validator: (value) {
-                              if (value!.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= 1 && v <= 30) {
-                                    setState(() {
-                                      _timePeriodSliderValue = v;
-                                      calculateLumpsum();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _timePeriodSliderValue,
-                      min: 1,
-                      max: 30,
-                      divisions: 30,
-                      label: _timePeriodSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _timePeriodSliderValue = value;
-                          _timePeriodController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateLumpsum();
-                        });
-                      },
-                    ),
-                    HeightBox(20),
-                    'Total Investment is ${curFormat.format(totalAmount)}'
-                        .text
-                        .xl
-                        .bold
-                        .purple600
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    'Future Return is ${curFormat.format(futureValue)}'
-                        .text
-                        .xl
-                        .bold
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    'Profit is ${curFormat.format(futureValue - totalAmount)}'
-                        .text
-                        .xl
-                        .bold
-                        .green600
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    if (_isBannerAdReady)
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          width: _bannerAd.size.width.toDouble(),
-                          height: _bannerAd.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd),
-                        ),
-                      ).py20(),
-                  ],
-                ),
-              ),
-            ],
+      appBar: AppBar(
+        title: const Text('Lump-sum Calculator'),
+        actions: [
+          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
+          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+        ],
+      ),
+      body: ListView(
+        children: [
+          InputRow(
+            label: 'One Time Investment',
+            controller: _investmentCtrl,
+            sliderValue: _investment,
+            min: 10000, max: 10000000,
+            prefix: '₹ ',
+            maxLength: 8,
+            onChanged: (v) {
+              _investment = v;
+              _investmentCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
           ),
-        ),
+          InputRow(
+            label: 'Expected Return',
+            controller: _returnCtrl,
+            sliderValue: _return,
+            min: 1, max: 30,
+            divisions: 29,
+            suffix: ' %',
+            maxLength: 2,
+            onChanged: (v) {
+              _return = v;
+              _returnCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
+          ),
+          InputRow(
+            label: 'Time Period',
+            controller: _yearsCtrl,
+            sliderValue: _years,
+            min: 1, max: 30,
+            divisions: 29,
+            suffix: ' Year',
+            maxLength: 2,
+            onChanged: (v) {
+              _years = v;
+              _yearsCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
+          ),
+          const SizedBox(height: 16),
+          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
+          _resultRow('Future Value', _result.totalValue, null),
+          _resultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
+          if (_result.totalValue > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
+                style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
+              ),
+            ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilterChip(
+              label: const Text('LTCG Tax (12.5% after ₹1.25L)'),
+              selected: _showPostTax,
+              onSelected: (v) {
+                _showPostTax = v;
+                _recalculate();
+              },
+            ),
+          ),
+          if (_showPostTax && _postTax != null) ...[
+            _resultRow('Post-Tax Value', _postTax!.totalValue, Colors.orange),
+            _resultRow('Tax Paid', _result.totalReturns - _postTax!.totalReturns, Colors.red),
+          ],
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilterChip(
+              label: const Text('Year Table'),
+              selected: _showYearTable,
+              onSelected: (v) => setState(() => _showYearTable = v),
+            ),
+          ),
+          if (_showYearTable)
+            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+          const AdBanner(),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _resultRow(String label, double value, Color? color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 13)),
+          Text(
+            _curFormat.format(value),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
+          ),
+        ],
       ),
     );
   }

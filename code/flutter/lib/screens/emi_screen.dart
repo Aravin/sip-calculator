@@ -6,27 +6,30 @@ import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
+import 'package:sip_calculator/widgets/year_table.dart';
 
 final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
 final _service = CalculatorService();
 
-class STPScreen extends StatefulWidget {
-  const STPScreen({super.key});
+class EMIScreen extends StatefulWidget {
+  const EMIScreen({super.key});
 
   @override
-  State<STPScreen> createState() => _STPScreenState();
+  State<EMIScreen> createState() => _EMIScreenState();
 }
 
-class _STPScreenState extends State<STPScreen> {
-  double _investment = 50000;
-  double _return = 12;
+class _EMIScreenState extends State<EMIScreen> {
+  double _principal = 500000;
+  double _rate = 9;
   double _years = 5;
+  bool _showTable = false;
 
-  final _investmentCtrl = TextEditingController(text: '50000');
-  final _returnCtrl = TextEditingController(text: '12');
+  final _principalCtrl = TextEditingController(text: '500000');
+  final _rateCtrl = TextEditingController(text: '9');
   final _yearsCtrl = TextEditingController(text: '5');
 
   CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  double _monthlyEmi = 0;
 
   @override
   void initState() {
@@ -36,20 +39,21 @@ class _STPScreenState extends State<STPScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculateStp(
-        totalInvestment: _investment,
-        rateOfReturn: _return,
+      _result = _service.calculateEmi(
+        principal: _principal,
+        annualRate: _rate,
         years: _years.round(),
       );
+      _monthlyEmi = _years > 0 ? _result.totalValue / (_years * 12) : 0;
     });
   }
 
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'STP - ${_curFormat.format(_investment)}',
-      type: 'STP',
-      params: '₹${_investment.toInt()}, ${_return}%, ${_years.toInt()}y',
+      name: 'EMI - ${_curFormat.format(_principal)}',
+      type: 'EMI',
+      params: '₹${_principal.toInt()}, ${_rate}%, ${_years.toInt()}y',
       result: _result,
       savedAt: DateTime.now(),
     );
@@ -60,13 +64,13 @@ class _STPScreenState extends State<STPScreen> {
   }
 
   void _shareCsv() {
-    ExportService.shareAsCsv(_result, 'STP Calculator');
+    ExportService.shareAsCsv(_result, 'EMI Calculator');
   }
 
   @override
   void dispose() {
-    _investmentCtrl.dispose();
-    _returnCtrl.dispose();
+    _principalCtrl.dispose();
+    _rateCtrl.dispose();
     _yearsCtrl.dispose();
     super.dispose();
   }
@@ -75,7 +79,7 @@ class _STPScreenState extends State<STPScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('STP Calculator'),
+        title: const Text('EMI Calculator'),
         actions: [
           IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
           IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
@@ -84,34 +88,35 @@ class _STPScreenState extends State<STPScreen> {
       body: ListView(
         children: [
           InputRow(
-            label: 'Total Investment',
-            controller: _investmentCtrl,
-            sliderValue: _investment,
+            label: 'Loan Amount',
+            controller: _principalCtrl,
+            sliderValue: _principal,
             min: 10000, max: 10000000,
+            divisions: 999,
             prefix: '₹ ',
             maxLength: 8,
             onChanged: (v) {
-              _investment = v;
-              _investmentCtrl.text = v.toInt().toString();
+              _principal = v;
+              _principalCtrl.text = v.toInt().toString();
               _recalculate();
             },
           ),
           InputRow(
-            label: 'Expected Return',
-            controller: _returnCtrl,
-            sliderValue: _return,
-            min: 1, max: 30,
-            divisions: 29,
+            label: 'Interest Rate',
+            controller: _rateCtrl,
+            sliderValue: _rate,
+            min: 1, max: 24,
+            divisions: 23,
             suffix: ' %',
             maxLength: 2,
             onChanged: (v) {
-              _return = v;
-              _returnCtrl.text = v.toInt().toString();
+              _rate = v;
+              _rateCtrl.text = v.toInt().toString();
               _recalculate();
             },
           ),
           InputRow(
-            label: 'Time Period',
+            label: 'Tenure',
             controller: _yearsCtrl,
             sliderValue: _years,
             min: 1, max: 30,
@@ -125,16 +130,29 @@ class _STPScreenState extends State<STPScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          _resultRow('Monthly STP Amount', _result.totalValue, Colors.green.shade600),
+          _resultRow('Monthly EMI', _monthlyEmi, Colors.red),
+          _resultRow('Total Interest', _result.totalReturns, Colors.orange),
+          _resultRow('Total Payment', _result.totalValue, null),
           if (_result.totalValue > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}/month',
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
                 style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
               ),
             ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilterChip(
+              label: const Text('Amortization Table'),
+              selected: _showTable,
+              onSelected: (v) => setState(() => _showTable = v),
+            ),
+          ),
+          if (_showTable)
+            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+          const SizedBox(height: 20),
           const AdBanner(),
           const SizedBox(height: 20),
         ],
@@ -150,7 +168,7 @@ class _STPScreenState extends State<STPScreen> {
         children: [
           Text(label, style: const TextStyle(fontSize: 13)),
           Text(
-            label.contains('STP') ? '${_curFormat.format(value)}/month' : _curFormat.format(value),
+            _curFormat.format(value),
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
           ),
         ],

@@ -1,59 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:sip_calculator/screens/combined_screen.dart';
+import 'package:sip_calculator/screens/emi_screen.dart';
 import 'package:sip_calculator/screens/lumpsum.dart';
 import 'package:sip_calculator/screens/ppf.dart';
+import 'package:sip_calculator/screens/savings_screen.dart';
 import 'package:sip_calculator/screens/sip.dart';
 import 'package:sip_calculator/screens/stp.dart';
 import 'package:sip_calculator/screens/swp.dart';
-import 'package:sip_calculator/shared/ads.dart';
 import 'package:sip_calculator/shared/constants.dart';
 import 'package:sip_calculator/shared/drawer.dart';
-import 'package:velocity_x/velocity_x.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sip_calculator/widgets/ad_banner.dart';
 
-late BannerAd _bannerAd;
-bool _isBannerAdReady = false;
-
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  void initState() {
-    super.initState();
-
-    _bannerAd = BannerAd(
-      adUnitId: AdManager.bannerAdUnitId,
-      request: AdRequest(),
-      size: AdSize.leaderboard,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
-          _isBannerAdReady = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _bannerAd.load();
-  }
-
-  void dispose() {
-    _bannerAd.dispose();
-    super.dispose();
-  }
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: 'Home'.text.make(),
-        backgroundColor: kPrimaryColor,
+        title: const Text('SIP Calculator'),
       ),
       drawer: CustomAppDrawer(),
       body: Column(
@@ -62,112 +27,55 @@ class _HomeScreenState extends State<HomeScreen> {
             child: GridView.count(
               padding: kAppPadding,
               crossAxisCount: 2,
-              // Generate 100 widgets that display their index in the List.
               children: [
-                GestureDetector(
-                  child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        'SIP Calculator'.text.bold.center.make(),
-                        'Systematic Investment Plan'.text.center.make(),
-                      ],
-                    ),
-                  ),
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SIPScreen())),
-                ),
-                GestureDetector(
-                  child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        'Lumpsum Calculator'.text.bold.center.make(),
-                        'One-Time Investment Plan'.text.center.make(),
-                      ],
-                    ),
-                  ),
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LumpSumScreen())),
-                ),
-                GestureDetector(
-                  child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        'SWP Calculator'.text.bold.center.make(),
-                        'Systematic Withdraw Plan'.text.center.make(),
-                      ],
-                    ),
-                  ),
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => SWPScreen())),
-                ),
-                GestureDetector(
-                  child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        'STP Calculator'.text.bold.center.make(),
-                        'Systematic Transfer Plan'.text.center.make(),
-                      ],
-                    ),
-                  ),
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => STPScreen())),
-                ),
-                GestureDetector(
-                  child: Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        'PPF Calculator'.text.bold.center.make(),
-                        'Public Provident Fund'.text.center.make(),
-                      ],
-                    ),
-                  ),
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => PPFScreen())),
-                ),
-                // Card(
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       'DTP Calculator'.text.bold.center.make(),
-                //       'Divident Transfer Plan'.text.center.make(),
-                //     ],
-                //   ),
-                // ),
-                // Card(
-                //   color: kSecondaryLiteColor,
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       'Savings'.text.white.bold.center.make(),
-                //       'Saved SIP/SWP/STP/DTP/LumpSum'.text.white.center.make(),
-                //     ],
-                //   ),
-                // ),
+                _card('SIP Calculator', 'Systematic Investment Plan', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => SIPScreen()));
+                }, Icons.trending_up, Colors.teal),
+                _card('Lumpsum', 'One-Time Investment', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => LumpSumScreen()));
+                }, Icons.monetization_on, Colors.blue),
+                _card('SWP Calculator', 'Systematic Withdraw Plan', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => SWPScreen()));
+                }, Icons.arrow_downward, Colors.orange),
+                _card('STP Calculator', 'Systematic Transfer Plan', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => STPScreen()));
+                }, Icons.swap_horiz, Colors.purple),
+                _card('PPF Calculator', 'Public Provident Fund', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => PPFScreen()));
+                }, Icons.savings, Colors.green),
+                _card('EMI Calculator', 'Loan EMI & Amortization', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => EMIScreen()));
+                }, Icons.home, Colors.red),
+                _card('SIP + Lumpsum', 'Combined Planner', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => CombinedScreen()));
+                }, Icons.merge, Colors.indigo),
+                _card('Saved Plans', 'Bookmarked Calcs', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => SavingsScreen()));
+                }, Icons.bookmark, Colors.amber),
               ],
             ),
           ),
-          if (_isBannerAdReady)
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                width: _bannerAd.size.width.toDouble(),
-                height: _bannerAd.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd),
-              ),
-            ).py20(),
+          const AdBanner(),
         ],
+      ),
+    );
+  }
+
+  Widget _card(String title, String subtitle, VoidCallback onTap, IconData icon, Color color) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 36, color: color),
+            const SizedBox(height: 8),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), textAlign: TextAlign.center),
+            const SizedBox(height: 4),
+            Text(subtitle, style: const TextStyle(fontSize: 10), textAlign: TextAlign.center),
+          ],
+        ),
       ),
     );
   }

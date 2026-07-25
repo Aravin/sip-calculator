@@ -16,6 +16,8 @@ dependencies:
   in_app_review: ^2.0.12
   google_mobile_ads: ^5.3.1
   fl_chart: ^0.69.2
+  shared_preferences: ^2.3.0
+  path_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:

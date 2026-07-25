@@ -1,358 +1,203 @@
-import 'dart:math';
-import 'package:intl/intl.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:sip_calculator/shared/ads.dart';
-import 'package:velocity_x/velocity_x.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:intl/intl.dart';
+import 'package:sip_calculator/models/calculator_models.dart';
+import 'package:sip_calculator/services/calculator_service.dart';
+import 'package:sip_calculator/services/export_service.dart';
+import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/widgets/ad_banner.dart';
+import 'package:sip_calculator/widgets/input_row.dart';
+import 'package:sip_calculator/widgets/year_table.dart';
 
-late BannerAd _bannerAd;
-bool _isBannerAdReady = false;
-final curFormat = new NumberFormat.simpleCurrency(locale: 'en_IN');
+final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
+final _service = CalculatorService();
 
 class SWPScreen extends StatefulWidget {
+  const SWPScreen({super.key});
+
   @override
-  _SWPScreenState createState() => _SWPScreenState();
+  State<SWPScreen> createState() => _SWPScreenState();
 }
 
 class _SWPScreenState extends State<SWPScreen> {
-  final _formKey = GlobalKey<FormState>();
-  double _investmentSliderValue = 50000;
-  double _withdrawSliderValue = 1000;
-  double _expectedReturnSliderValue = 12;
-  double _timePeriodSliderValue = 2;
-  final _monthlyInvestmentController = TextEditingController(text: '50000');
-  final _withdrawController = TextEditingController(text: '1000');
-  final _expectedReturnSController = TextEditingController(text: '12');
-  final _timePeriodController = TextEditingController(text: '2');
+  double _investment = 50000;
+  double _withdraw = 1000;
+  double _return = 12;
+  double _years = 5;
+  bool _showYearTable = false;
 
-  double sip = 0.0;
-  double totalAmount = 0.0;
-  double withdrawn = 0.0;
+  final _investmentCtrl = TextEditingController(text: '50000');
+  final _withdrawCtrl = TextEditingController(text: '1000');
+  final _returnCtrl = TextEditingController(text: '12');
+  final _yearsCtrl = TextEditingController(text: '5');
 
-  void calculateSwp() {
-    double amount = _investmentSliderValue;
-    double withdraw = _withdrawSliderValue;
-    double duration = _timePeriodSliderValue;
-    double rateOfReturn = _expectedReturnSliderValue;
+  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  double _totalWithdrawn = 0;
 
-    sip = ((amount * pow((1 + rateOfReturn / 100), duration)) -
-        (withdraw *
-            (pow((1 + (pow((1 + rateOfReturn / 100), (1 / 12)) - 1)),
-                    (duration * 12)) -
-                1) /
-            (pow((1 + rateOfReturn / 100), (1 / 12)) - 1)));
-    totalAmount = amount;
-    withdrawn = duration * 12 * withdraw;
-  }
-
+  @override
   void initState() {
     super.initState();
-    calculateSwp();
-
-    _bannerAd = BannerAd(
-      adUnitId: AdManager.bannerAdUnitId,
-      request: AdRequest(),
-      size: AdSize.leaderboard,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
-          _isBannerAdReady = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _bannerAd.load();
+    _recalculate();
   }
 
+  void _recalculate() {
+    setState(() {
+      _result = _service.calculateSwp(
+        totalInvestment: _investment,
+        monthlyWithdraw: _withdraw,
+        rateOfReturn: _return,
+        years: _years.round(),
+      );
+      _totalWithdrawn = _result.totalReturns;
+    });
+  }
+
+  void _save() {
+    final calc = SavedCalculation(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: 'SWP - ${_curFormat.format(_investment)}',
+      type: 'SWP',
+      params: '₹${_investment.toInt()}, ${_withdraw.toInt()}/mo, ${_return}%',
+      result: _result,
+      savedAt: DateTime.now(),
+    );
+    PersistenceService.save(calc);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+    );
+  }
+
+  void _shareCsv() {
+    ExportService.shareAsCsv(_result, 'SWP Calculator');
+  }
+
+  @override
   void dispose() {
-    _bannerAd.dispose();
+    _investmentCtrl.dispose();
+    _withdrawCtrl.dispose();
+    _returnCtrl.dispose();
+    _yearsCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: 'SWP Calculator'.text.make()),
-      body: Container(
-        // padding: kAppPadding,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'Total Investment'
-                              .text
-                              .lg
-                              .make()
-                              .pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _monthlyInvestmentController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(prefix: Text('₹ ')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(6),
-                            ],
-                            validator: (value) {
-                              if (value.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= 500 && v <= 50000) {
-                                    setState(() {
-                                      _investmentSliderValue = v;
-                                      calculateSwp();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _investmentSliderValue,
-                      min: 500,
-                      max: 50000,
-                      divisions: 495,
-                      label: _investmentSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _investmentSliderValue = value;
-                          _monthlyInvestmentController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateSwp();
-                        });
-                      },
-                    ),
-                    HeightBox(20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'Monthly Withdraw'
-                              .text
-                              .lg
-                              .make()
-                              .pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _withdrawController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(prefix: Text('₹ ')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(2),
-                            ],
-                            validator: (value) {
-                              if (value.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= 500 && v <= 50000) {
-                                    setState(() {
-                                      _withdrawSliderValue = v;
-                                      calculateSwp();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _withdrawSliderValue,
-                      min: 500,
-                      max: 50000,
-                      divisions: 495,
-                      label: _withdrawSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _withdrawSliderValue = value;
-                          _withdrawController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateSwp();
-                        });
-                      },
-                    ),
-                    HeightBox(20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'Expected Return Rate'
-                              .text
-                              .lg
-                              .make()
-                              .pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _expectedReturnSController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(suffix: Text(' %')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(2),
-                            ],
-                            validator: (value) {
-                              if (value.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= 1 && v <= 30) {
-                                    setState(() {
-                                      _expectedReturnSliderValue = v;
-                                      calculateSwp();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _expectedReturnSliderValue,
-                      min: 1,
-                      max: 30,
-                      divisions: 30,
-                      label: _expectedReturnSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _expectedReturnSliderValue = value;
-                          _expectedReturnSController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateSwp();
-                        });
-                      },
-                    ),
-                    HeightBox(20.0),
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 8,
-                          child: 'Time Period'.text.lg.make().pOnly(left: 24.0),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: TextFormField(
-                            controller: _timePeriodController,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(suffix: Text(' Year')),
-                            inputFormatters: [
-                              new LengthLimitingTextInputFormatter(2),
-                            ],
-                            validator: (value) {
-                              if (value.isEmptyOrNull) {
-                                return 'Please enter some text';
-                              }
-                              return null;
-                            },
-                            onChanged: (value) {
-                              if (!value.isEmptyOrNull) {
-                                try {
-                                  final v = double.parse(value);
-                                  if (v >= 1 && v <= 30) {
-                                    setState(() {
-                                      _timePeriodSliderValue = v;
-                                      calculateSwp();
-                                    });
-                                  }
-                                } catch (_) {}
-                              }
-                            },
-                          ).pOnly(right: 24.0),
-                        ),
-                      ],
-                    ),
-                    Slider(
-                      value: _timePeriodSliderValue,
-                      min: 1,
-                      max: 30,
-                      divisions: 30,
-                      label: _timePeriodSliderValue.round().toString(),
-                      onChanged: (double value) {
-                        setState(() {
-                          _timePeriodSliderValue = value;
-                          _timePeriodController.value =
-                              TextEditingValue(text: value.toInt().toString());
-                          calculateSwp();
-                        });
-                      },
-                    ),
-                    HeightBox(20),
-                    'Total Investment is ${curFormat.format(totalAmount)}'
-                        .text
-                        .xl
-                        .bold
-                        .purple600
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    'Future Return is ${curFormat.format(sip)}'
-                        .text
-                        .xl
-                        .bold
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    'Withdrawn Amount is ${curFormat.format(withdrawn)}'
-                        .text
-                        .xl
-                        .bold
-                        .green600
-                        .makeCentered()
-                        .pOnly(top: 5.0),
-                    if (_isBannerAdReady)
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          width: _bannerAd.size.width.toDouble(),
-                          height: _bannerAd.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd),
-                        ),
-                      ).py20(),
-                  ],
+      appBar: AppBar(
+        title: const Text('SWP Calculator'),
+        actions: [
+          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
+          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+        ],
+      ),
+      body: ListView(
+        children: [
+          InputRow(
+            label: 'Total Investment',
+            controller: _investmentCtrl,
+            sliderValue: _investment,
+            min: 10000, max: 10000000,
+            prefix: '₹ ',
+            maxLength: 8,
+            onChanged: (v) {
+              _investment = v;
+              _investmentCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
+          ),
+          InputRow(
+            label: 'Monthly Withdraw',
+            controller: _withdrawCtrl,
+            sliderValue: _withdraw,
+            min: 500, max: 500000,
+            prefix: '₹ ',
+            maxLength: 6,
+            onChanged: (v) {
+              _withdraw = v;
+              _withdrawCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
+          ),
+          InputRow(
+            label: 'Expected Return',
+            controller: _returnCtrl,
+            sliderValue: _return,
+            min: 1, max: 30,
+            divisions: 29,
+            suffix: ' %',
+            maxLength: 2,
+            onChanged: (v) {
+              _return = v;
+              _returnCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
+          ),
+          InputRow(
+            label: 'Time Period',
+            controller: _yearsCtrl,
+            sliderValue: _years,
+            min: 1, max: 30,
+            divisions: 29,
+            suffix: ' Year',
+            maxLength: 2,
+            onChanged: (v) {
+              _years = v;
+              _yearsCtrl.text = v.toInt().toString();
+              _recalculate();
+            },
+          ),
+          const SizedBox(height: 16),
+          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
+          _resultRow('Total Withdrawn', _totalWithdrawn, Colors.green.shade600),
+          _resultRow('Remaining Corpus', _result.totalValue, null),
+          if (_result.totalValue > 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
+                style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
+              ),
+            ),
+          if (_result.totalValue <= 0)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Card(
+                color: Colors.red.shade50,
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text('Warning: Corpus depleted before tenure ends!', style: TextStyle(color: Colors.red, fontSize: 12)),
                 ),
               ),
-            ],
+            ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FilterChip(
+              label: const Text('Year Table'),
+              selected: _showYearTable,
+              onSelected: (v) => setState(() => _showYearTable = v),
+            ),
           ),
-        ),
+          if (_showYearTable)
+            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+          const AdBanner(),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _resultRow(String label, double value, Color? color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 13)),
+          Text(
+            _curFormat.format(value),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
+          ),
+        ],
       ),
     );
   }
