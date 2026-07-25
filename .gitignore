@@ -1,1 +1,54 @@
-code/flutter/android/.kotlin/*
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.Trashes
+
+# Flutter/Dart
+.dart_tool/
+.packages
+.pub/
+build/
+*.freezed.dart
+*.g.dart
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.metadata
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+bin/
+gen/
+local.properties
+.gradle/
+.gradletasknamecache
+**/android/.kotlin/
+
+# iOS
+ios/Pods/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/ephemeral/
+ios/**/Pods/
+ios/**/.symlinks/
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Misc
+*.swp
+*.swo
+*~
+*.log
