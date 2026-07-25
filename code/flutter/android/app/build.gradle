@@ -33,7 +33,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 35
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -44,10 +44,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "io.epix.sip"
-        minSdkVersion 23
-        targetSdkVersion 33
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -67,6 +66,15 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 flutter {
@@ -74,11 +82,8 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlin_version}"
-    // Import the Firebase BoM
-    implementation 'com.google.firebase:firebase-bom:32.5.0'
-    // Declare the dependency for the Firebase SDK for Google Analytics
-    implementation 'com.google.firebase:firebase-analytics-ktx:21.5.0'
-    implementation 'com.google.android.gms:play-services-ads:22.5.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation platform('com.google.firebase:firebase-bom:33.5.0')
+    implementation 'com.google.android.gms:play-services-ads:23.5.0'
     implementation("androidx.multidex:multidex:2.0.1")
 }

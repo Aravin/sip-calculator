@@ -6,7 +6,7 @@ import 'package:sip_calculator/screens/sip.dart';
 import 'package:sip_calculator/screens/stp.dart';
 import 'package:sip_calculator/shared/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CustomAppDrawer extends StatefulWidget {
   @override

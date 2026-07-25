@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         secondaryHeaderColor: kSecondaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         fontFamily: 'IBM Plex Mono',
-        appBarTheme: AppBarTheme(color: kPrimaryColor),
+        appBarTheme: AppBarTheme(backgroundColor: kPrimaryColor),
         sliderTheme: SliderThemeData(
           activeTrackColor: kPrimaryLiteColor,
           inactiveTrackColor: kPrimaryColor,

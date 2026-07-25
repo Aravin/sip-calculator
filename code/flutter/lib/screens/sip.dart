@@ -390,7 +390,7 @@ class _SIPScreenState extends State<SIPScreen> {
   BarTouchData get barTouchData => BarTouchData(
         enabled: false,
         touchTooltipData: BarTouchTooltipData(
-          tooltipBgColor: Colors.yellow,
+          getTooltipColor: (_) => Colors.yellow,
           tooltipPadding: EdgeInsets.zero,
           tooltipMargin: 8,
           getTooltipItem: (
