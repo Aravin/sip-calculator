@@ -5,8 +5,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
   runApp(const MyApp());
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    MobileAds.instance.initialize();
+  });
 }
 
 class MyApp extends StatefulWidget {
