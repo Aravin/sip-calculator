@@ -3,7 +3,7 @@ description: Comprehensive SIP, Lumpsum, SWP, STP, PPF & EMI financial calculato
 
 publish_to: 'none'
 
-version: 5.4.0+34
+version: 5.5.0+35
 
 environment:
   sdk: ">=3.2.0 <4.0.0"
