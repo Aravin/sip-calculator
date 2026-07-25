@@ -1,0 +1,11 @@
+linter:
+  rules:
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - avoid_print
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - use_key_in_widget_constructors
+    - prefer_final_locals
+    - avoid_unnecessary_containers
+    - prefer_const_literals_to_create_immutables

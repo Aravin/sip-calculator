@@ -31,8 +31,7 @@ class _SWPScreenState extends State<SWPScreen> {
   double totalAmount = 0.0;
   double withdrawn = 0.0;
 
-  void calculateSip() {
-    // getting values from form
+  void calculateSwp() {
     double amount = _investmentSliderValue;
     double withdraw = _withdrawSliderValue;
     double duration = _timePeriodSliderValue;
@@ -50,7 +49,7 @@ class _SWPScreenState extends State<SWPScreen> {
 
   void initState() {
     super.initState();
-    calculateSip();
+    calculateSwp();
 
     _bannerAd = BannerAd(
       adUnitId: AdManager.bannerAdUnitId,
@@ -116,17 +115,18 @@ class _SWPScreenState extends State<SWPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 500 &&
-                                  double.parse(value) <= 50000)
-                                {
-                                  setState(() {
-                                    _investmentSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 500 && v <= 50000) {
+                                    setState(() {
+                                      _investmentSliderValue = v;
+                                      calculateSwp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -143,7 +143,7 @@ class _SWPScreenState extends State<SWPScreen> {
                           _investmentSliderValue = value;
                           _monthlyInvestmentController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateSwp();
                         });
                       },
                     ),
@@ -173,16 +173,18 @@ class _SWPScreenState extends State<SWPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _withdrawSliderValue = double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 500 && v <= 50000) {
+                                    setState(() {
+                                      _withdrawSliderValue = v;
+                                      calculateSwp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -199,7 +201,7 @@ class _SWPScreenState extends State<SWPScreen> {
                           _withdrawSliderValue = value;
                           _withdrawController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateSwp();
                         });
                       },
                     ),
@@ -229,17 +231,18 @@ class _SWPScreenState extends State<SWPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _expectedReturnSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _expectedReturnSliderValue = v;
+                                      calculateSwp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -256,7 +259,7 @@ class _SWPScreenState extends State<SWPScreen> {
                           _expectedReturnSliderValue = value;
                           _expectedReturnSController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateSwp();
                         });
                       },
                     ),
@@ -282,17 +285,18 @@ class _SWPScreenState extends State<SWPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _timePeriodSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _timePeriodSliderValue = v;
+                                      calculateSwp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -309,7 +313,7 @@ class _SWPScreenState extends State<SWPScreen> {
                           _timePeriodSliderValue = value;
                           _timePeriodController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateSwp();
                         });
                       },
                     ),

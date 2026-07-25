@@ -109,17 +109,18 @@ class _SIPScreenState extends State<SIPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 500 &&
-                                  double.parse(value) <= 50000)
-                                {
-                                  setState(() {
-                                    _monthlyInvestmentSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 500 && v <= 50000) {
+                                    setState(() {
+                                      _monthlyInvestmentSliderValue = v;
+                                      calculateSip();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -166,17 +167,18 @@ class _SIPScreenState extends State<SIPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _expectedReturnSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _expectedReturnSliderValue = v;
+                                      calculateSip();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -219,17 +221,18 @@ class _SIPScreenState extends State<SIPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _timePeriodSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _timePeriodSliderValue = v;
+                                      calculateSip();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),

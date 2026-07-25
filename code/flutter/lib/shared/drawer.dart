@@ -4,6 +4,7 @@ import 'package:sip_calculator/screens/lumpsum.dart';
 import 'package:sip_calculator/screens/ppf.dart';
 import 'package:sip_calculator/screens/sip.dart';
 import 'package:sip_calculator/screens/stp.dart';
+import 'package:sip_calculator/screens/swp.dart';
 import 'package:sip_calculator/shared/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:share_plus/share_plus.dart';
@@ -16,8 +17,7 @@ class CustomAppDrawer extends StatefulWidget {
 class _CustomAppDrawerState extends State<CustomAppDrawer> {
   _shareApp() async {
     Share.share('https://play.google.com/store/apps/details?id=io.epix.sip',
-        subject:
-            'Share the Application - TRAI Channel and Package Pricing Information');
+        subject: 'SIP & Lumpsum Calculator - Financial Planning Tool');
   }
 
   @override
@@ -60,7 +60,7 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => SIPScreen()));
+                  MaterialPageRoute(builder: (context) => SWPScreen()));
             },
           ),
           ListTile(

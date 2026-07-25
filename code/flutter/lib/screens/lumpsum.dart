@@ -22,35 +22,30 @@ class LumpSumScreen extends StatefulWidget {
 
 class _LumpSumScreenState extends State<LumpSumScreen> {
   final _formKey = GlobalKey<FormState>();
-  double _monthlyInvestmentSliderValue = LUMPSUM_AVG_AMT;
+  double _investmentSliderValue = LUMPSUM_AVG_AMT;
   double _expectedReturnSliderValue = 12;
   double _timePeriodSliderValue = 2;
-  final _monthlyInvestmentController =
+  final _investmentController =
       TextEditingController(text: LUMPSUM_AVG_AMT.toString());
   final _expectedReturnSController = TextEditingController(text: '12');
   final _timePeriodController = TextEditingController(text: '2');
 
-  double sip = 0.0;
+  double futureValue = 0.0;
   double totalAmount = 0.0;
 
-  void calculateSip() {
-    // getting values from form
-    double amount = _monthlyInvestmentSliderValue;
+  void calculateLumpsum() {
+    double amount = _investmentSliderValue;
     double duration = _timePeriodSliderValue;
     double rateOfReturn = _expectedReturnSliderValue;
 
-    // if (amount.isNotNull || duration.isNotNull || rateOfReturn.isNotNull) {
-    //   return;
-    // }
-
-    double r = rateOfReturn / 100 / 1;
-    sip = amount * ((pow(1 + r, 1 * duration)));
+    double r = rateOfReturn / 100;
+    futureValue = amount * pow(1 + r, duration);
     totalAmount = amount;
   }
 
   void initState() {
     super.initState();
-    calculateSip();
+    calculateLumpsum();
 
     _bannerAd = BannerAd(
       adUnitId: AdManager.bannerAdUnitId,
@@ -104,7 +99,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                         Expanded(
                           flex: 4,
                           child: TextFormField(
-                            controller: _monthlyInvestmentController,
+                            controller: _investmentController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(prefix: Text('₹ ')),
                             inputFormatters: [
@@ -116,34 +111,35 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= LUMPSUM_MIN_AMT &&
-                                  double.parse(value) <= LUMPSUM_MAX_AMT)
-                                {
-                                  setState(() {
-                                    _monthlyInvestmentSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= LUMPSUM_MIN_AMT && v <= LUMPSUM_MAX_AMT) {
+                                    setState(() {
+                                      _investmentSliderValue = v;
+                                      calculateLumpsum();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
                       ],
                     ),
                     Slider(
-                      value: _monthlyInvestmentSliderValue,
+                      value: _investmentSliderValue,
                       min: LUMPSUM_MIN_AMT,
                       max: LUMPSUM_MAX_AMT,
                       // divisions: 495,
-                      label: _monthlyInvestmentSliderValue.round().toString(),
+                      label: _investmentSliderValue.round().toString(),
                       onChanged: (double value) {
                         setState(() {
-                          _monthlyInvestmentSliderValue = value;
-                          _monthlyInvestmentController.value =
+                          _investmentSliderValue = value;
+                          _investmentController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateLumpsum();
                         });
                       },
                     ),
@@ -173,17 +169,18 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _expectedReturnSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _expectedReturnSliderValue = v;
+                                      calculateLumpsum();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -200,7 +197,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                           _expectedReturnSliderValue = value;
                           _expectedReturnSController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateLumpsum();
                         });
                       },
                     ),
@@ -226,17 +223,18 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _timePeriodSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _timePeriodSliderValue = v;
+                                      calculateLumpsum();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -253,7 +251,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                           _timePeriodSliderValue = value;
                           _timePeriodController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateLumpsum();
                         });
                       },
                     ),
@@ -265,13 +263,13 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
                         .purple600
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Future Return is ${curFormat.format(sip)}'
+                    'Future Return is ${curFormat.format(futureValue)}'
                         .text
                         .xl
                         .bold
                         .makeCentered()
                         .pOnly(top: 5.0),
-                    'Profit is ${curFormat.format(sip - totalAmount)}'
+                    'Profit is ${curFormat.format(futureValue - totalAmount)}'
                         .text
                         .xl
                         .bold

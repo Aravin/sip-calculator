@@ -1,7 +1,4 @@
-import 'dart:math';
 import 'package:intl/intl.dart';
-
-// import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sip_calculator/shared/ads.dart';
@@ -19,32 +16,27 @@ class STPScreen extends StatefulWidget {
 
 class _STPScreenState extends State<STPScreen> {
   final _formKey = GlobalKey<FormState>();
-  double _monthlyInvestmentSliderValue = 5000;
+  double _investmentSliderValue = 5000;
   double _expectedReturnSliderValue = 12;
   double _timePeriodSliderValue = 2;
-  final _monthlyInvestmentController = TextEditingController(text: '5000');
+  final _investmentController = TextEditingController(text: '5000');
   final _expectedReturnSController = TextEditingController(text: '12');
   final _timePeriodController = TextEditingController(text: '2');
 
-  double sip = 0.0;
   double totalAmount = 0.0;
   double stpAmount = 0.0;
 
-  void calculateSip() {
-    // getting values from form
-    double amount = _monthlyInvestmentSliderValue;
+  void calculateStp() {
+    double amount = _investmentSliderValue;
     double duration = _timePeriodSliderValue;
-    double rateOfReturn = _expectedReturnSliderValue;
 
-    double r = rateOfReturn / 100 / 1;
-    sip = amount * ((pow(1 + r, 12 * duration) - 1) / (r)) * (1 + r);
     totalAmount = amount;
-    stpAmount = totalAmount / (duration * 12);
+    stpAmount = amount / (duration * 12);
   }
 
   void initState() {
     super.initState();
-    calculateSip();
+    calculateStp();
 
     _bannerAd = BannerAd(
       adUnitId: AdManager.bannerAdUnitId,
@@ -77,7 +69,6 @@ class _STPScreenState extends State<STPScreen> {
     return Scaffold(
       appBar: AppBar(title: 'STP Calculator'.text.make()),
       body: Container(
-        // padding: kAppPadding,
         child: Form(
           key: _formKey,
           child: Column(
@@ -98,7 +89,7 @@ class _STPScreenState extends State<STPScreen> {
                         Expanded(
                           flex: 4,
                           child: TextFormField(
-                            controller: _monthlyInvestmentController,
+                            controller: _investmentController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(prefix: Text('₹ ')),
                             inputFormatters: [
@@ -110,34 +101,35 @@ class _STPScreenState extends State<STPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 500 &&
-                                  double.parse(value) <= 50000)
-                                {
-                                  setState(() {
-                                    _monthlyInvestmentSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 500 && v <= 50000) {
+                                    setState(() {
+                                      _investmentSliderValue = v;
+                                      calculateStp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
                       ],
                     ),
                     Slider(
-                      value: _monthlyInvestmentSliderValue,
+                      value: _investmentSliderValue,
                       min: 500,
                       max: 50000,
                       divisions: 495,
-                      label: _monthlyInvestmentSliderValue.round().toString(),
+                      label: _investmentSliderValue.round().toString(),
                       onChanged: (double value) {
                         setState(() {
-                          _monthlyInvestmentSliderValue = value;
-                          _monthlyInvestmentController.value =
+                          _investmentSliderValue = value;
+                          _investmentController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateStp();
                         });
                       },
                     ),
@@ -167,17 +159,18 @@ class _STPScreenState extends State<STPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _expectedReturnSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _expectedReturnSliderValue = v;
+                                      calculateStp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -194,7 +187,7 @@ class _STPScreenState extends State<STPScreen> {
                           _expectedReturnSliderValue = value;
                           _expectedReturnSController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateStp();
                         });
                       },
                     ),
@@ -220,17 +213,18 @@ class _STPScreenState extends State<STPScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _timePeriodSliderValue =
-                                        double.parse(value);
-                                    calculateSip();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _timePeriodSliderValue = v;
+                                      calculateStp();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -247,7 +241,7 @@ class _STPScreenState extends State<STPScreen> {
                           _timePeriodSliderValue = value;
                           _timePeriodController.value =
                               TextEditingValue(text: value.toInt().toString());
-                          calculateSip();
+                          calculateStp();
                         });
                       },
                     ),

@@ -109,17 +109,18 @@ class _PPFScreenState extends State<PPFScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 500 &&
-                                  double.parse(value) <= 150000)
-                                {
-                                  setState(() {
-                                    _monthlyInvestmentSliderValue =
-                                        double.parse(value);
-                                    calculatePPF();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 6000 && v <= 150000) {
+                                    setState(() {
+                                      _monthlyInvestmentSliderValue = v;
+                                      calculatePPF();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -166,17 +167,18 @@ class _PPFScreenState extends State<PPFScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 6 &&
-                                  double.parse(value) <= 12)
-                                {
-                                  setState(() {
-                                    _expectedReturnSliderValue =
-                                        double.parse(value);
-                                    calculatePPF();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 6 && v <= 12) {
+                                    setState(() {
+                                      _expectedReturnSliderValue = v;
+                                      calculatePPF();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
@@ -223,17 +225,18 @@ class _PPFScreenState extends State<PPFScreen> {
                               }
                               return null;
                             },
-                            onChanged: (value) => {
-                              if (value.isEmptyOrNull &&
-                                  double.parse(value) >= 1 &&
-                                  double.parse(value) <= 30)
-                                {
-                                  setState(() {
-                                    _timePeriodSliderValue =
-                                        double.parse(value);
-                                    calculatePPF();
-                                  })
-                                }
+                            onChanged: (value) {
+                              if (!value.isEmptyOrNull) {
+                                try {
+                                  final v = double.parse(value);
+                                  if (v >= 1 && v <= 30) {
+                                    setState(() {
+                                      _timePeriodSliderValue = v;
+                                      calculatePPF();
+                                    });
+                                  }
+                                } catch (_) {}
+                              }
                             },
                           ).pOnly(right: 24.0),
                         ),
