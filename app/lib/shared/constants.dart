@@ -145,7 +145,7 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
     ),
     dataTableTheme: DataTableThemeData(
       headingRowColor: WidgetStatePropertyAll(colorScheme.surfaceContainerHigh),
-      dataRowColor: WidgetStatePropertyAll(Colors.transparent),
+      dataRowColor: const WidgetStatePropertyAll(Colors.transparent),
       headingTextStyle: TextStyle(
         color: colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w600,

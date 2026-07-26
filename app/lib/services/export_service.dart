@@ -18,7 +18,7 @@ class ExportService {
   }
 
   static String generateCsv(CalcResult result, String calculatorName) {
-    List<String> lines = [];
+    final List<String> lines = [];
 
     lines.add(_toCsvRow([
       '$calculatorName - Projection Report',
@@ -66,13 +66,13 @@ class ExportService {
   }
 
   static Future<void> shareAsCsv(CalcResult result, String calculatorName) async {
-    String csv = generateCsv(result, calculatorName);
+    final String csv = generateCsv(result, calculatorName);
 
     if (!kIsWeb) {
-      Directory tempDir = await getTemporaryDirectory();
-      String fileName =
+      final Directory tempDir = await getTemporaryDirectory();
+      final String fileName =
           '${calculatorName.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
-      File file = File('${tempDir.path}/$fileName');
+      final File file = File('${tempDir.path}/$fileName');
       await file.writeAsString(csv);
       await Share.shareXFiles([XFile(file.path)], text: '$calculatorName Report');
     } else {
@@ -114,19 +114,19 @@ class ExportService {
   }
 
   static String _belowHundred(int num) {
-    List<String> ones = [
+    final List<String> ones = [
       '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
       'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
       'Seventeen', 'Eighteen', 'Nineteen'
     ];
-    List<String> tens = [
+    final List<String> tens = [
       '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
     ];
 
     if (num < 20) return ones[num];
     if (num < 100) {
-      int t = num ~/ 10;
-      int o = num % 10;
+      final int t = num ~/ 10;
+      final int o = num % 10;
       return o == 0 ? tens[t] : '${tens[t]} ${ones[o]}';
     }
     return num.toString();

@@ -20,19 +20,19 @@ class MonteCarloService {
     double stepUp = 0,
     double targetCorpus = 0,
   }) {
-    Random random = Random();
-    List<double> outcomes = [];
+    final Random random = Random();
+    final List<double> outcomes = [];
 
     for (int sim = 0; sim < simulations; sim++) {
       double corpus = 0;
-      double r = expectedReturn / 100;
+      final double r = expectedReturn / 100;
       double currentMonthly = monthlyInvestment;
 
-      int totalMonths = years * 12;
+      final int totalMonths = years * 12;
       int monthsInCurrentYear = 0;
 
       for (int m = 0; m < totalMonths; m++) {
-        double monthlyReturn = (r + _nextGaussian(random) * (volatility / 100) / sqrt(12)) / 12;
+        final double monthlyReturn = (r + _nextGaussian(random) * (volatility / 100) / sqrt(12)) / 12;
         corpus = (corpus + currentMonthly) * (1 + monthlyReturn);
         monthsInCurrentYear++;
 
@@ -56,14 +56,14 @@ class MonteCarloService {
       );
     }
 
-    double median = outcomes[outcomes.length ~/ 2];
-    double p10 = outcomes[outcomes.length * 10 ~/ 100];
-    double p90 = outcomes[outcomes.length * 90 ~/ 100];
+    final double median = outcomes[outcomes.length ~/ 2];
+    final double p10 = outcomes[outcomes.length * 10 ~/ 100];
+    final double p90 = outcomes[outcomes.length * 90 ~/ 100];
 
-    int successCount = targetCorpus > 0
+    final int successCount = targetCorpus > 0
         ? outcomes.where((c) => c >= targetCorpus).length
         : outcomes.length;
-    double probSuccess = successCount / outcomes.length;
+    final double probSuccess = successCount / outcomes.length;
 
     return MonteCarloResult(
       medianCorpus: median,

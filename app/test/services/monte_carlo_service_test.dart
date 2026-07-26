@@ -64,8 +64,8 @@ void main() {
         monthlyInvestment: 10000, years: 10,
         volatility: 30, simulations: 200);
 
-      double lowSpread = lowVol.p90Corpus - lowVol.p10Corpus;
-      double highSpread = highVol.p90Corpus - highVol.p10Corpus;
+      final double lowSpread = lowVol.p90Corpus - lowVol.p10Corpus;
+      final double highSpread = highVol.p90Corpus - highVol.p10Corpus;
       expect(highSpread, greaterThan(lowSpread));
     });
 

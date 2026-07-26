@@ -97,7 +97,7 @@ class _SIPScreenState extends State<SIPScreen> {
   }
 
   void _calculateGoal() {
-    double target = double.tryParse(_goalCtrl.text) ?? 10000000;
+    final double target = double.tryParse(_goalCtrl.text) ?? 10000000;
     _goalSip = CalculatorService.instance.findGoalSip(
       targetCorpus: target,
       rateOfReturn: _expectedReturn,
@@ -623,7 +623,7 @@ class _SIPScreenState extends State<SIPScreen> {
 
   Widget _buildDelayCost() {
     final colorScheme = Theme.of(context).colorScheme;
-    CalcResult delayCost = CalculatorService.instance.calculateSipDelay(
+    final CalcResult delayCost = CalculatorService.instance.calculateSipDelay(
       monthlyInvestment: _monthlyInvestment,
       rateOfReturn: _expectedReturn,
       actualYears: _timePeriod.round(),
@@ -790,7 +790,7 @@ class _SIPScreenState extends State<SIPScreen> {
 
   Widget _buildSwpBridge(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    double monthlySwp = CalculatorService.instance.calculateSwpFromCorpus(
+    final double monthlySwp = CalculatorService.instance.calculateSwpFromCorpus(
       corpus: _result.totalValue,
       rateOfReturn: _expectedReturn,
       years: _timePeriod.round(),

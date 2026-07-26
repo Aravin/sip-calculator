@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 class YearData {
   final int year;
@@ -189,4 +190,121 @@ class AiInsight {
     required this.description,
     this.emoji,
   });
+}
+
+class ComparisonResult {
+  final double lumpsumCorpus;
+  final double sipCorpus;
+  final double lumpsumInvestment;
+  final double sipTotalInvestment;
+  final double rateOfReturn;
+  final int years;
+  final List<YearData> lumpsumBreakdown;
+  final List<YearData> sipBreakdown;
+
+  ComparisonResult({
+    required this.lumpsumCorpus,
+    required this.sipCorpus,
+    required this.lumpsumInvestment,
+    required this.sipTotalInvestment,
+    required this.rateOfReturn,
+    required this.years,
+    required this.lumpsumBreakdown,
+    required this.sipBreakdown,
+  });
+
+  double get difference => (sipCorpus - lumpsumCorpus).abs();
+  bool get sipWins => sipCorpus > lumpsumCorpus;
+}
+
+class FinancialGoal {
+  final String id;
+  final String name;
+  final double targetAmount;
+  final DateTime targetDate;
+  final double currentSavings;
+  final double monthlyContribution;
+
+  FinancialGoal({
+    required this.id,
+    required this.name,
+    required this.targetAmount,
+    required this.targetDate,
+    required this.currentSavings,
+    required this.monthlyContribution,
+  });
+
+  int get remainingMonths {
+    final now = DateTime.now();
+    return targetDate.isAfter(now)
+        ? (targetDate.difference(now).inDays / 30).ceil().clamp(1, 999)
+        : 0;
+  }
+
+  double get projectedCorpus {
+    if (remainingMonths <= 0) return currentSavings;
+    return currentSavings + (monthlyContribution * remainingMonths);
+  }
+
+  double get progress => targetAmount > 0
+      ? (projectedCorpus / targetAmount).clamp(0.0, 1.0)
+      : 0.0;
+
+  double get shortfall => max(0.0, targetAmount - projectedCorpus);
+
+  double get requiredMonthlyForTarget {
+    if (remainingMonths <= 0) return 0;
+    final double needed = shortfall;
+    return needed / remainingMonths;
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'targetAmount': targetAmount,
+        'targetDate': targetDate.toIso8601String(),
+        'currentSavings': currentSavings,
+        'monthlyContribution': monthlyContribution,
+      };
+
+  factory FinancialGoal.fromJson(Map<String, dynamic> json) => FinancialGoal(
+        id: json['id'] as String? ?? '',
+        name: json['name'] as String? ?? '',
+        targetAmount: (json['targetAmount'] as num?)?.toDouble() ?? 0,
+        targetDate: json['targetDate'] != null
+            ? DateTime.tryParse(json['targetDate'] as String) ?? DateTime.now()
+            : DateTime.now(),
+        currentSavings: (json['currentSavings'] as num?)?.toDouble() ?? 0,
+        monthlyContribution:
+            (json['monthlyContribution'] as num?)?.toDouble() ?? 0,
+      );
+}
+
+class TaxResult {
+  final double grossIncome;
+  final double taxableIncomeOld;
+  final double taxableIncomeNew;
+  final double taxOld;
+  final double taxNew;
+  final double cessOld;
+  final double cessNew;
+  final double totalTaxOld;
+  final double totalTaxNew;
+  final double deductions;
+  final bool newRegimeBetter;
+
+  TaxResult({
+    required this.grossIncome,
+    required this.taxableIncomeOld,
+    required this.taxableIncomeNew,
+    required this.taxOld,
+    required this.taxNew,
+    required this.cessOld,
+    required this.cessNew,
+    required this.totalTaxOld,
+    required this.totalTaxNew,
+    required this.deductions,
+  }) : newRegimeBetter = totalTaxNew < totalTaxOld;
+
+  double get savings => (totalTaxOld - totalTaxNew).abs();
 }

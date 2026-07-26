@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:sip_calculator/main.dart';
 import 'package:sip_calculator/screens/combined_screen.dart';
+import 'package:sip_calculator/screens/compound_interest_screen.dart';
 import 'package:sip_calculator/screens/emi_screen.dart';
+import 'package:sip_calculator/screens/fd_screen.dart';
+import 'package:sip_calculator/screens/goal_planner_screen.dart';
 import 'package:sip_calculator/screens/lumpsum.dart';
 import 'package:sip_calculator/screens/ppf.dart';
+import 'package:sip_calculator/screens/rd_screen.dart';
 import 'package:sip_calculator/screens/savings_screen.dart';
 import 'package:sip_calculator/screens/sip.dart';
+import 'package:sip_calculator/screens/sip_vs_lumpsum_screen.dart';
 import 'package:sip_calculator/screens/stp.dart';
 import 'package:sip_calculator/screens/swp.dart';
+import 'package:sip_calculator/screens/tax_calculator_screen.dart';
 import 'package:share_plus/share_plus.dart';
 
 class CustomAppDrawer extends StatefulWidget {
@@ -74,6 +80,18 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
               'Public Provident Fund', () => _navigate(const PPFScreen())),
           _item(Icons.home, 'EMI Calculator',
               'Loan EMI & Amortization', () => _navigate(const EMIScreen())),
+          _item(Icons.account_balance, 'FD Calculator',
+              'Fixed Deposit', () => _navigate(const FDScreen())),
+          _item(Icons.repeat, 'RD Calculator',
+              'Recurring Deposit', () => _navigate(const RDScreen())),
+          _item(Icons.bubble_chart, 'Compound Interest',
+              'Compound Interest Calculator', () => _navigate(const CompoundInterestScreen())),
+          _item(Icons.compare_arrows, 'SIP vs Lumpsum',
+              'Compare Investment Strategies', () => _navigate(const SipVsLumpsumScreen())),
+          _item(Icons.flag, 'Goal Planner',
+              'Track Financial Goals', () => _navigate(const GoalPlannerScreen())),
+          _item(Icons.receipt_long, 'Tax Calculator',
+              'Old vs New Regime', () => _navigate(const TaxCalculatorScreen())),
           _item(Icons.merge, 'SIP + Lumpsum',
               'Combined Investment Planner', () => _navigate(const CombinedScreen())),
           _item(Icons.bookmark, 'Saved Plans',

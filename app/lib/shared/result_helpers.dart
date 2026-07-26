@@ -13,7 +13,7 @@ Widget buildResultRow(String label, double value, Color? color,
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12,
             color: Colors.grey,
           ),

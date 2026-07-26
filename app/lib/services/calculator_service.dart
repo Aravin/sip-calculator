@@ -10,15 +10,15 @@ class CalculatorService {
     required int years,
     double stepUp = 0,
   }) {
-    double r = rateOfReturn / 100 / 12;
+    final double r = rateOfReturn / 100 / 12;
     double totalInvestment = 0;
     double corpus = 0;
-    List<YearData> breakdown = [];
+    final List<YearData> breakdown = [];
 
     for (int y = 1; y <= years; y++) {
       double yearlyInvestment = 0;
-      double startCorpus = corpus;
-      double currentMonthly = monthlyInvestment * pow(1 + stepUp / 100, y - 1);
+      final double startCorpus = corpus;
+      final double currentMonthly = monthlyInvestment * pow(1 + stepUp / 100, y - 1);
 
       for (int m = 1; m <= 12; m++) {
         totalInvestment += currentMonthly;
@@ -26,7 +26,7 @@ class CalculatorService {
         corpus = (corpus + currentMonthly) * (1 + r);
       }
 
-      double interestThisYear = corpus - startCorpus - yearlyInvestment;
+      final double interestThisYear = corpus - startCorpus - yearlyInvestment;
       breakdown.add(YearData(
         year: y,
         investedThisYear: yearlyInvestment,
@@ -51,20 +51,20 @@ class CalculatorService {
     required int years,
     double stepUp = 0,
   }) {
-    double r = rateOfReturn / 100 / 12;
-    int months = years * 12;
+    final double r = rateOfReturn / 100 / 12;
+    final int months = years * 12;
     if (months == 0) return 0;
     if (r == 0) {
       return targetCorpus / months;
     }
-    double approxFactor = stepUp > 0
+    final double approxFactor = stepUp > 0
         ? ((pow(1 + stepUp / 100, years) - 1) / (stepUp / 100) / years)
         : 1.0;
     double low = 0;
     double high = targetCorpus / (approxFactor * ((pow(1 + r, months) - 1) / r) * (1 + r) / months);
     for (int i = 0; i < 100; i++) {
-      double mid = (low + high) / 2;
-      double corpus = calculateSip(
+      final double mid = (low + high) / 2;
+      final double corpus = calculateSip(
         monthlyInvestment: mid,
         rateOfReturn: rateOfReturn,
         years: years,
@@ -86,13 +86,13 @@ class CalculatorService {
     required int delayYears,
     double stepUp = 0,
   }) {
-    CalcResult actual = calculateSip(
+    final CalcResult actual = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: rateOfReturn,
       years: actualYears,
       stepUp: stepUp,
     );
-    CalcResult delayed = calculateSip(
+    final CalcResult delayed = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: rateOfReturn,
       years: max(0, actualYears - delayYears),
@@ -112,7 +112,7 @@ class CalculatorService {
     required int years,
     double inflationRate = 6.5,
   }) {
-    double realValue = corpus / pow(1 + inflationRate / 100, years);
+    final double realValue = corpus / pow(1 + inflationRate / 100, years);
     return CalcResult(
       totalInvestment: totalInvested,
       totalReturns: max(0, realValue - totalInvested),
@@ -127,19 +127,19 @@ class CalculatorService {
     double stepUp = 0,
     double range = 2,
   }) {
-    CalcResult best = calculateSip(
+    final CalcResult best = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: rateOfReturn + range,
       years: years,
       stepUp: stepUp,
     );
-    CalcResult expected = calculateSip(
+    final CalcResult expected = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: rateOfReturn,
       years: years,
       stepUp: stepUp,
     );
-    CalcResult worst = calculateSip(
+    final CalcResult worst = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: max(0, rateOfReturn - range),
       years: years,
@@ -184,14 +184,14 @@ class CalculatorService {
     required double rateOfReturn,
     required int years,
   }) {
-    double r = rateOfReturn / 100;
-    double totalValue = investment * pow(1 + r, years);
-    List<YearData> breakdown = [];
+    final double r = rateOfReturn / 100;
+    final double totalValue = investment * pow(1 + r, years);
+    final List<YearData> breakdown = [];
 
     for (int y = 1; y <= years; y++) {
-      double startOfYear = investment * pow(1 + r, y - 1);
-      double yearEnd = startOfYear * (1 + r);
-      double interestThisYear = yearEnd - startOfYear;
+      final double startOfYear = investment * pow(1 + r, y - 1);
+      final double yearEnd = startOfYear * (1 + r);
+      final double interestThisYear = yearEnd - startOfYear;
       breakdown.add(YearData(
         year: y,
         investedThisYear: y == 1 ? investment : 0,
@@ -220,7 +220,7 @@ class CalculatorService {
       return CalcResult(
         totalInvestment: totalInvestment, totalReturns: 0, totalValue: 0);
     }
-    double r = rateOfReturn / 100;
+    final double r = rateOfReturn / 100;
     if (1 + r <= 0) {
       return CalcResult(
         totalInvestment: totalInvestment,
@@ -232,19 +232,19 @@ class CalculatorService {
         )),
       );
     }
-    double monthlyR = pow(1 + r, 1 / 12) - 1;
+    final double monthlyR = pow(1 + r, 1 / 12) - 1;
 
     double corpus = totalInvestment;
     double totalWithdrawn = 0;
-    List<YearData> breakdown = [];
+    final List<YearData> breakdown = [];
 
     for (int y = 1; y <= years; y++) {
-      double startCorpus = corpus;
+      final double startCorpus = corpus;
       double yearWithdraw = 0;
 
       for (int m = 1; m <= 12; m++) {
         corpus = corpus * (1 + monthlyR);
-        double withdraw = min(monthlyWithdraw, corpus);
+        final double withdraw = min(monthlyWithdraw, corpus);
         corpus -= withdraw;
         yearWithdraw += withdraw;
       }
@@ -276,41 +276,42 @@ class CalculatorService {
     if (years < 1 || totalInvestment <= 0) {
       return CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
     }
-    double r = rateOfReturn / 100;
-    int months = years * 12;
-    double monthlyTransfer = totalInvestment / months;
+    final double r = rateOfReturn / 100;
+    final int months = years * 12;
+    final double monthlyTransfer = totalInvestment / months;
+    
+    // Effective monthly rate for annual compounding
+    final double monthlyR = pow(1 + r, 1 / 12) - 1;
 
-    double totalValue = 0;
+    final List<YearData> breakdown = [];
+    double corpus = 0;
     double cumulativeInvested = 0;
-    List<YearData> breakdown = [];
 
     for (int y = 1; y <= years; y++) {
-      double startPeriod = totalValue;
-      double yearInvested = 0;
-
+      final double startCorpus = corpus;
+      final double yearInvested = monthlyTransfer * 12;
+      
       for (int m = 1; m <= 12; m++) {
-        int globalMonth = (y - 1) * 12 + m;
-        double monthsLeft = (months - globalMonth).toDouble();
-        double yearsToGrow = monthsLeft / 12.0;
-        totalValue += monthlyTransfer * pow(1 + r, yearsToGrow);
-        yearInvested += monthlyTransfer;
+        corpus = (corpus + monthlyTransfer) * (1 + monthlyR);
       }
 
       cumulativeInvested += yearInvested;
+      final double interestThisYear = corpus - startCorpus - yearInvested;
+
       breakdown.add(YearData(
         year: y,
         investedThisYear: yearInvested,
         totalInvested: cumulativeInvested,
-        interestThisYear: totalValue - startPeriod - yearInvested,
-        totalInterest: totalValue - cumulativeInvested,
-        corpus: totalValue,
+        interestThisYear: interestThisYear,
+        totalInterest: corpus - cumulativeInvested,
+        corpus: corpus,
       ));
     }
 
     return CalcResult(
       totalInvestment: totalInvestment,
-      totalReturns: totalValue - totalInvestment,
-      totalValue: totalValue,
+      totalReturns: corpus - totalInvestment,
+      totalValue: corpus,
       yearlyBreakdown: breakdown,
     );
   }
@@ -320,15 +321,15 @@ class CalculatorService {
     required double rateOfReturn,
     required int years,
   }) {
-    double r = rateOfReturn / 100;
-    double totalInvestment = yearlyInvestment * years;
-    List<YearData> breakdown = [];
+    final double r = rateOfReturn / 100;
+    final double totalInvestment = yearlyInvestment * years;
+    final List<YearData> breakdown = [];
 
     double corpus = 0;
     for (int y = 1; y <= years; y++) {
-      double startCorpus = corpus;
+      final double startCorpus = corpus;
       corpus = ((corpus + yearlyInvestment) * (1 + r));
-      double interestThisYear = corpus - startCorpus - yearlyInvestment;
+      final double interestThisYear = corpus - startCorpus - yearlyInvestment;
       breakdown.add(YearData(
         year: y,
         investedThisYear: yearlyInvestment,
@@ -352,20 +353,20 @@ class CalculatorService {
     required double annualRate,
     required int years,
   }) {
-    double r = annualRate / 12 / 100;
-    int months = years * 12;
+    final double r = annualRate / 12 / 100;
+    final int months = years * 12;
     if (months == 0) {
       return CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
     }
     if (annualRate == 0) {
-      double monthlyEmi = principal / months;
+      final double monthlyEmi = principal / months;
       return CalcResult(
         totalInvestment: principal,
         totalReturns: 0,
         totalValue: principal,
         yearlyBreakdown: List.generate(years, (y) {
-          double yearlyPaid = monthlyEmi * 12;
-          double remaining = principal - (monthlyEmi * 12 * (y + 1));
+          final double yearlyPaid = monthlyEmi * 12;
+          final double remaining = principal - (monthlyEmi * 12 * (y + 1));
           return YearData(
             year: y + 1,
             investedThisYear: yearlyPaid,
@@ -377,18 +378,18 @@ class CalculatorService {
         }),
       );
     }
-    double emi = principal * r * pow(1 + r, months) / (pow(1 + r, months) - 1);
-    double totalPayment = emi * months;
-    double totalInterest = totalPayment - principal;
+    final double emi = principal * r * pow(1 + r, months) / (pow(1 + r, months) - 1);
+    final double totalPayment = emi * months;
+    final double totalInterest = totalPayment - principal;
 
-    List<YearData> breakdown = [];
+    final List<YearData> breakdown = [];
     double balance = principal;
     double cumulativeInterest = 0;
     for (int y = 1; y <= years; y++) {
       double yearInterest = 0;
       for (int m = 1; m <= 12; m++) {
-        double interest = balance * r;
-        double principalPaid = emi - interest;
+        final double interest = balance * r;
+        final double principalPaid = emi - interest;
         balance -= principalPaid;
         yearInterest += interest;
       }
@@ -418,23 +419,23 @@ class CalculatorService {
     required int years,
     double stepUp = 0,
   }) {
-    CalcResult lumpsum = calculateLumpsum(
+    final CalcResult lumpsum = calculateLumpsum(
       investment: lumpsumInvestment,
       rateOfReturn: rateOfReturn,
       years: years,
     );
-    CalcResult sip = calculateSip(
+    final CalcResult sip = calculateSip(
       monthlyInvestment: monthlySip,
       rateOfReturn: rateOfReturn,
       years: years,
       stepUp: stepUp,
     );
 
-    List<YearData> combined = [];
-    int minYears = min(lumpsum.yearlyBreakdown.length, sip.yearlyBreakdown.length);
+    final List<YearData> combined = [];
+    final int minYears = min(lumpsum.yearlyBreakdown.length, sip.yearlyBreakdown.length);
     for (int y = 0; y < minYears; y++) {
-      YearData l = lumpsum.yearlyBreakdown[y];
-      YearData s = sip.yearlyBreakdown[y];
+      final YearData l = lumpsum.yearlyBreakdown[y];
+      final YearData s = sip.yearlyBreakdown[y];
       combined.add(YearData(
         year: y + 1,
         investedThisYear: l.investedThisYear + s.investedThisYear,
@@ -459,10 +460,10 @@ class CalculatorService {
     required int years,
   }) {
     if (corpus.isNaN || corpus.isInfinite || corpus <= 0) return 0;
-    double r = rateOfReturn / 100;
+    final double r = rateOfReturn / 100;
     if (1 + r <= 0) return 0;
-    double monthlyR = pow(1 + r, 1 / 12) - 1;
-    int months = years * 12;
+    final double monthlyR = pow(1 + r, 1 / 12) - 1;
+    final int months = years * 12;
     if (months == 0) return 0;
     if (monthlyR == 0) return corpus / months;
     return corpus * monthlyR * pow(1 + monthlyR, months) /
@@ -474,15 +475,298 @@ class CalculatorService {
     double taxRate = 0.125,
     double exemption = 125000,
   }) {
-    double gains = result.totalReturns;
-    double taxableGains = max(0, gains - exemption);
-    double tax = taxableGains * taxRate;
-    double postTax = max(0, result.totalValue - tax);
+    final double gains = result.totalReturns;
+    final double taxableGains = max(0, gains - exemption);
+    final double tax = taxableGains * taxRate;
+    final double postTax = max(0, result.totalValue - tax);
 
     return CalcResult(
       totalInvestment: result.totalInvestment,
       totalReturns: max(0, postTax - result.totalInvestment),
       totalValue: postTax,
+    );
+  }
+
+  CalcResult calculateFd({
+    required double principal,
+    required double rateOfReturn,
+    required int years,
+    String compounding = 'quarterly',
+    String payout = 'cumulative',
+  }) {
+    final double r = rateOfReturn / 100;
+    final List<YearData> breakdown = [];
+
+    if (payout == 'quarterly') {
+      final double quarterlyRate = r / 4;
+      final double quarterlyInterest = principal * quarterlyRate;
+      double totalInterest = 0;
+      for (int y = 1; y <= years; y++) {
+        double yearInterest = 0;
+        for (int q = 1; q <= 4; q++) {
+          totalInterest += quarterlyInterest;
+          yearInterest += quarterlyInterest;
+        }
+        breakdown.add(YearData(
+          year: y,
+          investedThisYear: 0,
+          totalInvested: principal,
+          interestThisYear: yearInterest,
+          totalInterest: totalInterest,
+          corpus: principal,
+        ));
+      }
+      return CalcResult(
+        totalInvestment: principal,
+        totalReturns: totalInterest,
+        totalValue: principal + totalInterest,
+        yearlyBreakdown: breakdown,
+      );
+    }
+
+    int n;
+    switch (compounding) {
+      case 'monthly':
+        n = 12;
+        break;
+      case 'half_yearly':
+        n = 2;
+        break;
+      case 'yearly':
+        n = 1;
+        break;
+      default:
+        n = 4;
+    }
+
+    double totalValue = principal;
+    for (int y = 1; y <= years; y++) {
+      final double startOfYear = totalValue;
+      totalValue = startOfYear * pow(1 + r / n, n);
+      final double interestThisYear = totalValue - startOfYear;
+      breakdown.add(YearData(
+        year: y,
+        investedThisYear: 0,
+        totalInvested: principal,
+        interestThisYear: interestThisYear,
+        totalInterest: totalValue - principal,
+        corpus: totalValue,
+      ));
+    }
+
+    return CalcResult(
+      totalInvestment: principal,
+      totalReturns: totalValue - principal,
+      totalValue: totalValue,
+      yearlyBreakdown: breakdown,
+    );
+  }
+
+  CalcResult calculateRd({
+    required double monthlyDeposit,
+    required double rateOfReturn,
+    required int years,
+  }) {
+    final double r = rateOfReturn / 100;
+    final int totalMonths = years * 12;
+    final double totalInvestment = monthlyDeposit * totalMonths;
+    
+    // Effective monthly rate for quarterly compounding
+    final double monthlyR = pow(1 + r / 4, 1 / 3) - 1;
+
+    final List<YearData> breakdown = [];
+    double corpus = 0;
+    double cumulativeInvested = 0;
+
+    for (int y = 1; y <= years; y++) {
+      final double startCorpus = corpus;
+      final double yearInvested = monthlyDeposit * 12;
+
+      for (int m = 1; m <= 12; m++) {
+        corpus = (corpus + monthlyDeposit) * (1 + monthlyR);
+      }
+
+      cumulativeInvested += yearInvested;
+      final double interestThisYear = corpus - startCorpus - yearInvested;
+
+      breakdown.add(YearData(
+        year: y,
+        investedThisYear: yearInvested,
+        totalInvested: cumulativeInvested,
+        interestThisYear: interestThisYear,
+        totalInterest: corpus - cumulativeInvested,
+        corpus: corpus,
+      ));
+    }
+
+    return CalcResult(
+      totalInvestment: totalInvestment,
+      totalReturns: corpus - totalInvestment,
+      totalValue: corpus,
+      yearlyBreakdown: breakdown,
+    );
+  }
+
+  CalcResult calculateCompoundInterest({
+    required double principal,
+    required double rateOfReturn,
+    required int years,
+    String frequency = 'monthly',
+  }) {
+    final double r = rateOfReturn / 100;
+    int n;
+    switch (frequency) {
+      case 'daily':
+        n = 365;
+        break;
+      case 'monthly':
+        n = 12;
+        break;
+      case 'quarterly':
+        n = 4;
+        break;
+      case 'half_yearly':
+        n = 2;
+        break;
+      case 'yearly':
+        n = 1;
+        break;
+      default:
+        n = 12;
+    }
+
+    double totalValue = principal;
+    final List<YearData> breakdown = [];
+    for (int y = 1; y <= years; y++) {
+      final double startOfYear = totalValue;
+      totalValue = startOfYear * pow(1 + r / n, n);
+      final double interestThisYear = totalValue - startOfYear;
+      breakdown.add(YearData(
+        year: y,
+        investedThisYear: 0,
+        totalInvested: principal,
+        interestThisYear: interestThisYear,
+        totalInterest: totalValue - principal,
+        corpus: totalValue,
+      ));
+    }
+
+    return CalcResult(
+      totalInvestment: principal,
+      totalReturns: totalValue - principal,
+      totalValue: totalValue,
+      yearlyBreakdown: breakdown,
+    );
+  }
+
+  ComparisonResult compareSipVsLumpsum({
+    required double monthlySip,
+    required double lumpsumInvestment,
+    required double rateOfReturn,
+    required int years,
+    double stepUp = 0,
+  }) {
+    final CalcResult lumpsum = calculateLumpsum(
+      investment: lumpsumInvestment,
+      rateOfReturn: rateOfReturn,
+      years: years,
+    );
+    final CalcResult sip = calculateSip(
+      monthlyInvestment: monthlySip,
+      rateOfReturn: rateOfReturn,
+      years: years,
+      stepUp: stepUp,
+    );
+
+    return ComparisonResult(
+      lumpsumCorpus: lumpsum.totalValue,
+      sipCorpus: sip.totalValue,
+      lumpsumInvestment: lumpsumInvestment,
+      sipTotalInvestment: sip.totalInvestment,
+      rateOfReturn: rateOfReturn,
+      years: years,
+      lumpsumBreakdown: lumpsum.yearlyBreakdown,
+      sipBreakdown: sip.yearlyBreakdown,
+    );
+  }
+
+  TaxResult calculateTax({
+    required double grossIncome,
+    double deduction80C = 0,
+    double deduction80D = 0,
+  }) {
+    const standardDeductionOld = 50000.0;
+    const standardDeductionNew = 75000.0;
+    final double totalDeductions =
+        min(deduction80C, 150000.0) + min(deduction80D, 25000.0);
+
+    final double taxableIncomeOld =
+        max(0.0, grossIncome - totalDeductions - standardDeductionOld);
+    final double taxableIncomeNew =
+        max(0.0, grossIncome - standardDeductionNew);
+
+    double computeTaxOld(double income) {
+      double tax = 0;
+      if (income > 1000000) {
+        tax += (income - 1000000) * 0.30;
+        income = 1000000;
+      }
+      if (income > 500000) {
+        tax += (income - 500000) * 0.20;
+        income = 500000;
+      }
+      if (income > 250000) {
+        tax += (income - 250000) * 0.05;
+      }
+      if (taxableIncomeOld <= 500000) {
+        tax = max(0.0, tax - 12500);
+      }
+      return tax;
+    }
+
+    double computeTaxNew(double income) {
+      double tax = 0;
+      if (income > 1500000) {
+        tax += (income - 1500000) * 0.30;
+        income = 1500000;
+      }
+      if (income > 1200000) {
+        tax += (income - 1200000) * 0.20;
+        income = 1200000;
+      }
+      if (income > 1000000) {
+        tax += (income - 1000000) * 0.15;
+        income = 1000000;
+      }
+      if (income > 700000) {
+        tax += (income - 700000) * 0.10;
+        income = 700000;
+      }
+      if (income > 300000) {
+        tax += (income - 300000) * 0.05;
+      }
+      if (taxableIncomeNew <= 700000) {
+        tax = max(0.0, tax - 25000);
+      }
+      return tax;
+    }
+
+    final double taxOld = computeTaxOld(taxableIncomeOld);
+    final double taxNew = computeTaxNew(taxableIncomeNew);
+    final double cessOld = taxOld * 0.04;
+    final double cessNew = taxNew * 0.04;
+
+    return TaxResult(
+      grossIncome: grossIncome,
+      taxableIncomeOld: taxableIncomeOld,
+      taxableIncomeNew: taxableIncomeNew,
+      taxOld: taxOld,
+      taxNew: taxNew,
+      cessOld: cessOld,
+      cessNew: cessNew,
+      totalTaxOld: taxOld + cessOld,
+      totalTaxNew: taxNew + cessNew,
+      deductions: totalDeductions + standardDeductionOld,
     );
   }
 
@@ -492,9 +776,9 @@ class CalculatorService {
     required int years,
     double stepUp = 0,
   }) {
-    List<AiInsight> insights = [];
+    final List<AiInsight> insights = [];
 
-    CalcResult base = calculateSip(
+    final CalcResult base = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: rateOfReturn,
       years: years,
@@ -502,14 +786,14 @@ class CalculatorService {
     );
 
     if (stepUp > 0) {
-      CalcResult stepped = calculateSip(
+      final CalcResult stepped = calculateSip(
         monthlyInvestment: monthlyInvestment,
         rateOfReturn: rateOfReturn,
         years: years,
         stepUp: stepUp,
       );
-      double extra = stepped.totalValue - base.totalValue;
-      String extraText = extra.isFinite ? extra.toStringAsFixed(0) : '0';
+      final double extra = stepped.totalValue - base.totalValue;
+      final String extraText = extra.isFinite ? extra.toStringAsFixed(0) : '0';
       insights.add(AiInsight(
         title: 'Step-Up Impact',
         description:
@@ -519,17 +803,17 @@ class CalculatorService {
     }
 
     if (years >= 10) {
-      double halfTime = calculateSip(
+      final double halfTime = calculateSip(
         monthlyInvestment: monthlyInvestment,
         rateOfReturn: rateOfReturn,
         years: years ~/ 2,
         stepUp: stepUp,
       ).totalValue;
-      double fullTime = base.totalValue;
-      String secondHalf = (fullTime - halfTime).isFinite ? (fullTime - halfTime).toStringAsFixed(0) : '0';
+      final double fullTime = base.totalValue;
+      final String secondHalf = (fullTime - halfTime).isFinite ? (fullTime - halfTime).toStringAsFixed(0) : '0';
       String pct = '0';
       if (fullTime > 0) {
-        double pctVal = (fullTime - halfTime) / fullTime * 100;
+        final double pctVal = (fullTime - halfTime) / fullTime * 100;
         pct = pctVal.isFinite ? pctVal.toStringAsFixed(0) : '0';
       }
       insights.add(AiInsight(
@@ -540,14 +824,14 @@ class CalculatorService {
       ));
     }
 
-    CalcResult delayed = calculateSip(
+    final CalcResult delayed = calculateSip(
       monthlyInvestment: monthlyInvestment,
       rateOfReturn: rateOfReturn,
       years: max(1, years - 1),
       stepUp: stepUp,
     );
-    double delayCost = base.totalValue - delayed.totalValue;
-    String delayText = delayCost.isFinite ? delayCost.toStringAsFixed(0) : '0';
+    final double delayCost = base.totalValue - delayed.totalValue;
+    final String delayText = delayCost.isFinite ? delayCost.toStringAsFixed(0) : '0';
     insights.add(AiInsight(
       title: 'Cost of Delay',
       description:

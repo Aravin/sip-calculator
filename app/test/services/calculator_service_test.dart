@@ -17,9 +17,9 @@ void main() {
         years: 2,
       );
 
-      double r = 12 / 100 / 12;
-      int n = 2 * 12;
-      double expected = 5000 * ((pow(1 + r, n) - 1) / r) * (1 + r);
+      const double r = 12 / 100 / 12;
+      const int n = 2 * 12;
+      final double expected = 5000 * ((pow(1 + r, n) - 1) / r) * (1 + r);
 
       expect(result.totalInvestment, closeTo(120000, 0.5));
       expect(result.totalValue, closeTo(expected, 0.5));
@@ -67,10 +67,10 @@ void main() {
         years: 5,
       );
 
-      double totalFromBreakdown = result.yearlyBreakdown.fold(0, (sum, y) => sum + y.investedThisYear);
+      final double totalFromBreakdown = result.yearlyBreakdown.fold(0, (sum, y) => sum + y.investedThisYear);
       expect(totalFromBreakdown, closeTo(result.totalInvestment, 0.5));
 
-      double lastCorpus = result.yearlyBreakdown.last.corpus;
+      final double lastCorpus = result.yearlyBreakdown.last.corpus;
       expect(lastCorpus, closeTo(result.totalValue, 0.5));
     });
 
@@ -97,11 +97,11 @@ void main() {
 
   group('Goal Mode (Reverse SIP)', () {
     test('findGoalSip returns SIP that achieves target corpus', () {
-      double target = 10000000; // ₹1 Cr
-      double rate = 12;
-      int years = 15;
+      const double target = 10000000; // ₹1 Cr
+      const double rate = 12;
+      const int years = 15;
 
-      double sipAmount = service.findGoalSip(
+      final double sipAmount = service.findGoalSip(
         targetCorpus: target,
         rateOfReturn: rate,
         years: years,
@@ -117,11 +117,11 @@ void main() {
     });
 
     test('findGoalSip works with step-up', () {
-      double target = 50000000; // ₹5 Cr
-      double rate = 12;
-      int years = 20;
+      const double target = 50000000; // ₹5 Cr
+      const double rate = 12;
+      const int years = 20;
 
-      double sipAmount = service.findGoalSip(
+      final double sipAmount = service.findGoalSip(
         targetCorpus: target,
         rateOfReturn: rate,
         years: years,
@@ -139,11 +139,11 @@ void main() {
     });
 
     test('findGoalSip returns lower SIP for longer tenure', () {
-      double target = 10000000;
+      const double target = 10000000;
 
-      double sip10 = service.findGoalSip(
+      final double sip10 = service.findGoalSip(
         targetCorpus: target, rateOfReturn: 12, years: 10);
-      double sip20 = service.findGoalSip(
+      final double sip20 = service.findGoalSip(
         targetCorpus: target, rateOfReturn: 12, years: 20);
 
       expect(sip20, lessThan(sip10));
@@ -220,9 +220,9 @@ void main() {
         monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
 
       expect(result.yearlyBreakdown.length, 3);
-      double worst = result.yearlyBreakdown[0].corpus;
-      double expected = result.yearlyBreakdown[1].corpus;
-      double best = result.yearlyBreakdown[2].corpus;
+      final double worst = result.yearlyBreakdown[0].corpus;
+      final double expected = result.yearlyBreakdown[1].corpus;
+      final double best = result.yearlyBreakdown[2].corpus;
 
       expect(best, greaterThan(expected));
       expect(expected, greaterThan(worst));
@@ -233,7 +233,7 @@ void main() {
     test('basic lumpsum calculation', () {
       // FV = P * (1 + r)^t
       // P=100000, r=12%, t=5
-      double expected = (100000 * pow(1 + 0.12, 5)).toDouble();
+      final double expected = (100000 * pow(1 + 0.12, 5)).toDouble();
 
       final result = service.calculateLumpsum(
         investment: 100000, rateOfReturn: 12, years: 5);
@@ -332,8 +332,8 @@ void main() {
     test('basic PPF calculation', () {
       // PPF formula: FV = ((YI * ((1+r)^t - 1)) / r) * (1+r)
       // YI=24000, r=7.1%, t=15
-      double r = 7.1 / 100;
-      double expected = ((24000 * (pow(1 + r, 15) - 1)) / r) * (1 + r);
+      const double r = 7.1 / 100;
+      final double expected = ((24000 * (pow(1 + r, 15) - 1)) / r) * (1 + r);
 
       final result = service.calculatePpf(
         yearlyInvestment: 24000, rateOfReturn: 7.1, years: 15);
@@ -347,7 +347,7 @@ void main() {
         yearlyInvestment: 24000, rateOfReturn: 7.1, years: 15);
 
       expect(result.yearlyBreakdown.length, 15);
-      double lastCorpus = result.yearlyBreakdown.last.corpus;
+      final double lastCorpus = result.yearlyBreakdown.last.corpus;
       expect(lastCorpus, closeTo(result.totalValue, 0.5));
     });
 
@@ -363,15 +363,15 @@ void main() {
     test('basic EMI calculation', () {
       // EMI = P * r * (1+r)^n / ((1+r)^n - 1)
       // P=500000, r=9%/12=0.75%, n=5*12=60
-      double r = 9 / 12 / 100;
-      int n = 5 * 12;
-      double expectedEmi = 500000 * r * pow(1 + r, n) / (pow(1 + r, n) - 1);
-      double expectedTotal = expectedEmi * n;
+      const double r = 9 / 12 / 100;
+      const int n = 5 * 12;
+      final double expectedEmi = 500000 * r * pow(1 + r, n) / (pow(1 + r, n) - 1);
+      final double expectedTotal = expectedEmi * n;
 
       final result = service.calculateEmi(
         principal: 500000, annualRate: 9, years: 5);
 
-      double monthlyEmi = result.totalValue / (5 * 12);
+      final double monthlyEmi = result.totalValue / (5 * 12);
       expect(monthlyEmi, closeTo(expectedEmi, 1));
       expect(result.totalValue, closeTo(expectedTotal, 100));
     });
@@ -380,7 +380,7 @@ void main() {
       final result = service.calculateEmi(
         principal: 1000000, annualRate: 10, years: 10);
 
-      double totalPayments = result.totalValue;
+      final double totalPayments = result.totalValue;
       expect(totalPayments, closeTo(result.totalInvestment + result.totalReturns, 1));
     });
 
@@ -388,7 +388,7 @@ void main() {
       final result = service.calculateEmi(
         principal: 500000, annualRate: 9, years: 5);
 
-      double totalInterest = result.yearlyBreakdown.fold(0.0, (sum, y) => sum + y.interestThisYear);
+      final double totalInterest = result.yearlyBreakdown.fold(0.0, (sum, y) => sum + y.interestThisYear);
       expect(totalInterest, closeTo(result.totalReturns, 10));
     });
 
@@ -404,7 +404,7 @@ void main() {
       final result = service.calculateEmi(
         principal: 1000000, annualRate: 10, years: 5);
 
-      double lastBalance = result.yearlyBreakdown.last.corpus;
+      final double lastBalance = result.yearlyBreakdown.last.corpus;
       expect(lastBalance, lessThan(100)); // nearly paid off
     });
   });
@@ -424,7 +424,7 @@ void main() {
       final sip = service.calculateSip(
         monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
 
-      double expectedTotal = lumpsum.totalValue + sip.totalValue;
+      final double expectedTotal = lumpsum.totalValue + sip.totalValue;
       expect(combined.totalValue, closeTo(expectedTotal, expectedTotal * 0.001));
     });
 
@@ -450,7 +450,7 @@ void main() {
 
   group('LTCG Tax', () {
     test('tax is applied only on gains above exemption', () {
-      CalcResult result = CalcResult(
+      final CalcResult result = CalcResult(
         totalInvestment: 100000,
         totalReturns: 50000,
         totalValue: 150000,
@@ -463,7 +463,7 @@ void main() {
     });
 
     test('tax reduces corpus for large gains', () {
-      CalcResult result = CalcResult(
+      final CalcResult result = CalcResult(
         totalInvestment: 100000,
         totalReturns: 1000000,
         totalValue: 1100000,
@@ -478,7 +478,7 @@ void main() {
     });
 
     test('tax respects custom tax rate and exemption', () {
-      CalcResult result = CalcResult(
+      final CalcResult result = CalcResult(
         totalInvestment: 500000,
         totalReturns: 2000000,
         totalValue: 2500000,
@@ -487,38 +487,229 @@ void main() {
       final postTax = service.calculateLtcgTax(
         result: result, taxRate: 0.10, exemption: 100000);
 
-      double expectedTax = (2000000 - 100000) * 0.10;
-      double expectedValue = 2500000 - expectedTax;
+      const double expectedTax = (2000000 - 100000) * 0.10;
+      const double expectedValue = 2500000 - expectedTax;
       expect(postTax.totalValue, closeTo(expectedValue, 0.5));
     });
   });
 
   group('SWP from Corpus', () {
     test('returns positive monthly withdrawal', () {
-      double monthly = service.calculateSwpFromCorpus(
+      final double monthly = service.calculateSwpFromCorpus(
         corpus: 10000000, rateOfReturn: 8, years: 20);
 
       expect(monthly, greaterThan(0));
     });
 
     test('smaller corpus = smaller monthly withdrawal', () {
-      double high = service.calculateSwpFromCorpus(
+      final double high = service.calculateSwpFromCorpus(
         corpus: 5000000, rateOfReturn: 8, years: 20);
 
-      double low = service.calculateSwpFromCorpus(
+      final double low = service.calculateSwpFromCorpus(
         corpus: 1000000, rateOfReturn: 8, years: 20);
 
       expect(high, greaterThan(low));
     });
 
     test('longer tenure = smaller monthly withdrawal', () {
-      double short = service.calculateSwpFromCorpus(
+      final double short = service.calculateSwpFromCorpus(
         corpus: 10000000, rateOfReturn: 8, years: 10);
 
-      double long = service.calculateSwpFromCorpus(
+      final double long = service.calculateSwpFromCorpus(
         corpus: 10000000, rateOfReturn: 8, years: 30);
 
       expect(long, lessThan(short));
+    });
+  });
+
+  group('FD', () {
+    test('cumulative FD compounding quarterly', () {
+      final result = service.calculateFd(
+        principal: 100000,
+        rateOfReturn: 8,
+        years: 3,
+        compounding: 'quarterly',
+        payout: 'cumulative',
+      );
+      const double r = 0.08 / 4;
+      final double expected = (100000 * pow(1 + r, 12)).toDouble();
+      expect(result.totalInvestment, closeTo(100000, 0.5));
+      expect(result.totalValue, closeTo(expected, 1));
+      expect(result.totalReturns, closeTo(expected - 100000, 1));
+    });
+
+    test('FD quarterly payout pays interest each quarter', () {
+      final result = service.calculateFd(
+        principal: 100000,
+        rateOfReturn: 8,
+        years: 1,
+        payout: 'quarterly',
+      );
+      const double expectedInterest = 100000 * 0.08 / 4 * 4;
+      expect(result.totalReturns, closeTo(expectedInterest, 1));
+      expect(result.totalValue, closeTo(100000 + expectedInterest, 1));
+      expect(result.yearlyBreakdown.length, 1);
+    });
+
+    test('FD yearly breakdown matches total', () {
+      final result = service.calculateFd(
+        principal: 500000,
+        rateOfReturn: 7,
+        years: 5,
+      );
+      expect(result.yearlyBreakdown.length, 5);
+      expect(result.yearlyBreakdown.last.corpus, closeTo(result.totalValue, 1));
+    });
+  });
+
+  group('RD', () {
+    test('basic RD calculation', () {
+      final result = service.calculateRd(
+        monthlyDeposit: 5000,
+        rateOfReturn: 8,
+        years: 1,
+      );
+      expect(result.totalInvestment, closeTo(60000, 0.5));
+      expect(result.totalValue, greaterThan(result.totalInvestment));
+      expect(result.totalReturns, greaterThan(0));
+    });
+
+    test('RD longer tenure gives more returns', () {
+      final short = service.calculateRd(
+        monthlyDeposit: 5000, rateOfReturn: 8, years: 1);
+      final long = service.calculateRd(
+        monthlyDeposit: 5000, rateOfReturn: 8, years: 5);
+      expect(long.totalValue, greaterThan(short.totalValue));
+    });
+
+    test('RD yearly breakdown totals are consistent', () {
+      final result = service.calculateRd(
+        monthlyDeposit: 10000,
+        rateOfReturn: 7,
+        years: 3,
+      );
+      expect(result.yearlyBreakdown.length, 3);
+      final double lastCorpus = result.yearlyBreakdown.last.corpus;
+      expect(lastCorpus, closeTo(result.totalValue, 1));
+    });
+  });
+
+  group('Compound Interest', () {
+    test('annual compounding = lumpsum formula', () {
+      final result = service.calculateCompoundInterest(
+        principal: 100000,
+        rateOfReturn: 10,
+        years: 5,
+        frequency: 'yearly',
+      );
+      final double expected = (100000 * pow(1.10, 5)).toDouble();
+      expect(result.totalValue, closeTo(expected, 1));
+    });
+
+    test('monthly compounding gives more than yearly', () {
+      final yearly = service.calculateCompoundInterest(
+        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'yearly');
+      final monthly = service.calculateCompoundInterest(
+        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'monthly');
+      expect(monthly.totalValue, greaterThan(yearly.totalValue));
+    });
+
+    test('daily compounding gives more than monthly', () {
+      final monthly = service.calculateCompoundInterest(
+        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'monthly');
+      final daily = service.calculateCompoundInterest(
+        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'daily');
+      expect(daily.totalValue, greaterThan(monthly.totalValue));
+    });
+
+    test('zero return equals principal', () {
+      final result = service.calculateCompoundInterest(
+        principal: 500000, rateOfReturn: 0, years: 10);
+      expect(result.totalValue, closeTo(500000, 0.5));
+      expect(result.totalReturns, closeTo(0, 0.5));
+    });
+  });
+
+  group('SIP vs Lumpsum Comparison', () {
+    test('comparison returns both strategies', () {
+      final result = service.compareSipVsLumpsum(
+        monthlySip: 10000,
+        lumpsumInvestment: 500000,
+        rateOfReturn: 12,
+        years: 10,
+      );
+      expect(result.lumpsumCorpus, greaterThan(0));
+      expect(result.sipCorpus, greaterThan(0));
+      expect(result.lumpsumBreakdown.length, 10);
+      expect(result.sipBreakdown.length, 10);
+    });
+
+    test('lumpsum corpus equals calculated value', () {
+      final result = service.compareSipVsLumpsum(
+        monthlySip: 10000,
+        lumpsumInvestment: 500000,
+        rateOfReturn: 12,
+        years: 10,
+      );
+      final expected = service.calculateLumpsum(
+        investment: 500000, rateOfReturn: 12, years: 10);
+      expect(result.lumpsumCorpus, closeTo(expected.totalValue, 1));
+    });
+
+    test('sip corpus equals calculated value', () {
+      final result = service.compareSipVsLumpsum(
+        monthlySip: 10000,
+        lumpsumInvestment: 500000,
+        rateOfReturn: 12,
+        years: 10,
+      );
+      final expected = service.calculateSip(
+        monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
+      expect(result.sipCorpus, closeTo(expected.totalValue, 1));
+    });
+  });
+
+  group('Tax Calculator', () {
+    test('tax is zero for income below exemption', () {
+      final result = service.calculateTax(
+        grossIncome: 300000,
+        deduction80C: 50000,
+        deduction80D: 0,
+      );
+      expect(result.totalTaxOld, closeTo(0, 1));
+      expect(result.totalTaxNew, closeTo(0, 1));
+    });
+
+    test('old regime benefits from deductions', () {
+      final withDeductions = service.calculateTax(
+        grossIncome: 900000,
+        deduction80C: 150000,
+        deduction80D: 25000,
+      );
+      final withoutDeductions = service.calculateTax(
+        grossIncome: 900000,
+        deduction80C: 0,
+        deduction80D: 0,
+      );
+      expect(withDeductions.totalTaxOld, lessThan(withoutDeductions.totalTaxOld));
+    });
+
+    test('new regime is determined correctly', () {
+      final result = service.calculateTax(
+        grossIncome: 1500000,
+        deduction80C: 0,
+        deduction80D: 0,
+      );
+      expect(result.newRegimeBetter, isA<bool>());
+    });
+
+    test('old regime deductions reduce taxable income', () {
+      final result = service.calculateTax(
+        grossIncome: 1200000,
+        deduction80C: 150000,
+        deduction80D: 25000,
+      );
+      expect(result.deductions, greaterThan(0));
     });
   });
 

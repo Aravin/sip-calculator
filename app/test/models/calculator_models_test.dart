@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart' hide ComparisonResult;
 import 'package:sip_calculator/models/calculator_models.dart';
 
 void main() {
@@ -177,6 +177,124 @@ void main() {
       expect(result.p10Corpus, 2000000);
       expect(result.p90Corpus, 9000000);
       expect(result.probabilityOfSuccess, 0.85);
+    });
+  });
+
+  group('ComparisonResult', () {
+    test('constructor assigns values correctly', () {
+      final result = ComparisonResult(
+        lumpsumCorpus: 1000000,
+        sipCorpus: 1200000,
+        lumpsumInvestment: 500000,
+        sipTotalInvestment: 600000,
+        rateOfReturn: 12,
+        years: 10,
+        lumpsumBreakdown: [],
+        sipBreakdown: [],
+      );
+
+      expect(result.lumpsumCorpus, 1000000);
+      expect(result.sipCorpus, 1200000);
+      expect(result.sipWins, true);
+      expect(result.difference, 200000);
+    });
+
+    test('sipWins is false when lumpsum is larger', () {
+      final result = ComparisonResult(
+        lumpsumCorpus: 1500000,
+        sipCorpus: 1200000,
+        lumpsumInvestment: 500000,
+        sipTotalInvestment: 600000,
+        rateOfReturn: 12,
+        years: 10,
+        lumpsumBreakdown: [],
+        sipBreakdown: [],
+      );
+
+      expect(result.sipWins, false);
+    });
+  });
+
+  group('FinancialGoal', () {
+    test('progress is 0 for zero target', () {
+      final goal = FinancialGoal(
+        id: '1',
+        name: 'Test',
+        targetAmount: 0,
+        targetDate: DateTime.now().add(const Duration(days: 365)),
+        currentSavings: 1000,
+        monthlyContribution: 500,
+      );
+      expect(goal.progress, 0.0);
+    });
+
+    test('toJson and fromJson roundtrip', () {
+      final original = FinancialGoal(
+        id: 'goal-1',
+        name: 'Retirement',
+        targetAmount: 50000000,
+        targetDate: DateTime(2040, 12, 31),
+        currentSavings: 500000,
+        monthlyContribution: 25000,
+      );
+
+      final json = original.toJson();
+      final reconstructed = FinancialGoal.fromJson(json);
+
+      expect(reconstructed.id, original.id);
+      expect(reconstructed.name, original.name);
+      expect(reconstructed.targetAmount, original.targetAmount);
+      expect(reconstructed.targetDate.toIso8601String(), original.targetDate.toIso8601String());
+      expect(reconstructed.currentSavings, original.currentSavings);
+      expect(reconstructed.monthlyContribution, original.monthlyContribution);
+    });
+
+    test('remainingMonths is 0 for past target date', () {
+      final goal = FinancialGoal(
+        id: '1',
+        name: 'Past',
+        targetAmount: 100000,
+        targetDate: DateTime(2020, 1, 1),
+        currentSavings: 0,
+        monthlyContribution: 0,
+      );
+      expect(goal.remainingMonths, 0);
+    });
+  });
+
+  group('TaxResult', () {
+    test('newRegimeBetter is set correctly', () {
+      final result = TaxResult(
+        grossIncome: 800000,
+        taxableIncomeOld: 700000,
+        taxableIncomeNew: 725000,
+        taxOld: 50000,
+        taxNew: 40000,
+        cessOld: 2000,
+        cessNew: 1600,
+        totalTaxOld: 52000,
+        totalTaxNew: 41600,
+        deductions: 100000,
+      );
+      expect(result.newRegimeBetter, true);
+      expect(result.savings, 10400);
+    });
+
+    test('savings calculation is correct', () {
+      final result = TaxResult(
+        grossIncome: 1500000,
+        taxableIncomeOld: 1200000,
+        taxableIncomeNew: 1425000,
+        taxOld: 150000,
+        taxNew: 180000,
+        cessOld: 6000,
+        cessNew: 7200,
+        totalTaxOld: 156000,
+        totalTaxNew: 187200,
+        deductions: 300000,
+      );
+      expect(result.newRegimeBetter, false);
+      expect(result.savings, 31200);
     });
   });
 

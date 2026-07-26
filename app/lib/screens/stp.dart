@@ -39,7 +39,7 @@ class _STPScreenState extends State<STPScreen> {
         rateOfReturn: _return,
         years: _years.round(),
       );
-      int months = _years.round() * 12;
+      final int months = _years.round() * 12;
       _monthlyTransfer = months > 0 ? _investment / months : 0;
     });
   }
