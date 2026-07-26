@@ -9,8 +9,6 @@ import 'package:sip_calculator/screens/stp.dart';
 import 'package:sip_calculator/screens/swp.dart';
 import 'package:sip_calculator/shared/constants.dart';
 import 'package:sip_calculator/shared/drawer.dart';
-import 'package:sip_calculator/widgets/ad_banner.dart';
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -37,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisCount: 2,
               mainAxisSpacing: 12,
               crossAxisSpacing: 12,
-              childAspectRatio: 1.05,
+              childAspectRatio: 0.95,
               children: [
                 _card(context, 'SIP', 'Systematic\nInvestment Plan', Icons.trending_up, colorScheme.primary, () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const SIPScreen()));
@@ -57,18 +55,16 @@ class HomeScreen extends StatelessWidget {
                 _card(context, 'EMI', 'Loan EMI &\nAmortization', Icons.home, Color(0xFFC62828), () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const EMIScreen()));
                 }),
-                _card(context, 'SIP +\nLumpsum', 'Combined\nPlanner', Icons.merge, colorScheme.primary, () {
+                _card(context, 'SIP+Lumpsum', 'Combined Planner', Icons.merge, colorScheme.primary, () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const CombinedScreen()));
                 }),
-                _card(context, 'Saved\nPlans', 'Bookmarked\nCalculations', Icons.bookmark, Color(0xFFF9A825), () {
+                _card(context, 'Saved Plans', 'Bookmarked Calcs', Icons.bookmark, Color(0xFFF9A825), () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const SavingsScreen()));
                 }),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          const AdBanner(),
-          const SizedBox(height: 8),
+          
         ],
       ),
     );
@@ -84,36 +80,38 @@ class HomeScreen extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: iconColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, size: 26, color: iconColor),
+                child: Icon(icon, size: 22, color: iconColor),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontSize: 13,
                     ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 2),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
-                      fontSize: 11,
+                      fontSize: 10,
                     ),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

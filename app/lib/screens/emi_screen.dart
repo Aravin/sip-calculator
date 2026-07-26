@@ -4,7 +4,6 @@ import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
 import 'package:sip_calculator/shared/result_helpers.dart';
-import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
 
@@ -25,7 +24,8 @@ class _EMIScreenState extends State<EMIScreen> {
   final _rateCtrl = TextEditingController(text: '9');
   final _yearsCtrl = TextEditingController(text: '5');
 
-  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult _result =
+      CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
   double _monthlyEmi = 0;
 
   @override
@@ -50,13 +50,14 @@ class _EMIScreenState extends State<EMIScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'EMI - ${curFormat.format(_principal)}',
       type: 'EMI',
-      params: '₹${_principal.toInt()}, ${_rate}%, ${_years.toInt()}y',
+      params: '\u20b9${_principal.toInt()}, ${_rate}%, ${_years.toInt()}y',
       result: _result,
       savedAt: DateTime.now(),
     );
     PersistenceService.save(calc);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+      const SnackBar(
+          content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -78,19 +79,26 @@ class _EMIScreenState extends State<EMIScreen> {
       appBar: AppBar(
         title: const Text('EMI Calculator'),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+          IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareCsv,
+              tooltip: 'Export CSV'),
+          IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: _save,
+              tooltip: 'Save'),
         ],
       ),
       body: ListView(
         children: [
+          const SizedBox(height: 8),
           InputRow(
             label: 'Loan Amount',
             controller: _principalCtrl,
             sliderValue: _principal,
-            min: 10000, max: 10000000,
-            divisions: 999,
-            prefix: '₹ ',
+            min: 10000,
+            max: 10000000,
+            prefix: '\u20b9 ',
             maxLength: 8,
             onChanged: (v) {
               _principal = v;
@@ -102,8 +110,8 @@ class _EMIScreenState extends State<EMIScreen> {
             label: 'Interest Rate',
             controller: _rateCtrl,
             sliderValue: _rate,
-            min: 1, max: 24,
-            divisions: 23,
+            min: 1,
+            max: 24,
             suffix: ' %',
             maxLength: 2,
             onChanged: (v) {
@@ -116,9 +124,9 @@ class _EMIScreenState extends State<EMIScreen> {
             label: 'Tenure',
             controller: _yearsCtrl,
             sliderValue: _years,
-            min: 1, max: 30,
-            divisions: 29,
-            suffix: ' Year',
+            min: 1,
+            max: 30,
+            suffix: ' Years',
             maxLength: 2,
             onChanged: (v) {
               _years = v;
@@ -126,18 +134,8 @@ class _EMIScreenState extends State<EMIScreen> {
               _recalculate();
             },
           ),
-          const SizedBox(height: 16),
-          buildResultRow('Monthly EMI', _monthlyEmi, Colors.red),
-          buildResultRow('Total Interest', _result.totalReturns, Colors.orange),
-          buildResultRow('Total Payment', _result.totalValue, null),
-          if (_result.totalValue > 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
-                style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
-              ),
-            ),
+          const SizedBox(height: 8),
+          _buildResultsCard(context),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -149,12 +147,80 @@ class _EMIScreenState extends State<EMIScreen> {
           ),
           if (_showTable)
             YearTable(data: _result.yearlyBreakdown, format: curFormat),
-          const SizedBox(height: 20),
-          const AdBanner(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
+  Widget _buildResultsCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Results',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _resultRow(context, 'Monthly EMI', _monthlyEmi, colorScheme.error),
+            const Divider(height: 12),
+            _resultRow(
+                context, 'Total Interest', _result.totalReturns, Colors.orange),
+            const Divider(height: 12),
+            _resultRow(context, 'Total Payment', _result.totalValue, null),
+            if (_result.totalValue > 0) ...[
+              const SizedBox(height: 4),
+              Text(
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          curFormat.format(value),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color ?? colorScheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
 }

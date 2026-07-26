@@ -4,7 +4,6 @@ import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
 import 'package:sip_calculator/shared/result_helpers.dart';
-import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
 
@@ -27,7 +26,8 @@ class _SWPScreenState extends State<SWPScreen> {
   final _returnCtrl = TextEditingController(text: '12');
   final _yearsCtrl = TextEditingController(text: '5');
 
-  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult _result =
+      CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
   double _totalWithdrawn = 0;
 
   @override
@@ -53,13 +53,15 @@ class _SWPScreenState extends State<SWPScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'SWP - ${curFormat.format(_investment)}',
       type: 'SWP',
-      params: '₹${_investment.toInt()}, ${_withdraw.toInt()}/mo, ${_return}%',
+      params:
+          '\u20b9${_investment.toInt()}, ${_withdraw.toInt()}/mo, ${_return}%',
       result: _result,
       savedAt: DateTime.now(),
     );
     PersistenceService.save(calc);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+      const SnackBar(
+          content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -82,18 +84,26 @@ class _SWPScreenState extends State<SWPScreen> {
       appBar: AppBar(
         title: const Text('SWP Calculator'),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+          IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareCsv,
+              tooltip: 'Export CSV'),
+          IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: _save,
+              tooltip: 'Save'),
         ],
       ),
       body: ListView(
         children: [
+          const SizedBox(height: 8),
           InputRow(
             label: 'Total Investment',
             controller: _investmentCtrl,
             sliderValue: _investment,
-            min: 10000, max: 10000000,
-            prefix: '₹ ',
+            min: 10000,
+            max: 10000000,
+            prefix: '\u20b9 ',
             maxLength: 8,
             onChanged: (v) {
               _investment = v;
@@ -105,8 +115,9 @@ class _SWPScreenState extends State<SWPScreen> {
             label: 'Monthly Withdraw',
             controller: _withdrawCtrl,
             sliderValue: _withdraw,
-            min: 500, max: 500000,
-            prefix: '₹ ',
+            min: 500,
+            max: 500000,
+            prefix: '\u20b9 ',
             maxLength: 6,
             onChanged: (v) {
               _withdraw = v;
@@ -118,8 +129,8 @@ class _SWPScreenState extends State<SWPScreen> {
             label: 'Expected Return',
             controller: _returnCtrl,
             sliderValue: _return,
-            min: 1, max: 30,
-            divisions: 29,
+            min: 1,
+            max: 30,
             suffix: ' %',
             maxLength: 2,
             onChanged: (v) {
@@ -132,9 +143,9 @@ class _SWPScreenState extends State<SWPScreen> {
             label: 'Time Period',
             controller: _yearsCtrl,
             sliderValue: _years,
-            min: 1, max: 30,
-            divisions: 29,
-            suffix: ' Year',
+            min: 1,
+            max: 30,
+            suffix: ' Years',
             maxLength: 2,
             onChanged: (v) {
               _years = v;
@@ -142,29 +153,8 @@ class _SWPScreenState extends State<SWPScreen> {
               _recalculate();
             },
           ),
-          const SizedBox(height: 16),
-          buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          buildResultRow('Total Withdrawn', _totalWithdrawn, Colors.green.shade600),
-          buildResultRow('Remaining Corpus', _result.totalValue, null),
-          if (_result.totalValue > 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
-                style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
-              ),
-            ),
-          if (_result.totalValue <= 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Card(
-                color: Colors.red.shade50,
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('Warning: Corpus depleted before tenure ends!', style: TextStyle(color: Colors.red, fontSize: 12)),
-                ),
-              ),
-            ),
+          const SizedBox(height: 8),
+          _buildResultsCard(context),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -176,11 +166,109 @@ class _SWPScreenState extends State<SWPScreen> {
           ),
           if (_showYearTable)
             YearTable(data: _result.yearlyBreakdown, format: curFormat),
-          const AdBanner(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
+  Widget _buildResultsCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Results',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _resultRow(context, 'Total Investment', _result.totalInvestment,
+                colorScheme.tertiary),
+            const Divider(height: 12),
+            _resultRow(context, 'Total Withdrawn', _totalWithdrawn,
+                colorScheme.primary),
+            const Divider(height: 12),
+            _resultRow(
+                context, 'Remaining Corpus', _result.totalValue, null),
+            if (_result.totalValue > 0) ...[
+              const SizedBox(height: 4),
+              Text(
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+            if (_result.totalValue <= 0)
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.errorContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning, size: 18, color: colorScheme.error),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Corpus depleted before tenure ends!',
+                        style: TextStyle(
+                          color: colorScheme.onErrorContainer,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          curFormat.format(value),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color ?? colorScheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
 }

@@ -24,98 +24,101 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
         subject: 'SIP & Lumpsum Calculator - Financial Planning Tool');
   }
 
+  void _navigate(Widget screen) {
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeMode = MyApp.of(context);
     if (themeMode == null) return const SizedBox.shrink();
     final colorScheme = Theme.of(context).colorScheme;
 
-    return NavigationDrawer(
-      onDestinationSelected: (index) {},
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(28, 24, 28, 8),
-          child: Text(
-            'SIP Calculator',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(28, 0, 28, 16),
-          child: Text(
-            'Financial Planning Tools',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: colorScheme.primaryContainer),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'SIP Calculator',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onPrimaryContainer,
+                      ),
                 ),
-          ),
-        ),
-        const Divider(),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.trending_up),
-          selectedIcon: Icon(Icons.trending_up, color: colorScheme.primary),
-          label: const Text('SIP'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.monetization_on),
-          selectedIcon: Icon(Icons.monetization_on, color: colorScheme.primary),
-          label: const Text('Lumpsum'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.arrow_downward),
-          selectedIcon: Icon(Icons.arrow_downward, color: colorScheme.primary),
-          label: const Text('SWP'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.swap_horiz),
-          selectedIcon: Icon(Icons.swap_horiz, color: colorScheme.primary),
-          label: const Text('STP'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.savings),
-          selectedIcon: Icon(Icons.savings, color: colorScheme.primary),
-          label: const Text('PPF'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.home),
-          selectedIcon: Icon(Icons.home, color: colorScheme.primary),
-          label: const Text('EMI'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.merge),
-          selectedIcon: Icon(Icons.merge, color: colorScheme.primary),
-          label: const Text('SIP + Lumpsum'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.bookmark),
-          selectedIcon: Icon(Icons.bookmark, color: colorScheme.primary),
-          label: const Text('Saved Plans'),
-        ),
-        const Divider(),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.dark_mode),
-          selectedIcon: Icon(Icons.dark_mode, color: colorScheme.primary),
-          label: const Text('Toggle Theme'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.share),
-          selectedIcon: Icon(Icons.share, color: colorScheme.primary),
-          label: const Text('Share App'),
-        ),
-        NavigationDrawerDestination(
-          icon: Icon(Icons.star_rate),
-          selectedIcon: Icon(Icons.star_rate, color: colorScheme.primary),
-          label: const Text('Rate App'),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'v5.5.0',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+                const SizedBox(height: 4),
+                Text(
+                  'Financial Planning Tools',
+                  style: TextStyle(
+                    color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                    fontSize: 13,
+                  ),
                 ),
+              ],
+            ),
           ),
-        ),
-      ],
+          _item(Icons.trending_up, 'SIP Calculator',
+              'Systematic Investment Plan', () => _navigate(const SIPScreen())),
+          _item(Icons.monetization_on, 'Lumpsum Calculator',
+              'One-Time Investment Plan', () => _navigate(const LumpSumScreen())),
+          _item(Icons.arrow_downward, 'SWP Calculator',
+              'Systematic Withdraw Plan', () => _navigate(const SWPScreen())),
+          _item(Icons.swap_horiz, 'STP Calculator',
+              'Systematic Transfer Plan', () => _navigate(const STPScreen())),
+          _item(Icons.savings, 'PPF Calculator',
+              'Public Provident Fund', () => _navigate(const PPFScreen())),
+          _item(Icons.home, 'EMI Calculator',
+              'Loan EMI & Amortization', () => _navigate(const EMIScreen())),
+          _item(Icons.merge, 'SIP + Lumpsum',
+              'Combined Investment Planner', () => _navigate(const CombinedScreen())),
+          _item(Icons.bookmark, 'Saved Plans',
+              'Bookmarked Calculations', () => _navigate(const SavingsScreen())),
+          const Divider(),
+          ListTile(
+            leading: Icon(Icons.dark_mode, color: colorScheme.primary),
+            title: const Text('Toggle Theme'),
+            subtitle: const Text('Switch Dark/Light', style: TextStyle(fontSize: 12)),
+            onTap: () {
+              Navigator.pop(context);
+              themeMode.toggleTheme();
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.share, color: colorScheme.primary),
+            title: const Text('Share App'),
+            subtitle: const Text('Tell your friends', style: TextStyle(fontSize: 12)),
+            onTap: () {
+              Navigator.pop(context);
+              _shareApp();
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.star_rate, color: colorScheme.primary),
+            title: const Text('Rate the App'),
+            subtitle: const Text('Leave a review', style: TextStyle(fontSize: 12)),
+            onTap: () async {
+              Navigator.pop(context);
+              await InAppReview.instance.openStoreListing();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _item(IconData icon, String title, String subtitle, VoidCallback onTap) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ListTile(
+      leading: Icon(icon, color: colorScheme.primary),
+      title: Text(title),
+      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
+      onTap: onTap,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     );
   }
 }

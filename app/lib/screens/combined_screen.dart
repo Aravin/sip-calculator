@@ -4,12 +4,10 @@ import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
 import 'package:sip_calculator/shared/result_helpers.dart';
-import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/sensitivity_card.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:sip_calculator/shared/constants.dart';
 
 class CombinedScreen extends StatefulWidget {
   const CombinedScreen({super.key});
@@ -27,13 +25,14 @@ class _CombinedScreenState extends State<CombinedScreen> {
   bool _showYearTable = false;
   bool _showSensitivity = false;
 
-  final _lumpsumCtrl = TextEditingController(text: '100000');
-  final _sipCtrl = TextEditingController(text: '5000');
-  final _returnCtrl = TextEditingController(text: '12');
-  final _yearsCtrl = TextEditingController(text: '5');
-  final _stepUpCtrl = TextEditingController(text: '0');
+  late final _lumpsumCtrl = TextEditingController(text: _lumpsum.toInt().toString());
+  late final _sipCtrl = TextEditingController(text: _monthlySip.toInt().toString());
+  late final _returnCtrl = TextEditingController(text: _return.toInt().toString());
+  late final _yearsCtrl = TextEditingController(text: _years.toInt().toString());
+  late final _stepUpCtrl = TextEditingController(text: _stepUp.toInt().toString());
 
-  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult _result =
+      CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
   CalcResult? _sensitivity;
 
   @override
@@ -67,13 +66,15 @@ class _CombinedScreenState extends State<CombinedScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'Combined - ${curFormat.format(_lumpsum)} + ${curFormat.format(_monthlySip)}/mo',
       type: 'Combined',
-      params: 'Lumpsum: ${curFormat.format(_lumpsum)}, SIP: ${curFormat.format(_monthlySip)}/mo',
+      params:
+          'Lumpsum: ${curFormat.format(_lumpsum)}, SIP: ${curFormat.format(_monthlySip)}/mo',
       result: _result,
       savedAt: DateTime.now(),
     );
     PersistenceService.save(calc);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+      const SnackBar(
+          content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -93,27 +94,38 @@ class _CombinedScreenState extends State<CombinedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('SIP + Lumpsum'),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+          IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareCsv,
+              tooltip: 'Export CSV'),
+          IconButton(
+              icon: const Icon(Icons.save),
+              onPressed: _save,
+              tooltip: 'Save'),
         ],
       ),
       body: ListView(
         children: [
+          const SizedBox(height: 8),
           InputRow(
             label: 'Lumpsum Investment',
             controller: _lumpsumCtrl,
             sliderValue: _lumpsum,
-            min: 10000, max: 10000000,
-            divisions: 999,
-            prefix: '₹ ',
+            min: 10000,
+            max: 10000000,
+            prefix: '\u20b9 ',
             maxLength: 8,
             onChanged: (v) {
               _lumpsum = v;
-              _lumpsumCtrl.text = v.toInt().toString();
+              if (_lumpsumCtrl.text != v.toInt().toString()) {
+                _lumpsumCtrl.text = v.toInt().toString();
+              }
               _recalculate();
             },
           ),
@@ -121,13 +133,15 @@ class _CombinedScreenState extends State<CombinedScreen> {
             label: 'Monthly SIP',
             controller: _sipCtrl,
             sliderValue: _monthlySip,
-            min: 500, max: 500000,
-            divisions: 499,
-            prefix: '₹ ',
+            min: 500,
+            max: 500000,
+            prefix: '\u20b9 ',
             maxLength: 6,
             onChanged: (v) {
               _monthlySip = v;
-              _sipCtrl.text = v.toInt().toString();
+              if (_sipCtrl.text != v.toInt().toString()) {
+                _sipCtrl.text = v.toInt().toString();
+              }
               _recalculate();
             },
           ),
@@ -135,13 +149,15 @@ class _CombinedScreenState extends State<CombinedScreen> {
             label: 'Return Rate',
             controller: _returnCtrl,
             sliderValue: _return,
-            min: 1, max: 30,
-            divisions: 29,
+            min: 1,
+            max: 30,
             suffix: ' %',
             maxLength: 2,
             onChanged: (v) {
               _return = v;
-              _returnCtrl.text = v.toInt().toString();
+              if (_returnCtrl.text != v.toInt().toString()) {
+                _returnCtrl.text = v.toInt().toString();
+              }
               _recalculate();
             },
           ),
@@ -149,49 +165,51 @@ class _CombinedScreenState extends State<CombinedScreen> {
             label: 'Tenure',
             controller: _yearsCtrl,
             sliderValue: _years,
-            min: 1, max: 30,
-            divisions: 29,
-            suffix: ' Year',
+            min: 1,
+            max: 30,
+            suffix: ' Years',
             maxLength: 2,
             onChanged: (v) {
               _years = v;
-              _yearsCtrl.text = v.toInt().toString();
+              if (_yearsCtrl.text != v.toInt().toString()) {
+                _yearsCtrl.text = v.toInt().toString();
+              }
               _recalculate();
             },
           ),
-          ExpansionTile(
-            title: const Text('Step-Up SIP', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(_stepUp > 0 ? '${_stepUp}% annual' : 'Not enabled'),
-            initiallyExpanded: _stepUp > 0,
-            children: [
-              InputRow(
-                label: 'Annual Step-Up',
-                controller: _stepUpCtrl,
-                sliderValue: _stepUp,
-                min: 0, max: 25,
-                divisions: 25,
-                suffix: ' %',
-                maxLength: 2,
-                onChanged: (v) {
-                  _stepUp = v;
-                  _stepUpCtrl.text = v.toInt().toString();
-                  _recalculate();
-                },
+          const SizedBox(height: 8),
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: ExpansionTile(
+              title: const Text('Step-Up SIP', style: TextStyle(fontSize: 13)),
+              subtitle: Text(
+                _stepUp > 0 ? '${_stepUp}% annual' : 'Not enabled',
+                style: const TextStyle(fontSize: 11),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          buildResultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
-          buildResultRow('Total Corpus', _result.totalValue, null),
-          if (_result.totalValue > 0)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
-                style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
-              ),
+              initiallyExpanded: _stepUp > 0,
+              children: [
+                InputRow(
+                  label: 'Annual Step-Up',
+                  controller: _stepUpCtrl,
+                  sliderValue: _stepUp,
+                  min: 0,
+                  max: 25,
+                  suffix: ' %',
+                  maxLength: 2,
+                  onChanged: (v) {
+                    _stepUp = v;
+                    if (_stepUpCtrl.text != v.toInt().toString()) {
+                      _stepUpCtrl.text = v.toInt().toString();
+                    }
+                    _recalculate();
+                  },
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
+          ),
+          const SizedBox(height: 8),
+          _buildResultsCard(context),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -207,14 +225,17 @@ class _CombinedScreenState extends State<CombinedScreen> {
                   label: const Text('Sensitivity'),
                   selected: _showSensitivity,
                   onSelected: (v) {
-                    _showSensitivity = v;
+                    setState(() {
+                      _showSensitivity = v;
+                    });
                     _recalculate();
                   },
                 ),
               ],
             ),
           ),
-          if (_showSensitivity && _sensitivity != null && _sensitivity!.yearlyBreakdown.length >= 3)
+          if (_showSensitivity && _sensitivity != null &&
+              _sensitivity!.yearlyBreakdown.length >= 3)
             SensitivityCard(
               worstCorpus: _sensitivity!.yearlyBreakdown[0].corpus,
               expectedCorpus: _sensitivity!.yearlyBreakdown[1].corpus,
@@ -223,61 +244,198 @@ class _CombinedScreenState extends State<CombinedScreen> {
             ),
           if (_showYearTable)
             YearTable(data: _result.yearlyBreakdown, format: curFormat),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           SizedBox(
-            height: 250,
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  show: true,
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      reservedSize: 30,
-                      getTitlesWidget: (value, meta) {
-                        final style = TextStyle(color: kSecondaryDarkColor, fontWeight: FontWeight.bold);
-                        String text;
-                        switch (value.toInt()) {
-                          case 0: text = 'Investment'; break;
-                          case 1: text = 'Returns'; break;
-                          case 2: text = 'Total'; break;
-                          default: text = '';
-                        }
-                        return SideTitleWidget(axisSide: meta.axisSide, space: 4, child: Text(text, style: style));
+            height: 220,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: BarChart(
+                BarChartData(
+                  titlesData: FlTitlesData(
+                    show: true,
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                        getTitlesWidget: (value, meta) {
+                          final style = TextStyle(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          );
+                          String text;
+                          switch (value.toInt()) {
+                            case 0:
+                              text = 'Investment';
+                              break;
+                            case 1:
+                              text = 'Returns';
+                              break;
+                            case 2:
+                              text = 'Total';
+                              break;
+                            default:
+                              text = '';
+                          }
+                          return SideTitleWidget(
+                              axisSide: meta.axisSide,
+                              space: 4,
+                              child: Text(text, style: style));
+                        },
+                      ),
+                    ),
+                    leftTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                  ),
+                  borderData: FlBorderData(show: false),
+                  barGroups: [
+                    BarChartGroupData(
+                      x: 0,
+                      barRods: [
+                        BarChartRodData(
+                          toY: _result.totalInvestment,
+                          color: colorScheme.tertiary,
+                          width: 16,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                        )
+                      ],
+                      showingTooltipIndicators: [0],
+                    ),
+                    BarChartGroupData(
+                      x: 1,
+                      barRods: [
+                        BarChartRodData(
+                          toY: _result.totalReturns,
+                          color: colorScheme.primary,
+                          width: 16,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                        )
+                      ],
+                      showingTooltipIndicators: [0],
+                    ),
+                    BarChartGroupData(
+                      x: 2,
+                      barRods: [
+                        BarChartRodData(
+                          toY: _result.totalValue,
+                          color: colorScheme.secondary,
+                          width: 16,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6),
+                          ),
+                        )
+                      ],
+                      showingTooltipIndicators: [0],
+                    ),
+                  ],
+                  gridData: const FlGridData(show: false),
+                  barTouchData: BarTouchData(
+                    enabled: false,
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipColor: (_) => colorScheme.inverseSurface,
+                      tooltipPadding: EdgeInsets.zero,
+                      tooltipMargin: 8,
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        return BarTooltipItem(
+                          rod.toY.round().toString(),
+                          TextStyle(
+                            color: colorScheme.onInverseSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
                       },
                     ),
                   ),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  alignment: BarChartAlignment.spaceAround,
                 ),
-                borderData: FlBorderData(show: false),
-                barGroups: [
-                  BarChartGroupData(x: 0, barRods: [BarChartRodData(toY: double.parse(_result.totalInvestment.toStringAsFixed(2)), color: Colors.purple.shade600, width: 12.5)], showingTooltipIndicators: [0]),
-                  BarChartGroupData(x: 1, barRods: [BarChartRodData(toY: double.parse(_result.totalReturns.toStringAsFixed(2)), color: Colors.green.shade600, width: 12.5)], showingTooltipIndicators: [0]),
-                  BarChartGroupData(x: 2, barRods: [BarChartRodData(toY: double.parse(_result.totalValue.toStringAsFixed(2)), color: Colors.grey.shade600, width: 12.5)], showingTooltipIndicators: [0]),
-                ],
-                gridData: const FlGridData(show: false),
-                barTouchData: BarTouchData(
-                  enabled: false,
-                  touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => Colors.yellow,
-                    tooltipPadding: EdgeInsets.zero,
-                    tooltipMargin: 8,
-                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                      return BarTooltipItem(rod.toY.round().toString(), const TextStyle(color: kSecondaryColor, fontWeight: FontWeight.bold));
-                    },
-                  ),
-                ),
-                alignment: BarChartAlignment.spaceAround,
               ),
             ),
           ),
-          const AdBanner(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 40),
         ],
       ),
     );
   }
 
+  Widget _buildResultsCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Results',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _resultRow(context, 'Total Investment', _result.totalInvestment,
+                colorScheme.tertiary),
+            const Divider(height: 12),
+            _resultRow(
+                context, 'Total Returns', _result.totalReturns, colorScheme.primary),
+            const Divider(height: 12),
+            _resultRow(context, 'Total Corpus', _result.totalValue, null),
+            if (_result.totalValue > 0) ...[
+              const SizedBox(height: 4),
+              Text(
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          curFormat.format(value),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color ?? colorScheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
 }

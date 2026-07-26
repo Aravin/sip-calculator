@@ -62,7 +62,6 @@ class SensitivityCard extends StatelessWidget {
   }
 
   Widget _buildScenario(BuildContext context, String label, double value, Color color) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Container(

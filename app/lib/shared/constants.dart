@@ -4,22 +4,21 @@ const kAppPadding = EdgeInsets.all(12.0);
 
 const Color kSeedColor = Color(0xFF006B5E);
 
-ColorScheme _lightColorScheme = ColorScheme.fromSeed(
+final ColorScheme _lightColorScheme = ColorScheme.fromSeed(
   seedColor: kSeedColor,
   brightness: Brightness.light,
 );
 
-ColorScheme _darkColorScheme = ColorScheme.fromSeed(
+final ColorScheme _darkColorScheme = ColorScheme.fromSeed(
   seedColor: kSeedColor,
   brightness: Brightness.dark,
 );
 
-ThemeData get lightTheme => _buildTheme(_lightColorScheme);
+final ThemeData lightTheme = _buildTheme(_lightColorScheme);
 
-ThemeData get darkTheme => _buildTheme(_darkColorScheme);
+final ThemeData darkTheme = _buildTheme(_darkColorScheme);
 
 ThemeData _buildTheme(ColorScheme colorScheme) {
-  final isLight = colorScheme.brightness == Brightness.light;
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
@@ -33,7 +32,7 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
       scrolledUnderElevation: 1,
       centerTitle: true,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -41,13 +40,6 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
       clipBehavior: Clip.antiAlias,
       color: colorScheme.surfaceContainerLow,
       surfaceTintColor: colorScheme.surfaceTint,
-    ),
-    navigationDrawerTheme: NavigationDrawerThemeData(
-      backgroundColor: colorScheme.surface,
-      surfaceTintColor: colorScheme.surfaceTint,
-      indicatorShape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: colorScheme.primary,
@@ -114,16 +106,19 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
       selectedColor: colorScheme.secondaryContainer,
       side: BorderSide.none,
     ),
+    navigationDrawerTheme: NavigationDrawerThemeData(
+      backgroundColor: colorScheme.surface,
+      surfaceTintColor: colorScheme.surfaceTint,
+      indicatorShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      indicatorColor: colorScheme.secondaryContainer,
+    ),
     dividerTheme: DividerThemeData(
       color: colorScheme.outlineVariant,
       thickness: 0.5,
     ),
-    navigationDrawerTheme: NavigationDrawerThemeData(
-      backgroundColor: colorScheme.surface,
-      surfaceTintColor: colorScheme.surfaceTint,
-      indicatorColor: colorScheme.secondaryContainer,
-    ),
-    dialogTheme: DialogTheme(
+    dialogTheme: DialogThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
     snackBarTheme: SnackBarThemeData(
