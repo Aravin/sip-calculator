@@ -16,65 +16,107 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('SIP Calculator'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
       ),
-      drawer: CustomAppDrawer(),
+      drawer: const CustomAppDrawer(),
       body: Column(
         children: [
           Expanded(
             child: GridView.count(
               padding: kAppPadding,
               crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.05,
               children: [
-                _card('SIP Calculator', 'Systematic Investment Plan', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => SIPScreen()));
-                }, Icons.trending_up, Colors.teal),
-                _card('Lumpsum', 'One-Time Investment', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => LumpSumScreen()));
-                }, Icons.monetization_on, Colors.blue),
-                _card('SWP Calculator', 'Systematic Withdraw Plan', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => SWPScreen()));
-                }, Icons.arrow_downward, Colors.orange),
-                _card('STP Calculator', 'Systematic Transfer Plan', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => STPScreen()));
-                }, Icons.swap_horiz, Colors.purple),
-                _card('PPF Calculator', 'Public Provident Fund', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => PPFScreen()));
-                }, Icons.savings, Colors.green),
-                _card('EMI Calculator', 'Loan EMI & Amortization', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => EMIScreen()));
-                }, Icons.home, Colors.red),
-                _card('SIP + Lumpsum', 'Combined Planner', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => CombinedScreen()));
-                }, Icons.merge, Colors.indigo),
-                _card('Saved Plans', 'Bookmarked Calcs', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => SavingsScreen()));
-                }, Icons.bookmark, Colors.amber),
+                _card(context, 'SIP', 'Systematic\nInvestment Plan', Icons.trending_up, colorScheme.primary, () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SIPScreen()));
+                }),
+                _card(context, 'Lumpsum', 'One-Time\nInvestment', Icons.monetization_on, colorScheme.tertiary, () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const LumpSumScreen()));
+                }),
+                _card(context, 'SWP', 'Systematic\nWithdraw Plan', Icons.arrow_downward, colorScheme.error, () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SWPScreen()));
+                }),
+                _card(context, 'STP', 'Systematic\nTransfer Plan', Icons.swap_horiz, colorScheme.secondary, () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const STPScreen()));
+                }),
+                _card(context, 'PPF', 'Public\nProvident Fund', Icons.savings, Color(0xFF2E7D32), () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const PPFScreen()));
+                }),
+                _card(context, 'EMI', 'Loan EMI &\nAmortization', Icons.home, Color(0xFFC62828), () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const EMIScreen()));
+                }),
+                _card(context, 'SIP +\nLumpsum', 'Combined\nPlanner', Icons.merge, colorScheme.primary, () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const CombinedScreen()));
+                }),
+                _card(context, 'Saved\nPlans', 'Bookmarked\nCalculations', Icons.bookmark, Color(0xFFF9A825), () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SavingsScreen()));
+                }),
               ],
             ),
           ),
+          const SizedBox(height: 8),
           const AdBanner(),
+          const SizedBox(height: 8),
         ],
       ),
     );
   }
 
-  Widget _card(String title, String subtitle, VoidCallback onTap, IconData icon, Color color) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        elevation: 2,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 36, color: color),
-            const SizedBox(height: 8),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), textAlign: TextAlign.center),
-            const SizedBox(height: 4),
-            Text(subtitle, style: const TextStyle(fontSize: 10), textAlign: TextAlign.center),
-          ],
+  Widget _card(BuildContext context, String title, String subtitle, IconData icon, Color iconColor, VoidCallback onTap) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 0,
+      color: colorScheme.surfaceContainerLow,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icon, size: 26, color: iconColor),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

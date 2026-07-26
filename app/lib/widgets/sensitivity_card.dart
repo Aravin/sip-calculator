@@ -17,47 +17,79 @@ class SensitivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: LinearGradient(
-          colors: [
-            Colors.orange.shade100,
-            Colors.green.shade100,
-            Colors.teal.shade100,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.analytics_outlined, size: 20, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Scenario Analysis (±2%)',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(child: _buildScenario(context, 'Pessimistic', worstCorpus, colorScheme.error)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(width: 1, height: 48, color: colorScheme.outlineVariant),
+                ),
+                Expanded(child: _buildScenario(context, 'Expected', expectedCorpus, colorScheme.primary)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(width: 1, height: 48, color: colorScheme.outlineVariant),
+                ),
+                Expanded(child: _buildScenario(context, 'Optimistic', bestCorpus, colorScheme.tertiary)),
+              ],
+            ),
           ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Scenario Analysis (±2%)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildScenario('Pessimistic', worstCorpus, Colors.red),
-              _buildScenario('Expected', expectedCorpus, Colors.green),
-              _buildScenario('Optimistic', bestCorpus, Colors.teal),
-            ],
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildScenario(String label, double value, Color color) {
+  Widget _buildScenario(BuildContext context, String label, double value, Color color) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
-        Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(format.format(value),
-            style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          format.format(value),
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }

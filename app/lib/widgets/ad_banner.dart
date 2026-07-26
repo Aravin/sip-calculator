@@ -4,7 +4,6 @@ import 'package:sip_calculator/shared/ads.dart';
 
 class AdBanner extends StatefulWidget {
   const AdBanner({super.key});
-
   @override
   State<AdBanner> createState() => _AdBannerState();
 }
@@ -52,7 +51,7 @@ class _AdBannerState extends State<AdBanner> {
     return Container(
       width: _bannerAd!.size.width.toDouble(),
       height: _bannerAd!.size.height.toDouble(),
-      margin: const EdgeInsets.symmetric(vertical: 20),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: AdWidget(ad: _bannerAd!),
     );
   }

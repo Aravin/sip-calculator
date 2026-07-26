@@ -5,38 +5,33 @@ import '../models/calculator_models.dart';
 class YearTable extends StatelessWidget {
   final List<YearData> data;
   final NumberFormat format;
-
-  const YearTable({
-    super.key,
-    required this.data,
-    required this.format,
-  });
+  const YearTable({super.key, required this.data, required this.format});
 
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) return const SizedBox.shrink();
+    final colorScheme = Theme.of(context).colorScheme;
 
-    final dividerColor = Theme.of(context).dividerColor;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: dividerColor),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: colorScheme.outlineVariant),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columnSpacing: 20,
-            dataRowMinHeight: 32,
-            dataRowMaxHeight: 40,
+            dataRowMinHeight: 36,
+            dataRowMaxHeight: 44,
             columns: const [
-              DataColumn(label: Text('Year', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Invested', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Interest', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Total', style: TextStyle(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Corpus', style: TextStyle(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Year')),
+              DataColumn(label: Text('Invested')),
+              DataColumn(label: Text('Interest')),
+              DataColumn(label: Text('Total')),
+              DataColumn(label: Text('Corpus')),
             ],
             rows: data.map((y) {
               return DataRow(cells: [
