@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
-
-final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
-final _service = CalculatorService();
 
 class EMIScreen extends StatefulWidget {
   const EMIScreen({super.key});
@@ -39,7 +36,7 @@ class _EMIScreenState extends State<EMIScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculateEmi(
+      _result = CalculatorService.instance.calculateEmi(
         principal: _principal,
         annualRate: _rate,
         years: _years.round(),
@@ -51,7 +48,7 @@ class _EMIScreenState extends State<EMIScreen> {
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'EMI - ${_curFormat.format(_principal)}',
+      name: 'EMI - ${curFormat.format(_principal)}',
       type: 'EMI',
       params: '₹${_principal.toInt()}, ${_rate}%, ${_years.toInt()}y',
       result: _result,
@@ -130,9 +127,9 @@ class _EMIScreenState extends State<EMIScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _resultRow('Monthly EMI', _monthlyEmi, Colors.red),
-          _resultRow('Total Interest', _result.totalReturns, Colors.orange),
-          _resultRow('Total Payment', _result.totalValue, null),
+          buildResultRow('Monthly EMI', _monthlyEmi, Colors.red),
+          buildResultRow('Total Interest', _result.totalReturns, Colors.orange),
+          buildResultRow('Total Payment', _result.totalValue, null),
           if (_result.totalValue > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,7 +148,7 @@ class _EMIScreenState extends State<EMIScreen> {
             ),
           ),
           if (_showTable)
-            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const SizedBox(height: 20),
           const AdBanner(),
           const SizedBox(height: 20),
@@ -160,19 +157,4 @@ class _EMIScreenState extends State<EMIScreen> {
     );
   }
 
-  Widget _resultRow(String label, double value, Color? color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 13)),
-          Text(
-            _curFormat.format(value),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
-          ),
-        ],
-      ),
-    );
-  }
 }

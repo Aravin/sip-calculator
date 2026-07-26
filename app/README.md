@@ -83,5 +83,5 @@ test/
 
 ## Dependencies
 
-- `velocity_x`, `share_plus`, `in_app_review`, `google_mobile_ads`
+- `share_plus`, `in_app_review`, `google_mobile_ads`
 - `fl_chart`, `shared_preferences`, `path_provider`

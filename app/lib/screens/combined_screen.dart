@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/sensitivity_card.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:sip_calculator/shared/constants.dart';
-
-final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
-final _service = CalculatorService();
 
 class CombinedScreen extends StatefulWidget {
   const CombinedScreen({super.key});
@@ -47,7 +44,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculateCombined(
+      _result = CalculatorService.instance.calculateCombined(
         lumpsumInvestment: _lumpsum,
         monthlySip: _monthlySip,
         rateOfReturn: _return,
@@ -55,7 +52,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
         stepUp: _stepUp,
       );
       if (_showSensitivity) {
-        _sensitivity = _service.calculateSensitivity(
+        _sensitivity = CalculatorService.instance.calculateSensitivity(
           monthlyInvestment: _monthlySip,
           rateOfReturn: _return,
           years: _years.round(),
@@ -68,9 +65,9 @@ class _CombinedScreenState extends State<CombinedScreen> {
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'Combined - ${_curFormat.format(_lumpsum)} + ${_curFormat.format(_monthlySip)}/mo',
+      name: 'Combined - ${curFormat.format(_lumpsum)} + ${curFormat.format(_monthlySip)}/mo',
       type: 'Combined',
-      params: 'Lumpsum: ${_curFormat.format(_lumpsum)}, SIP: ${_curFormat.format(_monthlySip)}/mo',
+      params: 'Lumpsum: ${curFormat.format(_lumpsum)}, SIP: ${curFormat.format(_monthlySip)}/mo',
       result: _result,
       savedAt: DateTime.now(),
     );
@@ -184,9 +181,9 @@ class _CombinedScreenState extends State<CombinedScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          _resultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
-          _resultRow('Total Corpus', _result.totalValue, null),
+          buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
+          buildResultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
+          buildResultRow('Total Corpus', _result.totalValue, null),
           if (_result.totalValue > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -222,10 +219,10 @@ class _CombinedScreenState extends State<CombinedScreen> {
               worstCorpus: _sensitivity!.yearlyBreakdown[0].corpus,
               expectedCorpus: _sensitivity!.yearlyBreakdown[1].corpus,
               bestCorpus: _sensitivity!.yearlyBreakdown[2].corpus,
-              format: _curFormat,
+              format: curFormat,
             ),
           if (_showYearTable)
-            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const SizedBox(height: 20),
           SizedBox(
             height: 250,
@@ -238,7 +235,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
                       showTitles: true,
                       reservedSize: 30,
                       getTitlesWidget: (value, meta) {
-                        final style = TextStyle(color: kSecondaryDartColor, fontWeight: FontWeight.bold);
+                        final style = TextStyle(color: kSecondaryDarkColor, fontWeight: FontWeight.bold);
                         String text;
                         switch (value.toInt()) {
                           case 0: text = 'Investment'; break;
@@ -283,19 +280,4 @@ class _CombinedScreenState extends State<CombinedScreen> {
     );
   }
 
-  Widget _resultRow(String label, double value, Color? color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 13)),
-          Text(
-            _curFormat.format(value),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
-          ),
-        ],
-      ),
-    );
-  }
 }

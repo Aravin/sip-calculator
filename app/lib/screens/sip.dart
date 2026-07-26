@@ -8,13 +8,12 @@ import 'package:sip_calculator/services/monte_carlo_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
 import 'package:sip_calculator/screens/swp.dart';
 import 'package:sip_calculator/shared/constants.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/sensitivity_card.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
 import 'package:fl_chart/fl_chart.dart';
-
-final _service = CalculatorService();
 
 class SIPScreen extends StatefulWidget {
   const SIPScreen({super.key});
@@ -24,8 +23,6 @@ class SIPScreen extends StatefulWidget {
 }
 
 class _SIPScreenState extends State<SIPScreen> {
-  final _formKey = GlobalKey<FormState>();
-
   double _monthlyInvestment = 5000;
   double _expectedReturn = 12;
   double _timePeriod = 2;
@@ -61,21 +58,22 @@ class _SIPScreenState extends State<SIPScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculateSip(
+      _result = CalculatorService.instance.calculateSip(
         monthlyInvestment: _monthlyInvestment,
         rateOfReturn: _expectedReturn,
         years: _timePeriod.round(),
         stepUp: _stepUp,
       );
       if (_showInflationAdjusted) {
-        _inflAdjusted = _service.calculateInflationAdjusted(
+        _inflAdjusted = CalculatorService.instance.calculateInflationAdjusted(
           corpus: _result.totalValue,
+          totalInvested: _result.totalInvestment,
           years: _timePeriod.round(),
           inflationRate: _inflationRate,
         );
       }
       if (_showSensitivity) {
-        _sensitivity = _service.calculateSensitivity(
+        _sensitivity = CalculatorService.instance.calculateSensitivity(
           monthlyInvestment: _monthlyInvestment,
           rateOfReturn: _expectedReturn,
           years: _timePeriod.round(),
@@ -83,7 +81,7 @@ class _SIPScreenState extends State<SIPScreen> {
         );
       }
       if (_showInsights) {
-        _insights = _service.generateInsights(
+        _insights = CalculatorService.instance.generateInsights(
           monthlyInvestment: _monthlyInvestment,
           rateOfReturn: _expectedReturn,
           years: _timePeriod.round(),
@@ -103,7 +101,7 @@ class _SIPScreenState extends State<SIPScreen> {
 
   void _calculateGoal() {
     double target = double.tryParse(_goalCtrl.text) ?? 10000000;
-    _goalSip = _service.findGoalSip(
+    _goalSip = CalculatorService.instance.findGoalSip(
       targetCorpus: target,
       rateOfReturn: _expectedReturn,
       years: _timePeriod.round(),
@@ -159,9 +157,7 @@ class _SIPScreenState extends State<SIPScreen> {
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
+      body: ListView(
           children: [
             InputRow(
               label: 'Monthly Investment',
@@ -370,9 +366,9 @@ class _SIPScreenState extends State<SIPScreen> {
             ),
             const SizedBox(height: 16),
             // Results
-            _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-            _resultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
-            _resultRow('Total Value', _result.totalValue, null),
+            buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600, format: _format),
+            buildResultRow('Total Returns', _result.totalReturns, Colors.green.shade600, format: _format),
+            buildResultRow('Total Value', _result.totalValue, null, format: _format),
             if (_result.totalValue > 0)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -389,8 +385,7 @@ class _SIPScreenState extends State<SIPScreen> {
                   children: [
                     const Text('Inflation Rate', style: TextStyle(fontSize: 13)),
                     const Spacer(),
-                    SizedBox(
-                      width: 200,
+                    Expanded(
                       child: Slider(
                         value: _inflationRate,
                         min: 2, max: 12,
@@ -407,7 +402,7 @@ class _SIPScreenState extends State<SIPScreen> {
                 ),
               ),
               if (_inflAdjusted != null)
-                _resultRow('Real Value (${_inflationRate.toStringAsFixed(1)}% inflation)', _inflAdjusted!.totalValue, Colors.red, subtitle: 'What your corpus is worth today'),
+                buildResultRow('Real Value (${_inflationRate.toStringAsFixed(1)}% inflation)', _inflAdjusted!.totalValue, Colors.red, subtitle: 'What your corpus is worth today', format: _format),
             ],
             // SIP Delay Cost
             _buildDelayCost(),
@@ -488,7 +483,6 @@ class _SIPScreenState extends State<SIPScreen> {
             const AdBanner(),
             const SizedBox(height: 20),
           ],
-        ),
       ),
     );
   }
@@ -503,31 +497,9 @@ class _SIPScreenState extends State<SIPScreen> {
     );
   }
 
-  Widget _resultRow(String label, double value, Color? color, {String? subtitle}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 13)),
-          Text(
-            _format.format(value),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          if (subtitle != null)
-            Text(subtitle, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildDelayCost() {
     if (_timePeriod < 2) return const SizedBox.shrink();
-    CalcResult delayCost = _service.calculateSipDelay(
+    CalcResult delayCost = CalculatorService.instance.calculateSipDelay(
       monthlyInvestment: _monthlyInvestment,
       rateOfReturn: _expectedReturn,
       actualYears: _timePeriod.round(),
@@ -574,7 +546,7 @@ class _SIPScreenState extends State<SIPScreen> {
   }
 
   Widget _buildSwpBridge(BuildContext context) {
-    double monthlySwp = _service.calculateSwpFromCorpus(
+    double monthlySwp = CalculatorService.instance.calculateSwpFromCorpus(
       corpus: _result.totalValue,
       rateOfReturn: _expectedReturn,
       years: _timePeriod.round(),
@@ -629,7 +601,7 @@ class _SIPScreenState extends State<SIPScreen> {
             showTitles: true,
             reservedSize: 30,
             getTitlesWidget: (value, meta) {
-              final style = TextStyle(color: kSecondaryDartColor, fontWeight: FontWeight.bold);
+              final style = TextStyle(color: kSecondaryDarkColor, fontWeight: FontWeight.bold);
               String text;
               switch (value.toInt()) {
                 case 0: text = 'Investment'; break;

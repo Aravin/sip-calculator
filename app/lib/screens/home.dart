@@ -12,7 +12,7 @@ import 'package:sip_calculator/shared/drawer.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 
 class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

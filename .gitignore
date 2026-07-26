@@ -27,6 +27,7 @@ build/
 
 # Android
 *.apk
+**/key.properties
 *.aab
 *.ap_
 *.dex

@@ -2,6 +2,8 @@ import 'dart:math';
 import '../models/calculator_models.dart';
 
 class CalculatorService {
+  static final CalculatorService instance = CalculatorService._();
+  CalculatorService._();
   CalcResult calculateSip({
     required double monthlyInvestment,
     required double rateOfReturn,
@@ -106,13 +108,14 @@ class CalculatorService {
 
   CalcResult calculateInflationAdjusted({
     required double corpus,
+    required double totalInvested,
     required int years,
     double inflationRate = 6.5,
   }) {
     double realValue = corpus / pow(1 + inflationRate / 100, years);
     return CalcResult(
-      totalInvestment: corpus,
-      totalReturns: 0,
+      totalInvestment: totalInvested,
+      totalReturns: max(0, realValue - totalInvested),
       totalValue: realValue,
     );
   }
@@ -270,14 +273,45 @@ class CalculatorService {
     required double rateOfReturn,
     required int years,
   }) {
-    if (years < 1) {
-      return CalcResult(totalInvestment: totalInvestment, totalReturns: 0, totalValue: 0);
+    if (years < 1 || totalInvestment <= 0) {
+      return CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
     }
-    double monthlyAmount = totalInvestment / (years * 12);
+    double r = rateOfReturn / 100;
+    int months = years * 12;
+    double monthlyTransfer = totalInvestment / months;
+
+    double totalValue = 0;
+    double cumulativeInvested = 0;
+    List<YearData> breakdown = [];
+
+    for (int y = 1; y <= years; y++) {
+      double startPeriod = totalValue;
+      double yearInvested = 0;
+
+      for (int m = 1; m <= 12; m++) {
+        int globalMonth = (y - 1) * 12 + m;
+        double monthsLeft = (months - globalMonth).toDouble();
+        double yearsToGrow = monthsLeft / 12.0;
+        totalValue += monthlyTransfer * pow(1 + r, yearsToGrow);
+        yearInvested += monthlyTransfer;
+      }
+
+      cumulativeInvested += yearInvested;
+      breakdown.add(YearData(
+        year: y,
+        investedThisYear: yearInvested,
+        totalInvested: cumulativeInvested,
+        interestThisYear: totalValue - startPeriod - yearInvested,
+        totalInterest: totalValue - cumulativeInvested,
+        corpus: totalValue,
+      ));
+    }
+
     return CalcResult(
       totalInvestment: totalInvestment,
-      totalReturns: 0,
-      totalValue: monthlyAmount,
+      totalReturns: totalValue - totalInvestment,
+      totalValue: totalValue,
+      yearlyBreakdown: breakdown,
     );
   }
 
@@ -351,19 +385,17 @@ class CalculatorService {
     double balance = principal;
     double cumulativeInterest = 0;
     for (int y = 1; y <= years; y++) {
-      double yearPrincipal = 0;
       double yearInterest = 0;
       for (int m = 1; m <= 12; m++) {
         double interest = balance * r;
         double principalPaid = emi - interest;
         balance -= principalPaid;
-        yearPrincipal += principalPaid;
         yearInterest += interest;
       }
       cumulativeInterest += yearInterest;
       breakdown.add(YearData(
         year: y,
-        investedThisYear: yearPrincipal * 12,
+        investedThisYear: emi * 12,
         totalInvested: emi * y * 12,
         interestThisYear: yearInterest,
         totalInterest: cumulativeInterest,

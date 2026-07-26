@@ -17,14 +17,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
-  auto_size_text_pk:
-    dependency: transitive
-    description:
-      name: auto_size_text_pk
-      sha256: ced55de5336fa7f438c1f5a9aa234e25d7a120c1d40d376a7cdc2af28cdb6995
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -177,13 +169,13 @@ packages:
     source: hosted
     version: "2.0.5"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
-      sha256: "1ca20c894b1717686a2319b8548763d812bc0aabdac580420a44c5178c57a867"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.20.3"
+    version: "0.19.0"
   jni:
     dependency: transitive
     description:
@@ -581,14 +573,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  velocity_x:
-    dependency: "direct main"
-    description:
-      name: velocity_x
-      sha256: "45c1584d00c625d15132d1ec88b71427b907980f8ba7445a8d9052931d573c15"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.1"
   vm_service:
     dependency: transitive
     description:
@@ -597,14 +581,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.2.0"
-  vxstate:
-    dependency: transitive
-    description:
-      name: vxstate
-      sha256: ed5a880018191c5cfed8528bd77f2a942b04847168ca12636a306c323d311086
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.0"
   web:
     dependency: transitive
     description:

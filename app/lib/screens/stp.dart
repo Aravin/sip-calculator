@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
-
-final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
-final _service = CalculatorService();
 
 class STPScreen extends StatefulWidget {
   const STPScreen({super.key});
@@ -27,6 +24,7 @@ class _STPScreenState extends State<STPScreen> {
   final _yearsCtrl = TextEditingController(text: '5');
 
   CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  double _monthlyTransfer = 0;
 
   @override
   void initState() {
@@ -36,18 +34,20 @@ class _STPScreenState extends State<STPScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculateStp(
+      _result = CalculatorService.instance.calculateStp(
         totalInvestment: _investment,
         rateOfReturn: _return,
         years: _years.round(),
       );
+      int months = _years.round() * 12;
+      _monthlyTransfer = months > 0 ? _investment / months : 0;
     });
   }
 
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'STP - ${_curFormat.format(_investment)}',
+      name: 'STP - ${curFormat.format(_investment)}',
       type: 'STP',
       params: '₹${_investment.toInt()}, ${_return}%, ${_years.toInt()}y',
       result: _result,
@@ -125,13 +125,18 @@ class _STPScreenState extends State<STPScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          _resultRow('Monthly STP Amount', _result.totalValue, Colors.green.shade600),
+          buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Text('Monthly Transfer: ${curFormat.format(_monthlyTransfer)}/month', style: const TextStyle(fontSize: 13)),
+          ),
+          buildResultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
+          buildResultRow('Maturity Value', _result.totalValue, null),
           if (_result.totalValue > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}/month',
+                'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
                 style: const TextStyle(fontSize: 11, fontStyle: FontStyle.italic),
               ),
             ),
@@ -142,19 +147,4 @@ class _STPScreenState extends State<STPScreen> {
     );
   }
 
-  Widget _resultRow(String label, double value, Color? color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 13)),
-          Text(
-            label.contains('STP') ? '${_curFormat.format(value)}/month' : _curFormat.format(value),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
-          ),
-        ],
-      ),
-    );
-  }
 }

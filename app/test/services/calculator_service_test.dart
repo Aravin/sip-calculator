@@ -4,7 +4,7 @@ import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/calculator_service.dart';
 
 void main() {
-  final service = CalculatorService();
+  final service = CalculatorService.instance;
 
   group('SIP', () {
     test('basic SIP calculation matches formula', () {
@@ -190,7 +190,7 @@ void main() {
   group('Inflation Adjusted', () {
     test('real value is less than nominal corpus', () {
       final result = service.calculateInflationAdjusted(
-        corpus: 10000000, years: 10);
+        corpus: 10000000, years: 10, totalInvested: 10000000);
 
       expect(result.totalValue, lessThan(10000000));
       expect(result.totalValue, greaterThan(0));
@@ -198,17 +198,17 @@ void main() {
 
     test('higher inflation = lower real value', () {
       final lowInfl = service.calculateInflationAdjusted(
-        corpus: 10000000, years: 10, inflationRate: 4);
+        corpus: 10000000, years: 10, inflationRate: 4, totalInvested: 10000000);
 
       final highInfl = service.calculateInflationAdjusted(
-        corpus: 10000000, years: 10, inflationRate: 10);
+        corpus: 10000000, years: 10, inflationRate: 10, totalInvested: 10000000);
 
       expect(highInfl.totalValue, lessThan(lowInfl.totalValue));
     });
 
     test('zero years means no inflation impact', () {
       final result = service.calculateInflationAdjusted(
-        corpus: 100000, years: 0);
+        corpus: 100000, years: 0, totalInvested: 100000);
 
       expect(result.totalValue, closeTo(100000, 0.5));
     });
@@ -305,7 +305,7 @@ void main() {
   });
 
   group('STP', () {
-    test('STP monthly amount is total / (years * 12)', () {
+    test('STP returns exceed total investment', () {
       final result = service.calculateStp(
         totalInvestment: 120000,
         rateOfReturn: 12,
@@ -313,17 +313,18 @@ void main() {
       );
 
       expect(result.totalInvestment, closeTo(120000, 0.5));
-      expect(result.totalValue, closeTo(10000, 0.5)); // 120000 / 12
+      expect(result.totalValue, greaterThan(120000));
+      expect(result.totalReturns, greaterThan(0));
     });
 
-    test('STP longer tenure = smaller monthly amount', () {
+    test('STP longer tenure = larger corpus', () {
       final short = service.calculateStp(
         totalInvestment: 120000, rateOfReturn: 12, years: 1);
 
       final long = service.calculateStp(
         totalInvestment: 120000, rateOfReturn: 12, years: 10);
 
-      expect(long.totalValue, lessThan(short.totalValue));
+      expect(long.totalValue, greaterThan(short.totalValue));
     });
   });
 

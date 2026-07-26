@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
-
-final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
 
 class SavingsScreen extends StatefulWidget {
   const SavingsScreen({super.key});
@@ -73,7 +71,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
                                     _info('Total', calc.result.totalValue),
                                     const SizedBox(height: 8),
                                     if (calc.result.yearlyBreakdown.isNotEmpty)
-                                      YearTable(data: calc.result.yearlyBreakdown, format: _curFormat),
+                                      YearTable(data: calc.result.yearlyBreakdown, format: curFormat),
                                   ],
                                 ),
                               ),
@@ -94,7 +92,7 @@ class _SavingsScreenState extends State<SavingsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(fontSize: 13)),
-          Text(_curFormat.format(value), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          Text(curFormat.format(value), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
         ],
       ),
     );

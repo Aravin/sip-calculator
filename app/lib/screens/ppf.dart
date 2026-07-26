@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
-
-final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
-final _service = CalculatorService();
 
 class PPFScreen extends StatefulWidget {
   const PPFScreen({super.key});
@@ -38,7 +35,7 @@ class _PPFScreenState extends State<PPFScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculatePpf(
+      _result = CalculatorService.instance.calculatePpf(
         yearlyInvestment: _yearlyInvestment,
         rateOfReturn: _return,
         years: _years.round(),
@@ -49,7 +46,7 @@ class _PPFScreenState extends State<PPFScreen> {
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'PPF - ${_curFormat.format(_yearlyInvestment)}/yr',
+      name: 'PPF - ${curFormat.format(_yearlyInvestment)}/yr',
       type: 'PPF',
       params: '₹${_yearlyInvestment.toInt()}/yr, ${_return}%, ${_years.toInt()}y',
       result: _result,
@@ -128,9 +125,9 @@ class _PPFScreenState extends State<PPFScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          _resultRow('Total Interest', _result.totalReturns, Colors.green.shade600),
-          _resultRow('Maturity Amount', _result.totalValue, null),
+          buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
+          buildResultRow('Total Interest', _result.totalReturns, Colors.green.shade600),
+          buildResultRow('Maturity Amount', _result.totalValue, null),
           if (_result.totalValue > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -149,7 +146,7 @@ class _PPFScreenState extends State<PPFScreen> {
             ),
           ),
           if (_showYearTable)
-            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const AdBanner(),
           const SizedBox(height: 20),
         ],
@@ -157,19 +154,4 @@ class _PPFScreenState extends State<PPFScreen> {
     );
   }
 
-  Widget _resultRow(String label, double value, Color? color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 13)),
-          Text(
-            _curFormat.format(value),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
-          ),
-        ],
-      ),
-    );
-  }
 }

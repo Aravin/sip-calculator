@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sip_calculator/models/calculator_models.dart';
 import 'package:sip_calculator/services/calculator_service.dart';
 import 'package:sip_calculator/services/export_service.dart';
 import 'package:sip_calculator/services/persistence_service.dart';
+import 'package:sip_calculator/shared/result_helpers.dart';
 import 'package:sip_calculator/widgets/ad_banner.dart';
 import 'package:sip_calculator/widgets/input_row.dart';
 import 'package:sip_calculator/widgets/year_table.dart';
-
-final _curFormat = NumberFormat.simpleCurrency(locale: 'en_IN');
-final _service = CalculatorService();
 
 class LumpSumScreen extends StatefulWidget {
   const LumpSumScreen({super.key});
@@ -40,13 +37,13 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
 
   void _recalculate() {
     setState(() {
-      _result = _service.calculateLumpsum(
+      _result = CalculatorService.instance.calculateLumpsum(
         investment: _investment,
         rateOfReturn: _return,
         years: _years.round(),
       );
       if (_showPostTax) {
-        _postTax = _service.calculateLtcgTax(result: _result);
+        _postTax = CalculatorService.instance.calculateLtcgTax(result: _result);
       }
     });
   }
@@ -54,7 +51,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'Lumpsum - ${_curFormat.format(_investment)}',
+      name: 'Lumpsum - ${curFormat.format(_investment)}',
       type: 'Lumpsum',
       params: '₹${_investment.toInt()}, ${_return}%, ${_years.toInt()}y',
       result: _result,
@@ -132,9 +129,9 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _resultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
-          _resultRow('Future Value', _result.totalValue, null),
-          _resultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
+          buildResultRow('Total Investment', _result.totalInvestment, Colors.purple.shade600),
+          buildResultRow('Future Value', _result.totalValue, null),
+          buildResultRow('Total Returns', _result.totalReturns, Colors.green.shade600),
           if (_result.totalValue > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -156,8 +153,8 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
             ),
           ),
           if (_showPostTax && _postTax != null) ...[
-            _resultRow('Post-Tax Value', _postTax!.totalValue, Colors.orange),
-            _resultRow('Tax Paid', _result.totalReturns - _postTax!.totalReturns, Colors.red),
+            buildResultRow('Post-Tax Value', _postTax!.totalValue, Colors.orange),
+            buildResultRow('Tax Paid', _result.totalReturns - _postTax!.totalReturns, Colors.red),
           ],
           const SizedBox(height: 8),
           Padding(
@@ -169,7 +166,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
             ),
           ),
           if (_showYearTable)
-            YearTable(data: _result.yearlyBreakdown, format: _curFormat),
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const AdBanner(),
           const SizedBox(height: 20),
         ],
@@ -177,19 +174,4 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
     );
   }
 
-  Widget _resultRow(String label, double value, Color? color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 13)),
-          Text(
-            _curFormat.format(value),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
-          ),
-        ],
-      ),
-    );
-  }
 }
