@@ -101,7 +101,8 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       labelStyle: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
-      secondaryLabelStyle: TextStyle(fontSize: 12, color: colorScheme.onSurface),
+      secondaryLabelStyle:
+          TextStyle(fontSize: 12, color: colorScheme.onSurface),
       backgroundColor: colorScheme.surfaceContainerHigh,
       selectedColor: colorScheme.secondaryContainer,
       side: BorderSide.none,
@@ -127,7 +128,8 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
     ),
     expansionTileTheme: ExpansionTileThemeData(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      collapsedShape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       iconColor: colorScheme.primary,
       collapsedIconColor: colorScheme.onSurfaceVariant,
       textColor: colorScheme.onSurface,
@@ -139,7 +141,8 @@ ThemeData _buildTheme(ColorScheme colorScheme) {
         return colorScheme.onSurfaceVariant;
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return colorScheme.primaryContainer;
+        if (states.contains(WidgetState.selected))
+          return colorScheme.primaryContainer;
         return colorScheme.surfaceContainerHighest;
       }),
     ),

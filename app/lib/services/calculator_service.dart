@@ -4,6 +4,14 @@ import '../models/calculator_models.dart';
 class CalculatorService {
   static final CalculatorService instance = CalculatorService._();
   CalculatorService._();
+
+  /// Calculates the future value of a Systematic Investment Plan (SIP).
+  ///
+  /// [monthlyInvestment] is the amount invested each month.
+  /// [rateOfReturn] is the expected annual return in percent.
+  /// [years] is the investment tenure in years.
+  /// [stepUp] is the annual percentage increase in the monthly amount (0-25).
+  /// Returns a [CalcResult] with total investment, returns, and yearly breakdown.
   CalcResult calculateSip({
     required double monthlyInvestment,
     required double rateOfReturn,
@@ -18,7 +26,8 @@ class CalculatorService {
     for (int y = 1; y <= years; y++) {
       double yearlyInvestment = 0;
       final double startCorpus = corpus;
-      final double currentMonthly = monthlyInvestment * pow(1 + stepUp / 100, y - 1);
+      final double currentMonthly =
+          monthlyInvestment * pow(1 + stepUp / 100, y - 1);
 
       for (int m = 1; m <= 12; m++) {
         totalInvestment += currentMonthly;
@@ -45,6 +54,8 @@ class CalculatorService {
     );
   }
 
+  /// Uses binary search (100 iterations) to find the monthly SIP amount
+  /// required to reach [targetCorpus] at [rateOfReturn] over [years].
   double findGoalSip({
     required double targetCorpus,
     required double rateOfReturn,
@@ -61,7 +72,8 @@ class CalculatorService {
         ? ((pow(1 + stepUp / 100, years) - 1) / (stepUp / 100) / years)
         : 1.0;
     double low = 0;
-    double high = targetCorpus / (approxFactor * ((pow(1 + r, months) - 1) / r) * (1 + r) / months);
+    double high = targetCorpus /
+        (approxFactor * ((pow(1 + r, months) - 1) / r) * (1 + r) / months);
     for (int i = 0; i < 100; i++) {
       final double mid = (low + high) / 2;
       final double corpus = calculateSip(
@@ -79,6 +91,9 @@ class CalculatorService {
     return (low + high) / 2;
   }
 
+  /// Calculates the opportunity cost of delaying an SIP by [delayYears].
+  /// Returns the difference in corpus between investing for [actualYears]
+  /// vs investing for (actualYears - delayYears).
   CalcResult calculateSipDelay({
     required double monthlyInvestment,
     required double rateOfReturn,
@@ -106,6 +121,8 @@ class CalculatorService {
     );
   }
 
+  /// Adjusts a future [corpus] to its present value using the given [inflationRate].
+  /// Uses the formula: realValue = corpus / (1 + inflationRate/100)^years.
   CalcResult calculateInflationAdjusted({
     required double corpus,
     required double totalInvested,
@@ -120,6 +137,8 @@ class CalculatorService {
     );
   }
 
+  /// Generates best/expected/worst scenarios by varying the rate of return
+  /// by ±[range] percentage points around the expected [rateOfReturn].
   CalcResult calculateSensitivity({
     required double monthlyInvestment,
     required double rateOfReturn,
@@ -179,6 +198,8 @@ class CalculatorService {
     );
   }
 
+  /// Calculates the future value of a one-time lumpsum investment.
+  /// Formula: FV = investment * (1 + rate/100)^years.
   CalcResult calculateLumpsum({
     required double investment,
     required double rateOfReturn,
@@ -210,6 +231,9 @@ class CalculatorService {
     );
   }
 
+  /// Calculates a Systematic Withdrawal Plan (SWP) — how much corpus remains
+  /// after withdrawing [monthlyWithdraw] each month from [totalInvestment]
+  /// growing at [rateOfReturn] over [years].
   CalcResult calculateSwp({
     required double totalInvestment,
     required double monthlyWithdraw,
@@ -218,7 +242,9 @@ class CalculatorService {
   }) {
     if (years <= 0) {
       return CalcResult(
-        totalInvestment: totalInvestment, totalReturns: 0, totalValue: 0);
+          totalInvestment: totalInvestment,
+          totalReturns: 0,
+          totalValue: totalInvestment);
     }
     final double r = rateOfReturn / 100;
     if (1 + r <= 0) {
@@ -226,10 +252,16 @@ class CalculatorService {
         totalInvestment: totalInvestment,
         totalReturns: 0,
         totalValue: totalInvestment,
-        yearlyBreakdown: List.generate(years, (y) => YearData(
-          year: y + 1, investedThisYear: 0, totalInvested: totalInvestment,
-          interestThisYear: 0, totalInterest: 0, corpus: 0,
-        )),
+        yearlyBreakdown: List.generate(
+            years,
+            (y) => YearData(
+                  year: y + 1,
+                  investedThisYear: 0,
+                  totalInvested: totalInvestment,
+                  interestThisYear: 0,
+                  totalInterest: 0,
+                  corpus: 0,
+                )),
       );
     }
     final double monthlyR = pow(1 + r, 1 / 12) - 1;
@@ -268,6 +300,8 @@ class CalculatorService {
     );
   }
 
+  /// Calculates a Systematic Transfer Plan (STP) — transfers [totalInvestment]
+  /// from debt to equity over [years] with monthly transfers, growing at [rateOfReturn].
   CalcResult calculateStp({
     required double totalInvestment,
     required double rateOfReturn,
@@ -279,7 +313,7 @@ class CalculatorService {
     final double r = rateOfReturn / 100;
     final int months = years * 12;
     final double monthlyTransfer = totalInvestment / months;
-    
+
     // Effective monthly rate for annual compounding
     final double monthlyR = pow(1 + r, 1 / 12) - 1;
 
@@ -290,7 +324,7 @@ class CalculatorService {
     for (int y = 1; y <= years; y++) {
       final double startCorpus = corpus;
       final double yearInvested = monthlyTransfer * 12;
-      
+
       for (int m = 1; m <= 12; m++) {
         corpus = (corpus + monthlyTransfer) * (1 + monthlyR);
       }
@@ -316,6 +350,8 @@ class CalculatorService {
     );
   }
 
+  /// Calculates Public Provident Fund (PPF) maturity — yearly contributions
+  /// compounded annually at [rateOfReturn] for [years].
   CalcResult calculatePpf({
     required double yearlyInvestment,
     required double rateOfReturn,
@@ -348,6 +384,8 @@ class CalculatorService {
     );
   }
 
+  /// Calculates equated monthly installment (EMI) for a loan of [principal]
+  /// at [annualRate] over [years], with a full amortization schedule.
   CalcResult calculateEmi({
     required double principal,
     required double annualRate,
@@ -378,7 +416,8 @@ class CalculatorService {
         }),
       );
     }
-    final double emi = principal * r * pow(1 + r, months) / (pow(1 + r, months) - 1);
+    final double emi =
+        principal * r * pow(1 + r, months) / (pow(1 + r, months) - 1);
     final double totalPayment = emi * months;
     final double totalInterest = totalPayment - principal;
 
@@ -412,6 +451,8 @@ class CalculatorService {
     );
   }
 
+  /// Combines a lumpsum investment with a monthly SIP, summing their
+  /// individual yearly breakdowns into a single projection.
   CalcResult calculateCombined({
     required double lumpsumInvestment,
     required double monthlySip,
@@ -432,7 +473,8 @@ class CalculatorService {
     );
 
     final List<YearData> combined = [];
-    final int minYears = min(lumpsum.yearlyBreakdown.length, sip.yearlyBreakdown.length);
+    final int minYears =
+        min(lumpsum.yearlyBreakdown.length, sip.yearlyBreakdown.length);
     for (int y = 0; y < minYears; y++) {
       final YearData l = lumpsum.yearlyBreakdown[y];
       final YearData s = sip.yearlyBreakdown[y];
@@ -454,6 +496,8 @@ class CalculatorService {
     );
   }
 
+  /// Calculates the monthly SWP withdrawal amount that can be sustained
+  /// from a [corpus] growing at [rateOfReturn] over [years].
   double calculateSwpFromCorpus({
     required double corpus,
     required double rateOfReturn,
@@ -466,10 +510,15 @@ class CalculatorService {
     final int months = years * 12;
     if (months == 0) return 0;
     if (monthlyR == 0) return corpus / months;
-    return corpus * monthlyR * pow(1 + monthlyR, months) /
+    return corpus *
+        monthlyR *
+        pow(1 + monthlyR, months) /
         (pow(1 + monthlyR, months) - 1);
   }
 
+  /// Applies long-term capital gains (LTCG) tax to a [CalcResult].
+  /// Gains below [exemption] (default ₹1.25L) are tax-free; gains above are
+  /// taxed at [taxRate] (default 12.5%).
   CalcResult calculateLtcgTax({
     required CalcResult result,
     double taxRate = 0.125,
@@ -487,6 +536,9 @@ class CalculatorService {
     );
   }
 
+  /// Calculates Fixed Deposit (FD) maturity value.
+  /// [compounding] can be 'monthly', 'quarterly', 'half_yearly', or 'yearly'.
+  /// [payout] can be 'cumulative' (reinvested) or 'quarterly' (interest paid out).
   CalcResult calculateFd({
     required double principal,
     required double rateOfReturn,
@@ -562,6 +614,8 @@ class CalculatorService {
     );
   }
 
+  /// Calculates Recurring Deposit (RD) maturity — monthly deposits growing
+  /// with quarterly compounding at [rateOfReturn] for [years].
   CalcResult calculateRd({
     required double monthlyDeposit,
     required double rateOfReturn,
@@ -570,7 +624,7 @@ class CalculatorService {
     final double r = rateOfReturn / 100;
     final int totalMonths = years * 12;
     final double totalInvestment = monthlyDeposit * totalMonths;
-    
+
     // Effective monthly rate for quarterly compounding
     final double monthlyR = pow(1 + r / 4, 1 / 3) - 1;
 
@@ -607,6 +661,8 @@ class CalculatorService {
     );
   }
 
+  /// General compound interest calculator. [frequency] can be 'daily',
+  /// 'monthly', 'quarterly', 'half_yearly', or 'yearly'.
   CalcResult calculateCompoundInterest({
     required double principal,
     required double rateOfReturn,
@@ -659,6 +715,9 @@ class CalculatorService {
     );
   }
 
+  /// Compares investing a lumpsum amount vs investing the same amount as a
+  /// monthly SIP over the same period. Returns a [ComparisonResult] with
+  /// both corpuses and a winner determination.
   ComparisonResult compareSipVsLumpsum({
     required double monthlySip,
     required double lumpsumInvestment,
@@ -690,6 +749,9 @@ class CalculatorService {
     );
   }
 
+  /// Computes income tax under Old and New regimes for FY 2024-25.
+  /// [deduction80C] is capped at ₹1.5L, [deduction80D] at ₹25K.
+  /// Standard deduction of ₹50K (Old) / ₹75K (New) is auto-applied.
   TaxResult calculateTax({
     required double grossIncome,
     double deduction80C = 0,
@@ -770,6 +832,8 @@ class CalculatorService {
     );
   }
 
+  /// Generates programmatic AI insights (Step-Up Impact, Power of Compounding,
+  /// Cost of Delay) based on the SIP parameters.
   List<AiInsight> generateInsights({
     required double monthlyInvestment,
     required double rateOfReturn,
@@ -810,7 +874,9 @@ class CalculatorService {
         stepUp: stepUp,
       ).totalValue;
       final double fullTime = base.totalValue;
-      final String secondHalf = (fullTime - halfTime).isFinite ? (fullTime - halfTime).toStringAsFixed(0) : '0';
+      final String secondHalf = (fullTime - halfTime).isFinite
+          ? (fullTime - halfTime).toStringAsFixed(0)
+          : '0';
       String pct = '0';
       if (fullTime > 0) {
         final double pctVal = (fullTime - halfTime) / fullTime * 100;
@@ -831,7 +897,8 @@ class CalculatorService {
       stepUp: stepUp,
     );
     final double delayCost = base.totalValue - delayed.totalValue;
-    final String delayText = delayCost.isFinite ? delayCost.toStringAsFixed(0) : '0';
+    final String delayText =
+        delayCost.isFinite ? delayCost.toStringAsFixed(0) : '0';
     insights.add(AiInsight(
       title: 'Cost of Delay',
       description:

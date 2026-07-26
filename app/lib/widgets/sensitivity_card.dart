@@ -28,7 +28,8 @@ class SensitivityCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.analytics_outlined, size: 20, color: colorScheme.primary),
+                Icon(Icons.analytics_outlined,
+                    size: 20, color: colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   'Scenario Analysis (±2%)',
@@ -42,17 +43,25 @@ class SensitivityCard extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(child: _buildScenario(context, 'Pessimistic', worstCorpus, colorScheme.error)),
+                Expanded(
+                    child: _buildScenario(context, 'Pessimistic', worstCorpus,
+                        colorScheme.error)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(width: 1, height: 48, color: colorScheme.outlineVariant),
+                  child: Container(
+                      width: 1, height: 48, color: colorScheme.outlineVariant),
                 ),
-                Expanded(child: _buildScenario(context, 'Expected', expectedCorpus, colorScheme.primary)),
+                Expanded(
+                    child: _buildScenario(context, 'Expected', expectedCorpus,
+                        colorScheme.primary)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(width: 1, height: 48, color: colorScheme.outlineVariant),
+                  child: Container(
+                      width: 1, height: 48, color: colorScheme.outlineVariant),
                 ),
-                Expanded(child: _buildScenario(context, 'Optimistic', bestCorpus, colorScheme.tertiary)),
+                Expanded(
+                    child: _buildScenario(context, 'Optimistic', bestCorpus,
+                        colorScheme.tertiary)),
               ],
             ),
           ],
@@ -61,7 +70,8 @@ class SensitivityCard extends StatelessWidget {
     );
   }
 
-  Widget _buildScenario(BuildContext context, String label, double value, Color color) {
+  Widget _buildScenario(
+      BuildContext context, String label, double value, Color color) {
     return Column(
       children: [
         Container(

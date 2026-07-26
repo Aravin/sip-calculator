@@ -113,20 +113,19 @@ class _SavingsScreenState extends State<SavingsScreen> {
                             ),
                             children: [
                               Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    16, 0, 16, 16),
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 0, 16, 16),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _info(
-                                        'Investment', calc.result.totalInvestment),
+                                    _info('Investment',
+                                        calc.result.totalInvestment),
                                     const Divider(height: 8),
                                     _info('Returns', calc.result.totalReturns),
                                     const Divider(height: 8),
                                     _info('Total', calc.result.totalValue),
                                     const SizedBox(height: 8),
-                                    if (calc.result.yearlyBreakdown
-                                        .isNotEmpty)
+                                    if (calc.result.yearlyBreakdown.isNotEmpty)
                                       YearTable(
                                         data: calc.result.yearlyBreakdown,
                                         format: curFormat,

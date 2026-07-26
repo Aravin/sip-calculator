@@ -27,7 +27,7 @@ class CustomAppDrawer extends StatefulWidget {
 class _CustomAppDrawerState extends State<CustomAppDrawer> {
   void _shareApp() {
     Share.share('https://play.google.com/store/apps/details?id=io.epix.sip',
-        subject: 'SIP & Lumpsum Calculator - Financial Planning Tool');
+        subject: 'Financial Calculator - Investment & Tax Planning Tool');
   }
 
   void _navigate(Widget screen) {
@@ -52,16 +52,17 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  'SIP Calculator',
+                  'Financial Calculator',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: colorScheme.onPrimaryContainer,
                       ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Financial Planning Tools',
+                  'All-in-One Finance Planner',
                   style: TextStyle(
-                    color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                    color:
+                        colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
                     fontSize: 13,
                   ),
                 ),
@@ -70,37 +71,47 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
           ),
           _item(Icons.trending_up, 'SIP Calculator',
               'Systematic Investment Plan', () => _navigate(const SIPScreen())),
-          _item(Icons.monetization_on, 'Lumpsum Calculator',
-              'One-Time Investment Plan', () => _navigate(const LumpSumScreen())),
+          _item(
+              Icons.monetization_on,
+              'Lumpsum Calculator',
+              'One-Time Investment Plan',
+              () => _navigate(const LumpSumScreen())),
           _item(Icons.arrow_downward, 'SWP Calculator',
               'Systematic Withdraw Plan', () => _navigate(const SWPScreen())),
-          _item(Icons.swap_horiz, 'STP Calculator',
-              'Systematic Transfer Plan', () => _navigate(const STPScreen())),
-          _item(Icons.savings, 'PPF Calculator',
-              'Public Provident Fund', () => _navigate(const PPFScreen())),
-          _item(Icons.home, 'EMI Calculator',
-              'Loan EMI & Amortization', () => _navigate(const EMIScreen())),
-          _item(Icons.account_balance, 'FD Calculator',
-              'Fixed Deposit', () => _navigate(const FDScreen())),
-          _item(Icons.repeat, 'RD Calculator',
-              'Recurring Deposit', () => _navigate(const RDScreen())),
-          _item(Icons.bubble_chart, 'Compound Interest',
-              'Compound Interest Calculator', () => _navigate(const CompoundInterestScreen())),
-          _item(Icons.compare_arrows, 'SIP vs Lumpsum',
-              'Compare Investment Strategies', () => _navigate(const SipVsLumpsumScreen())),
-          _item(Icons.flag, 'Goal Planner',
-              'Track Financial Goals', () => _navigate(const GoalPlannerScreen())),
-          _item(Icons.receipt_long, 'Tax Calculator',
-              'Old vs New Regime', () => _navigate(const TaxCalculatorScreen())),
-          _item(Icons.merge, 'SIP + Lumpsum',
-              'Combined Investment Planner', () => _navigate(const CombinedScreen())),
-          _item(Icons.bookmark, 'Saved Plans',
-              'Bookmarked Calculations', () => _navigate(const SavingsScreen())),
+          _item(Icons.swap_horiz, 'STP Calculator', 'Systematic Transfer Plan',
+              () => _navigate(const STPScreen())),
+          _item(Icons.savings, 'PPF Calculator', 'Public Provident Fund',
+              () => _navigate(const PPFScreen())),
+          _item(Icons.home, 'EMI Calculator', 'Loan EMI & Amortization',
+              () => _navigate(const EMIScreen())),
+          _item(Icons.account_balance, 'FD Calculator', 'Fixed Deposit',
+              () => _navigate(const FDScreen())),
+          _item(Icons.repeat, 'RD Calculator', 'Recurring Deposit',
+              () => _navigate(const RDScreen())),
+          _item(
+              Icons.bubble_chart,
+              'Compound Interest',
+              'Compound Interest Calculator',
+              () => _navigate(const CompoundInterestScreen())),
+          _item(
+              Icons.compare_arrows,
+              'SIP vs Lumpsum',
+              'Compare Investment Strategies',
+              () => _navigate(const SipVsLumpsumScreen())),
+          _item(Icons.flag, 'Goal Planner', 'Track Financial Goals',
+              () => _navigate(const GoalPlannerScreen())),
+          _item(Icons.receipt_long, 'Tax Calculator', 'Old vs New Regime',
+              () => _navigate(const TaxCalculatorScreen())),
+          _item(Icons.merge, 'SIP + Lumpsum', 'Combined Investment Planner',
+              () => _navigate(const CombinedScreen())),
+          _item(Icons.bookmark, 'Saved Plans', 'Bookmarked Calculations',
+              () => _navigate(const SavingsScreen())),
           const Divider(),
           ListTile(
             leading: Icon(Icons.dark_mode, color: colorScheme.primary),
             title: const Text('Toggle Theme'),
-            subtitle: const Text('Switch Dark/Light', style: TextStyle(fontSize: 12)),
+            subtitle:
+                const Text('Switch Dark/Light', style: TextStyle(fontSize: 12)),
             onTap: () {
               Navigator.pop(context);
               themeMode.toggleTheme();
@@ -109,7 +120,8 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
           ListTile(
             leading: Icon(Icons.share, color: colorScheme.primary),
             title: const Text('Share App'),
-            subtitle: const Text('Tell your friends', style: TextStyle(fontSize: 12)),
+            subtitle:
+                const Text('Tell your friends', style: TextStyle(fontSize: 12)),
             onTap: () {
               Navigator.pop(context);
               _shareApp();
@@ -118,7 +130,8 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
           ListTile(
             leading: Icon(Icons.star_rate, color: colorScheme.primary),
             title: const Text('Rate the App'),
-            subtitle: const Text('Leave a review', style: TextStyle(fontSize: 12)),
+            subtitle:
+                const Text('Leave a review', style: TextStyle(fontSize: 12)),
             onTap: () async {
               Navigator.pop(context);
               await InAppReview.instance.openStoreListing();
@@ -129,7 +142,8 @@ class _CustomAppDrawerState extends State<CustomAppDrawer> {
     );
   }
 
-  Widget _item(IconData icon, String title, String subtitle, VoidCallback onTap) {
+  Widget _item(
+      IconData icon, String title, String subtitle, VoidCallback onTap) {
     final colorScheme = Theme.of(context).colorScheme;
     return ListTile(
       leading: Icon(icon, color: colorScheme.primary),

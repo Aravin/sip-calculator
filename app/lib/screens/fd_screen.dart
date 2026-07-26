@@ -22,11 +22,15 @@ class _FDScreenState extends State<FDScreen> {
   String _payout = 'cumulative';
   bool _showYearTable = false;
 
-  late final _principalCtrl = TextEditingController(text: _principal.toInt().toString());
-  late final _returnCtrl = TextEditingController(text: _return.toStringAsFixed(1));
-  late final _yearsCtrl = TextEditingController(text: _years.toInt().toString());
+  late final _principalCtrl =
+      TextEditingController(text: _principal.toInt().toString());
+  late final _returnCtrl =
+      TextEditingController(text: _return.toStringAsFixed(1));
+  late final _yearsCtrl =
+      TextEditingController(text: _years.toInt().toString());
 
-  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult _result =
+      CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
 
   @override
   void initState() {
@@ -51,13 +55,15 @@ class _FDScreenState extends State<FDScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'FD - ${curFormat.format(_principal)}',
       type: 'FD',
-      params: '${curFormat.format(_principal)}, ${_return}%, ${_years.toInt()}y',
+      params:
+          '${curFormat.format(_principal)}, ${_return}%, ${_years.toInt()}y',
       result: _result,
       savedAt: DateTime.now(),
     );
     PersistenceService.save(calc);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+      const SnackBar(
+          content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -79,8 +85,12 @@ class _FDScreenState extends State<FDScreen> {
       appBar: AppBar(
         title: const Text('FD Calculator'),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+          IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareCsv,
+              tooltip: 'Export CSV'),
+          IconButton(
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -143,19 +153,35 @@ class _FDScreenState extends State<FDScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Compounding', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 13)),
+                    Text('Compounding',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelLarge
+                            ?.copyWith(fontSize: 13)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
-                      children: ['monthly', 'quarterly', 'half_yearly', 'yearly'].map((c) {
-                        final labels = {'monthly': 'Monthly', 'quarterly': 'Quarterly', 'half_yearly': 'Half-Yearly', 'yearly': 'Yearly'};
+                      children: [
+                        'monthly',
+                        'quarterly',
+                        'half_yearly',
+                        'yearly'
+                      ].map((c) {
+                        final labels = {
+                          'monthly': 'Monthly',
+                          'quarterly': 'Quarterly',
+                          'half_yearly': 'Half-Yearly',
+                          'yearly': 'Yearly'
+                        };
                         return ChoiceChip(
-                          label: Text(labels[c]!, style: const TextStyle(fontSize: 12)),
+                          label: Text(labels[c]!,
+                              style: const TextStyle(fontSize: 12)),
                           selected: _compounding == c,
                           onSelected: (v) {
                             if (v) {
                               _compounding = c;
-                              if (_payout == 'quarterly') _payout = 'cumulative';
+                              if (_payout == 'quarterly')
+                                _payout = 'cumulative';
                               _recalculate();
                             }
                           },
@@ -163,14 +189,22 @@ class _FDScreenState extends State<FDScreen> {
                       }).toList(),
                     ),
                     const SizedBox(height: 8),
-                    Text('Payout', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 13)),
+                    Text('Payout',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelLarge
+                            ?.copyWith(fontSize: 13)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
                       children: ['cumulative', 'quarterly'].map((p) {
-                        final labels = {'cumulative': 'Cumulative', 'quarterly': 'Quarterly Payout'};
+                        final labels = {
+                          'cumulative': 'Cumulative',
+                          'quarterly': 'Quarterly Payout'
+                        };
                         return ChoiceChip(
-                          label: Text(labels[p]!, style: const TextStyle(fontSize: 12)),
+                          label: Text(labels[p]!,
+                              style: const TextStyle(fontSize: 12)),
                           selected: _payout == p,
                           onSelected: (v) {
                             if (v) {
@@ -198,7 +232,8 @@ class _FDScreenState extends State<FDScreen> {
               onSelected: (v) => setState(() => _showYearTable = v),
             ),
           ),
-          if (_showYearTable) YearTable(data: _result.yearlyBreakdown, format: curFormat),
+          if (_showYearTable)
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const SizedBox(height: 24),
         ],
       ),
@@ -216,22 +251,32 @@ class _FDScreenState extends State<FDScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.assessment_outlined, size: 20, color: colorScheme.primary),
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Results', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text('Results',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
               ],
             ),
             const SizedBox(height: 12),
-            _resultRow(context, 'Principal Amount', _result.totalInvestment, colorScheme.tertiary),
+            _resultRow(context, 'Principal Amount', _result.totalInvestment,
+                colorScheme.tertiary),
             const Divider(height: 12),
-            _resultRow(context, 'Total Interest', _result.totalReturns, colorScheme.primary),
+            _resultRow(context, 'Total Interest', _result.totalReturns,
+                colorScheme.primary),
             const Divider(height: 12),
             _resultRow(context, 'Maturity Amount', _result.totalValue, null),
             if (_result.totalValue > 0) ...[
               const SizedBox(height: 4),
               Text(
                 'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
-                style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: colorScheme.onSurfaceVariant),
               ),
             ],
           ],
@@ -240,16 +285,22 @@ class _FDScreenState extends State<FDScreen> {
     );
   }
 
-  Widget _resultRow(BuildContext context, String label, double value, Color? color) {
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
     final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+        Text(label,
+            style:
+                TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
         const SizedBox(height: 2),
         Text(
           curFormat.format(value),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color ?? colorScheme.onSurface),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color ?? colorScheme.onSurface),
         ),
       ],
     );

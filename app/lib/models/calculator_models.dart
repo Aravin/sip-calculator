@@ -246,9 +246,8 @@ class FinancialGoal {
     return currentSavings + (monthlyContribution * remainingMonths);
   }
 
-  double get progress => targetAmount > 0
-      ? (projectedCorpus / targetAmount).clamp(0.0, 1.0)
-      : 0.0;
+  double get progress =>
+      targetAmount > 0 ? (projectedCorpus / targetAmount).clamp(0.0, 1.0) : 0.0;
 
   double get shortfall => max(0.0, targetAmount - projectedCorpus);
 

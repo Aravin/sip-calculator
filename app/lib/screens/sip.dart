@@ -45,7 +45,14 @@ class _SIPScreenState extends State<SIPScreen> {
   MonteCarloResult? _monteCarloResult;
   String _nriCountry = 'India';
   NumberFormat _format = NumberFormat.simpleCurrency(locale: 'en_IN');
-  static const _nriOptions = ['India', 'USA', 'UAE', 'UK', 'Canada', 'Singapore'];
+  static const _nriOptions = [
+    'India',
+    'USA',
+    'UAE',
+    'UK',
+    'Canada',
+    'Singapore'
+  ];
 
   @override
   void initState() {
@@ -206,7 +213,6 @@ class _SIPScreenState extends State<SIPScreen> {
             },
           ),
           const SizedBox(height: 8),
-
           _sectionCard(
             context,
             title: 'Advanced Options',
@@ -214,7 +220,8 @@ class _SIPScreenState extends State<SIPScreen> {
             child: Column(
               children: [
                 ExpansionTile(
-                  title: const Text('Step-Up SIP', style: TextStyle(fontSize: 13)),
+                  title:
+                      const Text('Step-Up SIP', style: TextStyle(fontSize: 13)),
                   subtitle: Text(
                     _stepUp > 0 ? '${_stepUp}% annual increase' : 'Not enabled',
                     style: const TextStyle(fontSize: 11),
@@ -239,7 +246,8 @@ class _SIPScreenState extends State<SIPScreen> {
                   ],
                 ),
                 ExpansionTile(
-                  title: const Text('Quick Goals', style: TextStyle(fontSize: 13)),
+                  title:
+                      const Text('Quick Goals', style: TextStyle(fontSize: 13)),
                   children: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -261,9 +269,7 @@ class _SIPScreenState extends State<SIPScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 8),
-
           _sectionCard(
             context,
             title: 'Goal Mode (Reverse SIP)',
@@ -297,7 +303,8 @@ class _SIPScreenState extends State<SIPScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                        color:
+                            colorScheme.primaryContainer.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: colorScheme.primaryContainer),
                       ),
@@ -324,25 +331,20 @@ class _SIPScreenState extends State<SIPScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 8),
-
           _buildResultsSection(context),
-
           if (_timePeriod >= 2) ...[
             const SizedBox(height: 8),
             _buildDelayCost(),
           ],
-
           const SizedBox(height: 8),
           _buildToggles(context),
-
           if (_showInsights && _insights.isNotEmpty) ...[
             const SizedBox(height: 8),
             _buildInsights(context),
           ],
-
-          if (_showSensitivity && _sensitivity != null &&
+          if (_showSensitivity &&
+              _sensitivity != null &&
               _sensitivity!.yearlyBreakdown.length >= 3)
             SensitivityCard(
               worstCorpus: _sensitivity!.yearlyBreakdown[0].corpus,
@@ -350,22 +352,16 @@ class _SIPScreenState extends State<SIPScreen> {
               bestCorpus: _sensitivity!.yearlyBreakdown[2].corpus,
               format: _format,
             ),
-
           if (_showMonteCarlo && _monteCarloResult != null)
             _buildMonteCarlo(context),
-
           if (_showYearTable)
             YearTable(data: _result.yearlyBreakdown, format: _format),
-
           const SizedBox(height: 16),
-
           _buildChart(context),
-
           if (_result.totalValue > 0) ...[
             const SizedBox(height: 8),
             _buildSwpBridge(context),
           ],
-
           const SizedBox(height: 24),
         ],
       ),
@@ -413,7 +409,8 @@ class _SIPScreenState extends State<SIPScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.assessment_outlined, size: 20, color: colorScheme.primary),
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   'Results',
@@ -539,7 +536,8 @@ class _SIPScreenState extends State<SIPScreen> {
     );
   }
 
-  Widget _resultRow(BuildContext context, String label, double value, Color? color,
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color,
       {String? subtitle}) {
     final colorScheme = Theme.of(context).colorScheme;
     return Column(
@@ -637,7 +635,8 @@ class _SIPScreenState extends State<SIPScreen> {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: colorScheme.error, size: 22),
+            Icon(Icons.warning_amber_rounded,
+                color: colorScheme.error, size: 22),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -690,7 +689,8 @@ class _SIPScreenState extends State<SIPScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                      color:
+                          colorScheme.primaryContainer.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(
@@ -752,8 +752,7 @@ class _SIPScreenState extends State<SIPScreen> {
               'Success Probability',
               mc.probabilityOfSuccess,
               colorScheme.primary,
-              label2:
-                  '${(mc.probabilityOfSuccess * 100).toStringAsFixed(0)}%',
+              label2: '${(mc.probabilityOfSuccess * 100).toStringAsFixed(0)}%',
             ),
           ],
         ),
@@ -868,12 +867,12 @@ class _SIPScreenState extends State<SIPScreen> {
                   },
                 ),
               ),
-              leftTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false)),
-              rightTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false)),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(show: false),
             barGroups: [
@@ -913,8 +912,7 @@ class _SIPScreenState extends State<SIPScreen> {
                 x: 2,
                 barRods: [
                   BarChartRodData(
-                    toY:
-                        double.parse((_result.totalValue).toStringAsFixed(2)),
+                    toY: double.parse((_result.totalValue).toStringAsFixed(2)),
                     color: colorScheme.secondary,
                     width: 16,
                     borderRadius: const BorderRadius.only(

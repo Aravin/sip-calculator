@@ -40,13 +40,21 @@ void main() {
 
     test('delete removes specific item', () async {
       final calc1 = SavedCalculation(
-        id: '1', name: 'First', type: 'SIP', params: '',
-        result: CalcResult(totalInvestment: 100, totalReturns: 10, totalValue: 110),
+        id: '1',
+        name: 'First',
+        type: 'SIP',
+        params: '',
+        result:
+            CalcResult(totalInvestment: 100, totalReturns: 10, totalValue: 110),
         savedAt: DateTime.now(),
       );
       final calc2 = SavedCalculation(
-        id: '2', name: 'Second', type: 'EMI', params: '',
-        result: CalcResult(totalInvestment: 200, totalReturns: 20, totalValue: 220),
+        id: '2',
+        name: 'Second',
+        type: 'EMI',
+        params: '',
+        result:
+            CalcResult(totalInvestment: 200, totalReturns: 20, totalValue: 220),
         savedAt: DateTime.now(),
       );
 
@@ -61,8 +69,12 @@ void main() {
 
     test('delete non-existent id does nothing', () async {
       final calc = SavedCalculation(
-        id: '1', name: 'Test', type: 'SIP', params: '',
-        result: CalcResult(totalInvestment: 100, totalReturns: 10, totalValue: 110),
+        id: '1',
+        name: 'Test',
+        type: 'SIP',
+        params: '',
+        result:
+            CalcResult(totalInvestment: 100, totalReturns: 10, totalValue: 110),
         savedAt: DateTime.now(),
       );
 
@@ -76,8 +88,14 @@ void main() {
     test('enforces max items limit (50)', () async {
       for (int i = 0; i < 55; i++) {
         final calc = SavedCalculation(
-          id: '$i', name: 'Calc $i', type: 'SIP', params: '',
-          result: CalcResult(totalInvestment: 100.0 * i, totalReturns: 10.0 * i, totalValue: 110.0 * i),
+          id: '$i',
+          name: 'Calc $i',
+          type: 'SIP',
+          params: '',
+          result: CalcResult(
+              totalInvestment: 100.0 * i,
+              totalReturns: 10.0 * i,
+              totalValue: 110.0 * i),
           savedAt: DateTime.now(),
         );
         await PersistenceService.save(calc);
@@ -92,10 +110,20 @@ void main() {
 
     test('persists serialized data correctly (JSON roundtrip)', () async {
       final yearlyBreakdown = [
-        YearData(year: 1, investedThisYear: 60000, totalInvested: 60000,
-            interestThisYear: 3000, totalInterest: 3000, corpus: 63000),
-        YearData(year: 2, investedThisYear: 60000, totalInvested: 120000,
-            interestThisYear: 7500, totalInterest: 10500, corpus: 130500),
+        YearData(
+            year: 1,
+            investedThisYear: 60000,
+            totalInvested: 60000,
+            interestThisYear: 3000,
+            totalInterest: 3000,
+            corpus: 63000),
+        YearData(
+            year: 2,
+            investedThisYear: 60000,
+            totalInvested: 120000,
+            interestThisYear: 7500,
+            totalInterest: 10500,
+            corpus: 130500),
       ];
 
       final calc = SavedCalculation(

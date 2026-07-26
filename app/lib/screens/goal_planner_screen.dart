@@ -28,7 +28,8 @@ class _GoalPlannerScreenState extends State<GoalPlannerScreen> {
       _goals = data
           .map((s) {
             try {
-              return FinancialGoal.fromJson(jsonDecode(s) as Map<String, dynamic>);
+              return FinancialGoal.fromJson(
+                  jsonDecode(s) as Map<String, dynamic>);
             } catch (_) {
               return null;
             }
@@ -89,7 +90,10 @@ class _GoalPlannerScreenState extends State<GoalPlannerScreen> {
       appBar: AppBar(
         title: const Text('Goal Planner'),
         actions: [
-          IconButton(icon: const Icon(Icons.add), onPressed: _addGoal, tooltip: 'Add Goal'),
+          IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _addGoal,
+              tooltip: 'Add Goal'),
         ],
       ),
       body: _goals.isEmpty
@@ -97,12 +101,18 @@ class _GoalPlannerScreenState extends State<GoalPlannerScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.flag_outlined, size: 64, color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4)),
+                  Icon(Icons.flag_outlined,
+                      size: 64,
+                      color:
+                          colorScheme.onSurfaceVariant.withValues(alpha: 0.4)),
                   const SizedBox(height: 16),
-                  Text('No goals yet', style: TextStyle(fontSize: 18, color: colorScheme.onSurfaceVariant)),
+                  Text('No goals yet',
+                      style: TextStyle(
+                          fontSize: 18, color: colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 8),
                   Text('Add your financial goals to track progress',
-                      style: TextStyle(fontSize: 13, color: colorScheme.onSurfaceVariant)),
+                      style: TextStyle(
+                          fontSize: 13, color: colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     icon: const Icon(Icons.add),
@@ -170,12 +180,26 @@ class _GoalCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(goal.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
+                  child: Text(goal.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600, fontSize: 14)),
                 ),
                 PopupMenuButton<String>(
                   itemBuilder: (ctx) => [
-                    const PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit, size: 18), SizedBox(width: 8), Text('Edit')])),
-                    const PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete, size: 18, color: Colors.red), SizedBox(width: 8), Text('Delete', style: TextStyle(color: Colors.red))])),
+                    const PopupMenuItem(
+                        value: 'edit',
+                        child: Row(children: [
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text('Edit')
+                        ])),
+                    const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(children: [
+                          Icon(Icons.delete, size: 18, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text('Delete', style: TextStyle(color: Colors.red))
+                        ])),
                   ],
                   onSelected: (v) {
                     if (v == 'edit') onEdit();
@@ -195,22 +219,34 @@ class _GoalCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text('$pct% of target', style: TextStyle(fontSize: 11, color: colorScheme.onSurfaceVariant)),
+            Text('$pct% of target',
+                style: TextStyle(
+                    fontSize: 11, color: colorScheme.onSurfaceVariant)),
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: _info('Target', curFormat.format(goal.targetAmount), colorScheme)),
+                Expanded(
+                    child: _info('Target', curFormat.format(goal.targetAmount),
+                        colorScheme)),
                 const SizedBox(width: 8),
-                Expanded(child: _info('Projected', curFormat.format(goal.projectedCorpus), colorScheme,
-                    valueColor: isOnTrack ? Colors.green : colorScheme.error)),
+                Expanded(
+                    child: _info('Projected',
+                        curFormat.format(goal.projectedCorpus), colorScheme,
+                        valueColor:
+                            isOnTrack ? Colors.green : colorScheme.error)),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(child: _info('Monthly', '${curFormat.format(goal.monthlyContribution)}/mo', colorScheme)),
+                Expanded(
+                    child: _info(
+                        'Monthly',
+                        '${curFormat.format(goal.monthlyContribution)}/mo',
+                        colorScheme)),
                 const SizedBox(width: 8),
-                Expanded(child: _info('Timeline', '$months months', colorScheme)),
+                Expanded(
+                    child: _info('Timeline', '$months months', colorScheme)),
               ],
             ),
             if (!isOnTrack && requiredMonthly > 0) ...[
@@ -234,13 +270,18 @@ class _GoalCard extends StatelessWidget {
     );
   }
 
-  Widget _info(String label, String value, ColorScheme cs, {Color? valueColor}) {
+  Widget _info(String label, String value, ColorScheme cs,
+      {Color? valueColor}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
         const SizedBox(height: 2),
-        Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: valueColor ?? cs.onSurface)),
+        Text(value,
+            style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: valueColor ?? cs.onSurface)),
       ],
     );
   }
@@ -257,11 +298,16 @@ class _GoalFormDialog extends StatefulWidget {
 }
 
 class _GoalFormDialogState extends State<_GoalFormDialog> {
-  late final _nameCtrl = TextEditingController(text: widget.existingGoal?.name ?? '');
-  late final _targetCtrl = TextEditingController(text: widget.existingGoal?.targetAmount.toInt().toString() ?? '');
-  late final _currentCtrl = TextEditingController(text: widget.existingGoal?.currentSavings.toInt().toString() ?? '0');
-  late final _monthlyCtrl = TextEditingController(text: widget.existingGoal?.monthlyContribution.toInt().toString() ?? '0');
-  late DateTime _targetDate = widget.existingGoal?.targetDate ?? DateTime.now().add(const Duration(days: 365));
+  late final _nameCtrl =
+      TextEditingController(text: widget.existingGoal?.name ?? '');
+  late final _targetCtrl = TextEditingController(
+      text: widget.existingGoal?.targetAmount.toInt().toString() ?? '');
+  late final _currentCtrl = TextEditingController(
+      text: widget.existingGoal?.currentSavings.toInt().toString() ?? '0');
+  late final _monthlyCtrl = TextEditingController(
+      text: widget.existingGoal?.monthlyContribution.toInt().toString() ?? '0');
+  late DateTime _targetDate = widget.existingGoal?.targetDate ??
+      DateTime.now().add(const Duration(days: 365));
 
   @override
   void dispose() {
@@ -284,24 +330,29 @@ class _GoalFormDialogState extends State<_GoalFormDialog> {
           children: [
             TextField(
               controller: _nameCtrl,
-              decoration: const InputDecoration(labelText: 'Goal Name', hintText: 'e.g. Retirement, Vacation'),
+              decoration: const InputDecoration(
+                  labelText: 'Goal Name',
+                  hintText: 'e.g. Retirement, Vacation'),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _targetCtrl,
-              decoration: const InputDecoration(labelText: 'Target Amount (₹)', prefixText: '₹ '),
+              decoration: const InputDecoration(
+                  labelText: 'Target Amount (₹)', prefixText: '₹ '),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _currentCtrl,
-              decoration: const InputDecoration(labelText: 'Current Savings (₹)', prefixText: '₹ '),
+              decoration: const InputDecoration(
+                  labelText: 'Current Savings (₹)', prefixText: '₹ '),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _monthlyCtrl,
-              decoration: const InputDecoration(labelText: 'Monthly Contribution (₹)', prefixText: '₹ '),
+              decoration: const InputDecoration(
+                  labelText: 'Monthly Contribution (₹)', prefixText: '₹ '),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 12),
@@ -329,7 +380,9 @@ class _GoalFormDialogState extends State<_GoalFormDialog> {
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel')),
         FilledButton(
           onPressed: () {
             final name = _nameCtrl.text.trim();
@@ -339,7 +392,8 @@ class _GoalFormDialogState extends State<_GoalFormDialog> {
             if (name.isEmpty || target <= 0) return;
 
             widget.onSave(FinancialGoal(
-              id: widget.existingGoal?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+              id: widget.existingGoal?.id ??
+                  DateTime.now().millisecondsSinceEpoch.toString(),
               name: name,
               targetAmount: target,
               targetDate: _targetDate,

@@ -25,11 +25,16 @@ class _CombinedScreenState extends State<CombinedScreen> {
   bool _showYearTable = false;
   bool _showSensitivity = false;
 
-  late final _lumpsumCtrl = TextEditingController(text: _lumpsum.toInt().toString());
-  late final _sipCtrl = TextEditingController(text: _monthlySip.toInt().toString());
-  late final _returnCtrl = TextEditingController(text: _return.toInt().toString());
-  late final _yearsCtrl = TextEditingController(text: _years.toInt().toString());
-  late final _stepUpCtrl = TextEditingController(text: _stepUp.toInt().toString());
+  late final _lumpsumCtrl =
+      TextEditingController(text: _lumpsum.toInt().toString());
+  late final _sipCtrl =
+      TextEditingController(text: _monthlySip.toInt().toString());
+  late final _returnCtrl =
+      TextEditingController(text: _return.toInt().toString());
+  late final _yearsCtrl =
+      TextEditingController(text: _years.toInt().toString());
+  late final _stepUpCtrl =
+      TextEditingController(text: _stepUp.toInt().toString());
 
   CalcResult _result =
       CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
@@ -64,7 +69,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
   void _save() {
     final calc = SavedCalculation(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: 'Combined - ${curFormat.format(_lumpsum)} + ${curFormat.format(_monthlySip)}/mo',
+      name:
+          'Combined - ${curFormat.format(_lumpsum)} + ${curFormat.format(_monthlySip)}/mo',
       type: 'Combined',
       params:
           'Lumpsum: ${curFormat.format(_lumpsum)}, SIP: ${curFormat.format(_monthlySip)}/mo',
@@ -105,9 +111,7 @@ class _CombinedScreenState extends State<CombinedScreen> {
               onPressed: _shareCsv,
               tooltip: 'Export CSV'),
           IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _save,
-              tooltip: 'Save'),
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -234,7 +238,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
               ],
             ),
           ),
-          if (_showSensitivity && _sensitivity != null &&
+          if (_showSensitivity &&
+              _sensitivity != null &&
               _sensitivity!.yearlyBreakdown.length >= 3)
             SensitivityCard(
               worstCorpus: _sensitivity!.yearlyBreakdown[0].corpus,
@@ -395,8 +400,8 @@ class _CombinedScreenState extends State<CombinedScreen> {
             _resultRow(context, 'Total Investment', _result.totalInvestment,
                 colorScheme.tertiary),
             const Divider(height: 12),
-            _resultRow(
-                context, 'Total Returns', _result.totalReturns, colorScheme.primary),
+            _resultRow(context, 'Total Returns', _result.totalReturns,
+                colorScheme.primary),
             const Divider(height: 12),
             _resultRow(context, 'Total Corpus', _result.totalValue, null),
             if (_result.totalValue > 0) ...[

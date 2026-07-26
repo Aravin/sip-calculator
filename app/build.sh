@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ──────────────────────────────────────
-#  SIP Calculator — Automated Build Script
+#  Financial Calculator — Automated Build Script
 #  Bumps version, builds release artifacts,
 #  and optionally creates a git tag.
 # ──────────────────────────────────────
@@ -21,7 +21,7 @@ print_usage() {
   cat <<EOF
 Usage: $(basename "$0") [options]
 
-Bump version and build release APK / AAB for SIP Calculator.
+Bump version and build release APK / AAB for Financial Calculator.
 
 Options:
   --major            Bump major version (x.0.0)
@@ -144,7 +144,11 @@ fi
 
 # ── Write new version to pubspec.yaml ──
 echo -e "\n${CYAN}Updating pubspec.yaml...${NC}"
-sed -i "" "s/^version: .*/version: $NEW_VERSION/" "$PUBSPEC"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i "" "s/^version: .*/version: $NEW_VERSION/" "$PUBSPEC"
+else
+  sed -i "s/^version: .*/version: $NEW_VERSION/" "$PUBSPEC"
+fi
 echo -e "${GREEN}  → version: $NEW_VERSION${NC}"
 
 # ── Optional git commit ───────────────

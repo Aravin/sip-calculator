@@ -83,9 +83,7 @@ class _PPFScreenState extends State<PPFScreen> {
               onPressed: _shareCsv,
               tooltip: 'Export CSV'),
           IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _save,
-              tooltip: 'Save'),
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -180,8 +178,8 @@ class _PPFScreenState extends State<PPFScreen> {
             _resultRow(context, 'Total Investment', _result.totalInvestment,
                 colorScheme.tertiary),
             const Divider(height: 12),
-            _resultRow(
-                context, 'Total Interest', _result.totalReturns, colorScheme.primary),
+            _resultRow(context, 'Total Interest', _result.totalReturns,
+                colorScheme.primary),
             const Divider(height: 12),
             _resultRow(context, 'Maturity Amount', _result.totalValue, null),
             if (_result.totalValue > 0) ...[

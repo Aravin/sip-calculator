@@ -22,11 +22,15 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
   String _frequency = 'monthly';
   bool _showYearTable = false;
 
-  late final _principalCtrl = TextEditingController(text: _principal.toInt().toString());
-  late final _returnCtrl = TextEditingController(text: _return.toInt().toString());
-  late final _yearsCtrl = TextEditingController(text: _years.toInt().toString());
+  late final _principalCtrl =
+      TextEditingController(text: _principal.toInt().toString());
+  late final _returnCtrl =
+      TextEditingController(text: _return.toInt().toString());
+  late final _yearsCtrl =
+      TextEditingController(text: _years.toInt().toString());
 
-  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult _result =
+      CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
 
   @override
   void initState() {
@@ -50,13 +54,15 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'Compound - ${curFormat.format(_principal)}',
       type: 'Compound',
-      params: '${curFormat.format(_principal)}, ${_return}%, ${_years.toInt()}y',
+      params:
+          '${curFormat.format(_principal)}, ${_return}%, ${_years.toInt()}y',
       result: _result,
       savedAt: DateTime.now(),
     );
     PersistenceService.save(calc);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+      const SnackBar(
+          content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -80,8 +86,12 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
       appBar: AppBar(
         title: const Text('Compound Interest'),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+          IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareCsv,
+              tooltip: 'Export CSV'),
+          IconButton(
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -144,11 +154,21 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Compounding Frequency', style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 13)),
+                    Text('Compounding Frequency',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelLarge
+                            ?.copyWith(fontSize: 13)),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
-                      children: ['daily', 'monthly', 'quarterly', 'half_yearly', 'yearly'].map((f) {
+                      children: [
+                        'daily',
+                        'monthly',
+                        'quarterly',
+                        'half_yearly',
+                        'yearly'
+                      ].map((f) {
                         final labels = {
                           'daily': 'Daily',
                           'monthly': 'Monthly',
@@ -157,7 +177,8 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
                           'yearly': 'Yearly'
                         };
                         return ChoiceChip(
-                          label: Text(labels[f]!, style: const TextStyle(fontSize: 12)),
+                          label: Text(labels[f]!,
+                              style: const TextStyle(fontSize: 12)),
                           selected: _frequency == f,
                           onSelected: (v) {
                             if (v) {
@@ -184,7 +205,8 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
               onSelected: (v) => setState(() => _showYearTable = v),
             ),
           ),
-          if (_showYearTable) YearTable(data: _result.yearlyBreakdown, format: curFormat),
+          if (_showYearTable)
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const SizedBox(height: 16),
           SizedBox(
             height: 220,
@@ -199,36 +221,73 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
                         showTitles: true,
                         reservedSize: 30,
                         getTitlesWidget: (value, meta) {
-                          final style = TextStyle(color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600, fontSize: 11);
+                          final style = TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11);
                           String text;
                           switch (value.toInt()) {
-                            case 0: text = 'Principal'; break;
-                            case 1: text = 'Interest'; break;
-                            case 2: text = 'Total'; break;
-                            default: text = '';
+                            case 0:
+                              text = 'Principal';
+                              break;
+                            case 1:
+                              text = 'Interest';
+                              break;
+                            case 2:
+                              text = 'Total';
+                              break;
+                            default:
+                              text = '';
                           }
-                          return SideTitleWidget(axisSide: meta.axisSide, space: 4, child: Text(text, style: style));
+                          return SideTitleWidget(
+                              axisSide: meta.axisSide,
+                              space: 4,
+                              child: Text(text, style: style));
                         },
                       ),
                     ),
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                   ),
                   borderData: FlBorderData(show: false),
                   barGroups: [
                     BarChartGroupData(x: 0, barRods: [
-                      BarChartRodData(toY: _result.totalInvestment, color: colorScheme.tertiary, width: 16,
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
-                    ], showingTooltipIndicators: [0]),
+                      BarChartRodData(
+                          toY: _result.totalInvestment,
+                          color: colorScheme.tertiary,
+                          width: 16,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(6),
+                              topRight: Radius.circular(6))),
+                    ], showingTooltipIndicators: [
+                      0
+                    ]),
                     BarChartGroupData(x: 1, barRods: [
-                      BarChartRodData(toY: _result.totalReturns, color: colorScheme.primary, width: 16,
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
-                    ], showingTooltipIndicators: [0]),
+                      BarChartRodData(
+                          toY: _result.totalReturns,
+                          color: colorScheme.primary,
+                          width: 16,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(6),
+                              topRight: Radius.circular(6))),
+                    ], showingTooltipIndicators: [
+                      0
+                    ]),
                     BarChartGroupData(x: 2, barRods: [
-                      BarChartRodData(toY: _result.totalValue, color: colorScheme.secondary, width: 16,
-                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
-                    ], showingTooltipIndicators: [0]),
+                      BarChartRodData(
+                          toY: _result.totalValue,
+                          color: colorScheme.secondary,
+                          width: 16,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(6),
+                              topRight: Radius.circular(6))),
+                    ], showingTooltipIndicators: [
+                      0
+                    ]),
                   ],
                   gridData: const FlGridData(show: false),
                   barTouchData: BarTouchData(
@@ -240,7 +299,9 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         return BarTooltipItem(
                           rod.toY.round().toString(),
-                          TextStyle(color: colorScheme.onInverseSurface, fontWeight: FontWeight.bold),
+                          TextStyle(
+                              color: colorScheme.onInverseSurface,
+                              fontWeight: FontWeight.bold),
                         );
                       },
                     ),
@@ -267,22 +328,32 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.assessment_outlined, size: 20, color: colorScheme.primary),
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Results', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text('Results',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
               ],
             ),
             const SizedBox(height: 12),
-            _resultRow(context, 'Principal Amount', _result.totalInvestment, colorScheme.tertiary),
+            _resultRow(context, 'Principal Amount', _result.totalInvestment,
+                colorScheme.tertiary),
             const Divider(height: 12),
-            _resultRow(context, 'Compound Interest', _result.totalReturns, colorScheme.primary),
+            _resultRow(context, 'Compound Interest', _result.totalReturns,
+                colorScheme.primary),
             const Divider(height: 12),
             _resultRow(context, 'Total Amount', _result.totalValue, null),
             if (_result.totalValue > 0) ...[
               const SizedBox(height: 4),
               Text(
                 'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
-                style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: colorScheme.onSurfaceVariant),
               ),
             ],
           ],
@@ -291,16 +362,22 @@ class _CompoundInterestScreenState extends State<CompoundInterestScreen> {
     );
   }
 
-  Widget _resultRow(BuildContext context, String label, double value, Color? color) {
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
     final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+        Text(label,
+            style:
+                TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
         const SizedBox(height: 2),
         Text(
           curFormat.format(value),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color ?? colorScheme.onSurface),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color ?? colorScheme.onSurface),
         ),
       ],
     );

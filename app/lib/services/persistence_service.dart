@@ -13,14 +13,18 @@ class PersistenceService {
       final data = prefs.getString(_key);
       if (data == null) return [];
       final List<dynamic> jsonList = jsonDecode(data);
-      return jsonList.where((j) => j is Map<String, dynamic>).map((j) {
-        try {
-          return SavedCalculation.fromJson(j as Map<String, dynamic>);
-        } catch (e) {
-          debugPrint('Skipping corrupt saved calculation: $e');
-          return null;
-        }
-      }).whereType<SavedCalculation>().toList();
+      return jsonList
+          .where((j) => j is Map<String, dynamic>)
+          .map((j) {
+            try {
+              return SavedCalculation.fromJson(j as Map<String, dynamic>);
+            } catch (e) {
+              debugPrint('Skipping corrupt saved calculation: $e');
+              return null;
+            }
+          })
+          .whereType<SavedCalculation>()
+          .toList();
     } catch (e) {
       debugPrint('Error loading saved calculations: $e');
       return [];

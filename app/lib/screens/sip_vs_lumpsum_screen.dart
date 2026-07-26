@@ -19,11 +19,16 @@ class _SipVsLumpsumScreenState extends State<SipVsLumpsumScreen> {
   double _years = 10;
   double _stepUp = 0;
 
-  late final _lumpsumCtrl = TextEditingController(text: _lumpsum.toInt().toString());
-  late final _sipCtrl = TextEditingController(text: _monthlySip.toInt().toString());
-  late final _returnCtrl = TextEditingController(text: _return.toInt().toString());
-  late final _yearsCtrl = TextEditingController(text: _years.toInt().toString());
-  late final _stepUpCtrl = TextEditingController(text: _stepUp.toInt().toString());
+  late final _lumpsumCtrl =
+      TextEditingController(text: _lumpsum.toInt().toString());
+  late final _sipCtrl =
+      TextEditingController(text: _monthlySip.toInt().toString());
+  late final _returnCtrl =
+      TextEditingController(text: _return.toInt().toString());
+  late final _yearsCtrl =
+      TextEditingController(text: _years.toInt().toString());
+  late final _stepUpCtrl =
+      TextEditingController(text: _stepUp.toInt().toString());
 
   ComparisonResult? _comparison;
 
@@ -61,7 +66,10 @@ class _SipVsLumpsumScreenState extends State<SipVsLumpsumScreen> {
       appBar: AppBar(
         title: const Text('SIP vs Lumpsum'),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _recalculate, tooltip: 'Refresh'),
+          IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _recalculate,
+              tooltip: 'Refresh'),
         ],
       ),
       body: ListView(
@@ -191,40 +199,79 @@ class _SipVsLumpsumScreenState extends State<SipVsLumpsumScreen> {
                       showTitles: true,
                       reservedSize: 30,
                       getTitlesWidget: (value, meta) {
-                        final style = TextStyle(color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600, fontSize: 11);
+                        final style = TextStyle(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11);
                         String text;
                         switch (value.toInt()) {
-                          case 0: text = 'Lumpsum\nInvested'; break;
-                          case 1: text = 'Lumpsum\nCorpus'; break;
-                          case 2: text = 'SIP\nInvested'; break;
-                          case 3: text = 'SIP\nCorpus'; break;
-                          default: text = '';
+                          case 0:
+                            text = 'Lumpsum\nInvested';
+                            break;
+                          case 1:
+                            text = 'Lumpsum\nCorpus';
+                            break;
+                          case 2:
+                            text = 'SIP\nInvested';
+                            break;
+                          case 3:
+                            text = 'SIP\nCorpus';
+                            break;
+                          default:
+                            text = '';
                         }
-                        return SideTitleWidget(axisSide: meta.axisSide, space: 4, child: Text(text, style: style, textAlign: TextAlign.center));
+                        return SideTitleWidget(
+                            axisSide: meta.axisSide,
+                            space: 4,
+                            child: Text(text,
+                                style: style, textAlign: TextAlign.center));
                       },
                     ),
                   ),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                 ),
                 borderData: FlBorderData(show: false),
                 barGroups: [
                   BarChartGroupData(x: 0, barRods: [
-                    BarChartRodData(toY: c.lumpsumInvestment, color: colorScheme.tertiary.withValues(alpha: 0.6), width: 16,
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
+                    BarChartRodData(
+                        toY: c.lumpsumInvestment,
+                        color: colorScheme.tertiary.withValues(alpha: 0.6),
+                        width: 16,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6))),
                   ]),
                   BarChartGroupData(x: 1, barRods: [
-                    BarChartRodData(toY: c.lumpsumCorpus, color: colorScheme.tertiary, width: 16,
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
+                    BarChartRodData(
+                        toY: c.lumpsumCorpus,
+                        color: colorScheme.tertiary,
+                        width: 16,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6))),
                   ]),
                   BarChartGroupData(x: 2, barRods: [
-                    BarChartRodData(toY: c.sipTotalInvestment, color: colorScheme.primary.withValues(alpha: 0.6), width: 16,
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
+                    BarChartRodData(
+                        toY: c.sipTotalInvestment,
+                        color: colorScheme.primary.withValues(alpha: 0.6),
+                        width: 16,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6))),
                   ]),
                   BarChartGroupData(x: 3, barRods: [
-                    BarChartRodData(toY: c.sipCorpus, color: colorScheme.primary, width: 16,
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6))),
+                    BarChartRodData(
+                        toY: c.sipCorpus,
+                        color: colorScheme.primary,
+                        width: 16,
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(6),
+                            topRight: Radius.circular(6))),
                   ]),
                 ],
                 gridData: const FlGridData(show: false),
@@ -237,7 +284,9 @@ class _SipVsLumpsumScreenState extends State<SipVsLumpsumScreen> {
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
                         rod.toY.round().toString(),
-                        TextStyle(color: colorScheme.onInverseSurface, fontWeight: FontWeight.bold),
+                        TextStyle(
+                            color: colorScheme.onInverseSurface,
+                            fontWeight: FontWeight.bold),
                       );
                     },
                   ),
@@ -265,37 +314,56 @@ class _SipVsLumpsumScreenState extends State<SipVsLumpsumScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.compare_arrows, size: 20, color: colorScheme.primary),
+                Icon(Icons.compare_arrows,
+                    size: 20, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Comparison', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text('Comparison',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
               ],
             ),
             const SizedBox(height: 16),
-            _resultRow(context, 'Lumpsum Investment', c.lumpsumInvestment, colorScheme.tertiary),
-            _resultRow(context, 'Lumpsum Corpus', c.lumpsumCorpus, colorScheme.tertiary),
+            _resultRow(context, 'Lumpsum Investment', c.lumpsumInvestment,
+                colorScheme.tertiary),
+            _resultRow(context, 'Lumpsum Corpus', c.lumpsumCorpus,
+                colorScheme.tertiary),
             const Divider(height: 16),
-            _resultRow(context, 'SIP Total Investment', c.sipTotalInvestment, colorScheme.primary),
+            _resultRow(context, 'SIP Total Investment', c.sipTotalInvestment,
+                colorScheme.primary),
             _resultRow(context, 'SIP Corpus', c.sipCorpus, colorScheme.primary),
             const Divider(height: 16),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: (c.sipWins ? colorScheme.primary : colorScheme.tertiary).withValues(alpha: 0.1),
+                color: (c.sipWins ? colorScheme.primary : colorScheme.tertiary)
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
                   Icon(c.sipWins ? Icons.trending_up : Icons.monetization_on,
-                      size: 24, color: c.sipWins ? colorScheme.primary : colorScheme.tertiary),
+                      size: 24,
+                      color: c.sipWins
+                          ? colorScheme.primary
+                          : colorScheme.tertiary),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('$winner wins by', style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+                        Text('$winner wins by',
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: colorScheme.onSurfaceVariant)),
                         Text(curFormat.format(diff),
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,
-                                color: c.sipWins ? colorScheme.primary : colorScheme.tertiary)),
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: c.sipWins
+                                    ? colorScheme.primary
+                                    : colorScheme.tertiary)),
                       ],
                     ),
                   ),
@@ -308,15 +376,22 @@ class _SipVsLumpsumScreenState extends State<SipVsLumpsumScreen> {
     );
   }
 
-  Widget _resultRow(BuildContext context, String label, double value, Color? color) {
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
-          Text(curFormat.format(value), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color ?? colorScheme.onSurface)),
+          Text(label,
+              style:
+                  TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+          Text(curFormat.format(value),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: color ?? colorScheme.onSurface)),
         ],
       ),
     );

@@ -1,9 +1,9 @@
 name: sip_calculator
-description: Comprehensive SIP, Lumpsum, SWP, STP, PPF & EMI financial calculator with Monte Carlo simulation, AI insights, step-up SIP, goal mode, LTCG tax, inflation adjustment, NRI currency mode, CSV export, and dark mode.
+description: All-in-one Financial Calculator with SIP, Lumpsum, SWP, STP, PPF, EMI, FD, RD, Compound Interest, Tax Calculator, Goal Planner, Monte Carlo simulation, AI insights, step-up SIP, LTCG tax, inflation adjustment, NRI currency mode, CSV export, and dark mode.
 
 publish_to: 'none'
 
-version: 5.7.0+37
+version: 5.9.0+39
 
 environment:
   sdk: ">=3.2.0 <4.0.0"

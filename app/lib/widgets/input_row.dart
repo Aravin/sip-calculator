@@ -95,7 +95,9 @@ class InputRow extends StatelessWidget {
                       min: min,
                       max: max,
                       divisions: divisions ??
-                          ((max - min) / _stepForRange(max - min)).round().clamp(1, 1000),
+                          ((max - min) / _stepForRange(max - min))
+                              .round()
+                              .clamp(1, 1000),
                       label: _formatLabel(sliderValue),
                       onChanged: (value) {
                         controller.text = _formatValue(value);

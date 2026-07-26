@@ -10,8 +10,13 @@ void main() {
         totalReturns: 50000,
         totalValue: 170000,
         yearlyBreakdown: [
-          YearData(year: 1, investedThisYear: 60000, totalInvested: 60000,
-              interestThisYear: 3000, totalInterest: 3000, corpus: 63000),
+          YearData(
+              year: 1,
+              investedThisYear: 60000,
+              totalInvested: 60000,
+              interestThisYear: 3000,
+              totalInterest: 3000,
+              corpus: 63000),
         ],
       );
 
@@ -46,8 +51,13 @@ void main() {
         totalReturns: 100,
         totalValue: 1100,
         yearlyBreakdown: [
-          YearData(year: 1, investedThisYear: 1000, totalInvested: 1000,
-              interestThisYear: 100, totalInterest: 100, corpus: 1100),
+          YearData(
+              year: 1,
+              investedThisYear: 1000,
+              totalInvested: 1000,
+              interestThisYear: 100,
+              totalInterest: 100,
+              corpus: 1100),
         ],
       );
 
@@ -63,8 +73,13 @@ void main() {
         totalReturns: 9876543,
         totalValue: 22222221,
         yearlyBreakdown: [
-          YearData(year: 1, investedThisYear: 6000000, totalInvested: 6000000,
-              interestThisYear: 300000, totalInterest: 300000, corpus: 6300000),
+          YearData(
+              year: 1,
+              investedThisYear: 6000000,
+              totalInvested: 6000000,
+              interestThisYear: 300000,
+              totalInterest: 300000,
+              corpus: 6300000),
         ],
       );
 
@@ -82,8 +97,7 @@ void main() {
     });
 
     test('negative number', () {
-      expect(ExportService.generateNumberToWords(-500),
-          'Minus Five Hundred');
+      expect(ExportService.generateNumberToWords(-500), 'Minus Five Hundred');
     });
 
     test('units (1-19)', () {
@@ -102,7 +116,8 @@ void main() {
     test('hundreds', () {
       expect(ExportService.generateNumberToWords(100), 'One Hundred');
       expect(ExportService.generateNumberToWords(250), 'Two Hundred Fifty');
-      expect(ExportService.generateNumberToWords(999), 'Nine Hundred Ninety Nine');
+      expect(
+          ExportService.generateNumberToWords(999), 'Nine Hundred Ninety Nine');
     });
 
     test('thousands (Indian system)', () {
@@ -113,8 +128,10 @@ void main() {
 
     test('lakhs', () {
       expect(ExportService.generateNumberToWords(100000), 'One Lakh');
-      expect(ExportService.generateNumberToWords(250000), 'Two Lakh Fifty Thousand');
-      expect(ExportService.generateNumberToWords(999999), 'Nine Lakh Ninety Nine Thousand Nine Hundred Ninety Nine');
+      expect(ExportService.generateNumberToWords(250000),
+          'Two Lakh Fifty Thousand');
+      expect(ExportService.generateNumberToWords(999999),
+          'Nine Lakh Ninety Nine Thousand Nine Hundred Ninety Nine');
     });
 
     test('crores', () {

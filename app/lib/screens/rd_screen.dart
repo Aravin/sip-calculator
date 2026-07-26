@@ -20,11 +20,15 @@ class _RDScreenState extends State<RDScreen> {
   double _years = 5;
   bool _showYearTable = false;
 
-  late final _depositCtrl = TextEditingController(text: _monthlyDeposit.toInt().toString());
-  late final _returnCtrl = TextEditingController(text: _return.toStringAsFixed(1));
-  late final _yearsCtrl = TextEditingController(text: _years.toInt().toString());
+  late final _depositCtrl =
+      TextEditingController(text: _monthlyDeposit.toInt().toString());
+  late final _returnCtrl =
+      TextEditingController(text: _return.toStringAsFixed(1));
+  late final _yearsCtrl =
+      TextEditingController(text: _years.toInt().toString());
 
-  CalcResult _result = CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
+  CalcResult _result =
+      CalcResult(totalInvestment: 0, totalReturns: 0, totalValue: 0);
 
   @override
   void initState() {
@@ -47,13 +51,15 @@ class _RDScreenState extends State<RDScreen> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: 'RD - ${curFormat.format(_monthlyDeposit)}/mo',
       type: 'RD',
-      params: '${curFormat.format(_monthlyDeposit)}/mo, ${_return}%, ${_years.toInt()}y',
+      params:
+          '${curFormat.format(_monthlyDeposit)}/mo, ${_return}%, ${_years.toInt()}y',
       result: _result,
       savedAt: DateTime.now(),
     );
     PersistenceService.save(calc);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
+      const SnackBar(
+          content: Text('Calculation saved!'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -75,8 +81,12 @@ class _RDScreenState extends State<RDScreen> {
       appBar: AppBar(
         title: const Text('RD Calculator'),
         actions: [
-          IconButton(icon: const Icon(Icons.share), onPressed: _shareCsv, tooltip: 'Export CSV'),
-          IconButton(icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
+          IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _shareCsv,
+              tooltip: 'Export CSV'),
+          IconButton(
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -141,7 +151,8 @@ class _RDScreenState extends State<RDScreen> {
               onSelected: (v) => setState(() => _showYearTable = v),
             ),
           ),
-          if (_showYearTable) YearTable(data: _result.yearlyBreakdown, format: curFormat),
+          if (_showYearTable)
+            YearTable(data: _result.yearlyBreakdown, format: curFormat),
           const SizedBox(height: 24),
         ],
       ),
@@ -159,22 +170,32 @@ class _RDScreenState extends State<RDScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.assessment_outlined, size: 20, color: colorScheme.primary),
+                Icon(Icons.assessment_outlined,
+                    size: 20, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Results', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
+                Text('Results',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600, fontSize: 14)),
               ],
             ),
             const SizedBox(height: 12),
-            _resultRow(context, 'Total Investment', _result.totalInvestment, colorScheme.tertiary),
+            _resultRow(context, 'Total Investment', _result.totalInvestment,
+                colorScheme.tertiary),
             const Divider(height: 12),
-            _resultRow(context, 'Total Interest', _result.totalReturns, colorScheme.primary),
+            _resultRow(context, 'Total Interest', _result.totalReturns,
+                colorScheme.primary),
             const Divider(height: 12),
             _resultRow(context, 'Maturity Amount', _result.totalValue, null),
             if (_result.totalValue > 0) ...[
               const SizedBox(height: 4),
               Text(
                 'In words: ${ExportService.generateNumberToWords(_result.totalValue)}',
-                style: TextStyle(fontSize: 11, fontStyle: FontStyle.italic, color: colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: colorScheme.onSurfaceVariant),
               ),
             ],
           ],
@@ -183,16 +204,22 @@ class _RDScreenState extends State<RDScreen> {
     );
   }
 
-  Widget _resultRow(BuildContext context, String label, double value, Color? color) {
+  Widget _resultRow(
+      BuildContext context, String label, double value, Color? color) {
     final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+        Text(label,
+            style:
+                TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
         const SizedBox(height: 2),
         Text(
           curFormat.format(value),
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color ?? colorScheme.onSurface),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color ?? colorScheme.onSurface),
         ),
       ],
     );

@@ -38,7 +38,8 @@ class YearTable extends StatelessWidget {
                 DataCell(Text('${y.year}')),
                 DataCell(Text(format.format(y.totalInvested))),
                 DataCell(Text(format.format(y.totalInterest))),
-                DataCell(Text(format.format(y.totalInvested + y.totalInterest))),
+                DataCell(
+                    Text(format.format(y.totalInvested + y.totalInterest))),
                 DataCell(Text(format.format(y.corpus))),
               ]);
             }).toList(),

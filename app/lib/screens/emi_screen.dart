@@ -84,9 +84,7 @@ class _EMIScreenState extends State<EMIScreen> {
               onPressed: _shareCsv,
               tooltip: 'Export CSV'),
           IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _save,
-              tooltip: 'Save'),
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(

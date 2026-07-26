@@ -89,9 +89,7 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
               onPressed: _shareCsv,
               tooltip: 'Export CSV'),
           IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _save,
-              tooltip: 'Save'),
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -221,8 +219,8 @@ class _LumpSumScreenState extends State<LumpSumScreen> {
             const Divider(height: 12),
             _resultRow(context, 'Future Value', _result.totalValue, null),
             const Divider(height: 12),
-            _resultRow(
-                context, 'Total Returns', _result.totalReturns, colorScheme.primary),
+            _resultRow(context, 'Total Returns', _result.totalReturns,
+                colorScheme.primary),
             if (_result.totalValue > 0) ...[
               const SizedBox(height: 4),
               Text(

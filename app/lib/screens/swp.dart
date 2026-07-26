@@ -89,9 +89,7 @@ class _SWPScreenState extends State<SWPScreen> {
               onPressed: _shareCsv,
               tooltip: 'Export CSV'),
           IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _save,
-              tooltip: 'Save'),
+              icon: const Icon(Icons.save), onPressed: _save, tooltip: 'Save'),
         ],
       ),
       body: ListView(
@@ -203,8 +201,7 @@ class _SWPScreenState extends State<SWPScreen> {
             _resultRow(context, 'Total Withdrawn', _totalWithdrawn,
                 colorScheme.primary),
             const Divider(height: 12),
-            _resultRow(
-                context, 'Remaining Corpus', _result.totalValue, null),
+            _resultRow(context, 'Remaining Corpus', _result.totalValue, null),
             if (_result.totalValue > 0) ...[
               const SizedBox(height: 4),
               Text(

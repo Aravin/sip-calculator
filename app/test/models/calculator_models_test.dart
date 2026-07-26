@@ -47,10 +47,20 @@ void main() {
         totalReturns: 350000,
         totalValue: 850000,
         yearlyBreakdown: [
-          YearData(year: 1, investedThisYear: 60000, totalInvested: 60000,
-              interestThisYear: 3000, totalInterest: 3000, corpus: 63000),
-          YearData(year: 2, investedThisYear: 60000, totalInvested: 120000,
-              interestThisYear: 7500, totalInterest: 10500, corpus: 130500),
+          YearData(
+              year: 1,
+              investedThisYear: 60000,
+              totalInvested: 60000,
+              interestThisYear: 3000,
+              totalInterest: 3000,
+              corpus: 63000),
+          YearData(
+              year: 2,
+              investedThisYear: 60000,
+              totalInvested: 120000,
+              interestThisYear: 7500,
+              totalInterest: 10500,
+              corpus: 130500),
         ],
       );
 
@@ -60,8 +70,10 @@ void main() {
       expect(reconstructed.totalInvestment, original.totalInvestment);
       expect(reconstructed.totalReturns, original.totalReturns);
       expect(reconstructed.totalValue, original.totalValue);
-      expect(reconstructed.yearlyBreakdown.length, original.yearlyBreakdown.length);
-      expect(reconstructed.yearlyBreakdown[1].corpus, original.yearlyBreakdown[1].corpus);
+      expect(reconstructed.yearlyBreakdown.length,
+          original.yearlyBreakdown.length);
+      expect(reconstructed.yearlyBreakdown[1].corpus,
+          original.yearlyBreakdown[1].corpus);
     });
 
     test('fromJson handles empty yearly breakdown', () {
@@ -113,7 +125,8 @@ void main() {
       expect(reconstructed.type, original.type);
       expect(reconstructed.params, original.params);
       expect(reconstructed.result.totalValue, original.result.totalValue);
-      expect(reconstructed.savedAt.toIso8601String(), original.savedAt.toIso8601String());
+      expect(reconstructed.savedAt.toIso8601String(),
+          original.savedAt.toIso8601String());
     });
 
     test('fromJson handles all field types correctly', () {
@@ -244,7 +257,8 @@ void main() {
       expect(reconstructed.id, original.id);
       expect(reconstructed.name, original.name);
       expect(reconstructed.targetAmount, original.targetAmount);
-      expect(reconstructed.targetDate.toIso8601String(), original.targetDate.toIso8601String());
+      expect(reconstructed.targetDate.toIso8601String(),
+          original.targetDate.toIso8601String());
       expect(reconstructed.currentSavings, original.currentSavings);
       expect(reconstructed.monthlyContribution, original.monthlyContribution);
     });

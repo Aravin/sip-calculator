@@ -65,7 +65,8 @@ class ExportService {
     return lines.join('\n');
   }
 
-  static Future<void> shareAsCsv(CalcResult result, String calculatorName) async {
+  static Future<void> shareAsCsv(
+      CalcResult result, String calculatorName) async {
     final String csv = generateCsv(result, calculatorName);
 
     if (!kIsWeb) {
@@ -74,7 +75,8 @@ class ExportService {
           '${calculatorName.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.csv';
       final File file = File('${tempDir.path}/$fileName');
       await file.writeAsString(csv);
-      await Share.shareXFiles([XFile(file.path)], text: '$calculatorName Report');
+      await Share.shareXFiles([XFile(file.path)],
+          text: '$calculatorName Report');
     } else {
       await Share.share(csv, subject: '$calculatorName Report');
     }
@@ -115,12 +117,38 @@ class ExportService {
 
   static String _belowHundred(int num) {
     final List<String> ones = [
-      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-      'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen',
-      'Seventeen', 'Eighteen', 'Nineteen'
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen'
     ];
     final List<String> tens = [
-      '', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety'
     ];
 
     if (num < 20) return ones[num];

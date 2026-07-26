@@ -2,7 +2,6 @@ import 'dart:math';
 import '../models/calculator_models.dart';
 
 class MonteCarloService {
-
   static double _nextGaussian(Random random) {
     double u1 = 0;
     double u2 = 0;
@@ -32,7 +31,8 @@ class MonteCarloService {
       int monthsInCurrentYear = 0;
 
       for (int m = 0; m < totalMonths; m++) {
-        final double monthlyReturn = (r + _nextGaussian(random) * (volatility / 100) / sqrt(12)) / 12;
+        final double monthlyReturn =
+            (r + _nextGaussian(random) * (volatility / 100) / sqrt(12)) / 12;
         corpus = (corpus + currentMonthly) * (1 + monthlyReturn);
         monthsInCurrentYear++;
 

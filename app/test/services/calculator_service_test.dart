@@ -67,7 +67,8 @@ void main() {
         years: 5,
       );
 
-      final double totalFromBreakdown = result.yearlyBreakdown.fold(0, (sum, y) => sum + y.investedThisYear);
+      final double totalFromBreakdown =
+          result.yearlyBreakdown.fold(0, (sum, y) => sum + y.investedThisYear);
       expect(totalFromBreakdown, closeTo(result.totalInvestment, 0.5));
 
       final double lastCorpus = result.yearlyBreakdown.last.corpus;
@@ -142,9 +143,9 @@ void main() {
       const double target = 10000000;
 
       final double sip10 = service.findGoalSip(
-        targetCorpus: target, rateOfReturn: 12, years: 10);
+          targetCorpus: target, rateOfReturn: 12, years: 10);
       final double sip20 = service.findGoalSip(
-        targetCorpus: target, rateOfReturn: 12, years: 20);
+          targetCorpus: target, rateOfReturn: 12, years: 20);
 
       expect(sip20, lessThan(sip10));
     });
@@ -153,11 +154,13 @@ void main() {
   group('SIP Delay Cost', () {
     test('delaying 1 year reduces corpus', () {
       final noDelay = service.calculateSip(
-        monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
+          monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
 
       final delayed = service.calculateSipDelay(
-        monthlyInvestment: 10000, rateOfReturn: 12,
-        actualYears: 10, delayYears: 1);
+          monthlyInvestment: 10000,
+          rateOfReturn: 12,
+          actualYears: 10,
+          delayYears: 1);
 
       expect(delayed.totalValue, greaterThan(0));
       expect(delayed.totalValue, lessThan(noDelay.totalValue));
@@ -165,23 +168,29 @@ void main() {
 
     test('delay cost increases with longer delay', () {
       final delay1 = service.calculateSipDelay(
-        monthlyInvestment: 10000, rateOfReturn: 12,
-        actualYears: 10, delayYears: 1);
+          monthlyInvestment: 10000,
+          rateOfReturn: 12,
+          actualYears: 10,
+          delayYears: 1);
 
       final delay3 = service.calculateSipDelay(
-        monthlyInvestment: 10000, rateOfReturn: 12,
-        actualYears: 10, delayYears: 3);
+          monthlyInvestment: 10000,
+          rateOfReturn: 12,
+          actualYears: 10,
+          delayYears: 3);
 
       expect(delay3.totalValue, greaterThan(delay1.totalValue));
     });
 
     test('delay >= actual years costs the entire corpus', () {
       final actual = service.calculateSip(
-        monthlyInvestment: 10000, rateOfReturn: 12, years: 5);
+          monthlyInvestment: 10000, rateOfReturn: 12, years: 5);
 
       final result = service.calculateSipDelay(
-        monthlyInvestment: 10000, rateOfReturn: 12,
-        actualYears: 5, delayYears: 5);
+          monthlyInvestment: 10000,
+          rateOfReturn: 12,
+          actualYears: 5,
+          delayYears: 5);
 
       expect(result.totalValue, closeTo(actual.totalValue, 0.5));
     });
@@ -190,7 +199,7 @@ void main() {
   group('Inflation Adjusted', () {
     test('real value is less than nominal corpus', () {
       final result = service.calculateInflationAdjusted(
-        corpus: 10000000, years: 10, totalInvested: 10000000);
+          corpus: 10000000, years: 10, totalInvested: 10000000);
 
       expect(result.totalValue, lessThan(10000000));
       expect(result.totalValue, greaterThan(0));
@@ -198,17 +207,23 @@ void main() {
 
     test('higher inflation = lower real value', () {
       final lowInfl = service.calculateInflationAdjusted(
-        corpus: 10000000, years: 10, inflationRate: 4, totalInvested: 10000000);
+          corpus: 10000000,
+          years: 10,
+          inflationRate: 4,
+          totalInvested: 10000000);
 
       final highInfl = service.calculateInflationAdjusted(
-        corpus: 10000000, years: 10, inflationRate: 10, totalInvested: 10000000);
+          corpus: 10000000,
+          years: 10,
+          inflationRate: 10,
+          totalInvested: 10000000);
 
       expect(highInfl.totalValue, lessThan(lowInfl.totalValue));
     });
 
     test('zero years means no inflation impact', () {
       final result = service.calculateInflationAdjusted(
-        corpus: 100000, years: 0, totalInvested: 100000);
+          corpus: 100000, years: 0, totalInvested: 100000);
 
       expect(result.totalValue, closeTo(100000, 0.5));
     });
@@ -217,7 +232,7 @@ void main() {
   group('Sensitivity', () {
     test('best > expected > worst', () {
       final result = service.calculateSensitivity(
-        monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
+          monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
 
       expect(result.yearlyBreakdown.length, 3);
       final double worst = result.yearlyBreakdown[0].corpus;
@@ -236,7 +251,7 @@ void main() {
       final double expected = (100000 * pow(1 + 0.12, 5)).toDouble();
 
       final result = service.calculateLumpsum(
-        investment: 100000, rateOfReturn: 12, years: 5);
+          investment: 100000, rateOfReturn: 12, years: 5);
 
       expect(result.totalInvestment, closeTo(100000, 0.5));
       expect(result.totalValue, closeTo(expected, 0.5));
@@ -245,7 +260,7 @@ void main() {
 
     test('lumpsum yearly breakdown is correct', () {
       final result = service.calculateLumpsum(
-        investment: 100000, rateOfReturn: 10, years: 3);
+          investment: 100000, rateOfReturn: 10, years: 3);
 
       expect(result.yearlyBreakdown.length, 3);
       // Year 1: 100000 * 1.1 = 110000
@@ -258,7 +273,7 @@ void main() {
 
     test('lumpsum with zero return equals investment', () {
       final result = service.calculateLumpsum(
-        investment: 500000, rateOfReturn: 0, years: 10);
+          investment: 500000, rateOfReturn: 0, years: 10);
 
       expect(result.totalValue, closeTo(500000, 0.5));
       expect(result.totalReturns, closeTo(0, 0.5));
@@ -319,10 +334,10 @@ void main() {
 
     test('STP longer tenure = larger corpus', () {
       final short = service.calculateStp(
-        totalInvestment: 120000, rateOfReturn: 12, years: 1);
+          totalInvestment: 120000, rateOfReturn: 12, years: 1);
 
       final long = service.calculateStp(
-        totalInvestment: 120000, rateOfReturn: 12, years: 10);
+          totalInvestment: 120000, rateOfReturn: 12, years: 10);
 
       expect(long.totalValue, greaterThan(short.totalValue));
     });
@@ -336,7 +351,7 @@ void main() {
       final double expected = ((24000 * (pow(1 + r, 15) - 1)) / r) * (1 + r);
 
       final result = service.calculatePpf(
-        yearlyInvestment: 24000, rateOfReturn: 7.1, years: 15);
+          yearlyInvestment: 24000, rateOfReturn: 7.1, years: 15);
 
       expect(result.totalInvestment, closeTo(360000, 0.5));
       expect(result.totalValue, closeTo(expected, 100));
@@ -344,7 +359,7 @@ void main() {
 
     test('PPF yearly breakdown matches total', () {
       final result = service.calculatePpf(
-        yearlyInvestment: 24000, rateOfReturn: 7.1, years: 15);
+          yearlyInvestment: 24000, rateOfReturn: 7.1, years: 15);
 
       expect(result.yearlyBreakdown.length, 15);
       final double lastCorpus = result.yearlyBreakdown.last.corpus;
@@ -353,7 +368,7 @@ void main() {
 
     test('PPF with 0% return equals total investment', () {
       final result = service.calculatePpf(
-        yearlyInvestment: 24000, rateOfReturn: 0, years: 15);
+          yearlyInvestment: 24000, rateOfReturn: 0, years: 15);
 
       expect(result.totalValue, closeTo(360000, 0.5));
     });
@@ -365,11 +380,12 @@ void main() {
       // P=500000, r=9%/12=0.75%, n=5*12=60
       const double r = 9 / 12 / 100;
       const int n = 5 * 12;
-      final double expectedEmi = 500000 * r * pow(1 + r, n) / (pow(1 + r, n) - 1);
+      final double expectedEmi =
+          500000 * r * pow(1 + r, n) / (pow(1 + r, n) - 1);
       final double expectedTotal = expectedEmi * n;
 
-      final result = service.calculateEmi(
-        principal: 500000, annualRate: 9, years: 5);
+      final result =
+          service.calculateEmi(principal: 500000, annualRate: 9, years: 5);
 
       final double monthlyEmi = result.totalValue / (5 * 12);
       expect(monthlyEmi, closeTo(expectedEmi, 1));
@@ -377,32 +393,34 @@ void main() {
     });
 
     test('EMI amortization schedule principal + interest = payment', () {
-      final result = service.calculateEmi(
-        principal: 1000000, annualRate: 10, years: 10);
+      final result =
+          service.calculateEmi(principal: 1000000, annualRate: 10, years: 10);
 
       final double totalPayments = result.totalValue;
-      expect(totalPayments, closeTo(result.totalInvestment + result.totalReturns, 1));
+      expect(totalPayments,
+          closeTo(result.totalInvestment + result.totalReturns, 1));
     });
 
     test('EMI yearly breakdown totals are consistent', () {
-      final result = service.calculateEmi(
-        principal: 500000, annualRate: 9, years: 5);
+      final result =
+          service.calculateEmi(principal: 500000, annualRate: 9, years: 5);
 
-      final double totalInterest = result.yearlyBreakdown.fold(0.0, (sum, y) => sum + y.interestThisYear);
+      final double totalInterest = result.yearlyBreakdown
+          .fold(0.0, (sum, y) => sum + y.interestThisYear);
       expect(totalInterest, closeTo(result.totalReturns, 10));
     });
 
     test('EMI with zero interest equals principal', () {
-      final result = service.calculateEmi(
-        principal: 100000, annualRate: 0, years: 5);
+      final result =
+          service.calculateEmi(principal: 100000, annualRate: 0, years: 5);
 
       expect(result.totalValue, closeTo(100000, 0.5));
       expect(result.totalReturns, closeTo(0, 0.5));
     });
 
     test('last EMI year balance is ~0', () {
-      final result = service.calculateEmi(
-        principal: 1000000, annualRate: 10, years: 5);
+      final result =
+          service.calculateEmi(principal: 1000000, annualRate: 10, years: 5);
 
       final double lastBalance = result.yearlyBreakdown.last.corpus;
       expect(lastBalance, lessThan(100)); // nearly paid off
@@ -419,13 +437,14 @@ void main() {
       );
 
       final lumpsum = service.calculateLumpsum(
-        investment: 200000, rateOfReturn: 12, years: 10);
+          investment: 200000, rateOfReturn: 12, years: 10);
 
       final sip = service.calculateSip(
-        monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
+          monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
 
       final double expectedTotal = lumpsum.totalValue + sip.totalValue;
-      expect(combined.totalValue, closeTo(expectedTotal, expectedTotal * 0.001));
+      expect(
+          combined.totalValue, closeTo(expectedTotal, expectedTotal * 0.001));
     });
 
     test('combined with step-up exceeds flat combined', () {
@@ -485,7 +504,7 @@ void main() {
       );
 
       final postTax = service.calculateLtcgTax(
-        result: result, taxRate: 0.10, exemption: 100000);
+          result: result, taxRate: 0.10, exemption: 100000);
 
       const double expectedTax = (2000000 - 100000) * 0.10;
       const double expectedValue = 2500000 - expectedTax;
@@ -496,27 +515,27 @@ void main() {
   group('SWP from Corpus', () {
     test('returns positive monthly withdrawal', () {
       final double monthly = service.calculateSwpFromCorpus(
-        corpus: 10000000, rateOfReturn: 8, years: 20);
+          corpus: 10000000, rateOfReturn: 8, years: 20);
 
       expect(monthly, greaterThan(0));
     });
 
     test('smaller corpus = smaller monthly withdrawal', () {
       final double high = service.calculateSwpFromCorpus(
-        corpus: 5000000, rateOfReturn: 8, years: 20);
+          corpus: 5000000, rateOfReturn: 8, years: 20);
 
       final double low = service.calculateSwpFromCorpus(
-        corpus: 1000000, rateOfReturn: 8, years: 20);
+          corpus: 1000000, rateOfReturn: 8, years: 20);
 
       expect(high, greaterThan(low));
     });
 
     test('longer tenure = smaller monthly withdrawal', () {
       final double short = service.calculateSwpFromCorpus(
-        corpus: 10000000, rateOfReturn: 8, years: 10);
+          corpus: 10000000, rateOfReturn: 8, years: 10);
 
       final double long = service.calculateSwpFromCorpus(
-        corpus: 10000000, rateOfReturn: 8, years: 30);
+          corpus: 10000000, rateOfReturn: 8, years: 30);
 
       expect(long, lessThan(short));
     });
@@ -575,10 +594,10 @@ void main() {
     });
 
     test('RD longer tenure gives more returns', () {
-      final short = service.calculateRd(
-        monthlyDeposit: 5000, rateOfReturn: 8, years: 1);
-      final long = service.calculateRd(
-        monthlyDeposit: 5000, rateOfReturn: 8, years: 5);
+      final short =
+          service.calculateRd(monthlyDeposit: 5000, rateOfReturn: 8, years: 1);
+      final long =
+          service.calculateRd(monthlyDeposit: 5000, rateOfReturn: 8, years: 5);
       expect(long.totalValue, greaterThan(short.totalValue));
     });
 
@@ -608,23 +627,23 @@ void main() {
 
     test('monthly compounding gives more than yearly', () {
       final yearly = service.calculateCompoundInterest(
-        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'yearly');
+          principal: 100000, rateOfReturn: 10, years: 5, frequency: 'yearly');
       final monthly = service.calculateCompoundInterest(
-        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'monthly');
+          principal: 100000, rateOfReturn: 10, years: 5, frequency: 'monthly');
       expect(monthly.totalValue, greaterThan(yearly.totalValue));
     });
 
     test('daily compounding gives more than monthly', () {
       final monthly = service.calculateCompoundInterest(
-        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'monthly');
+          principal: 100000, rateOfReturn: 10, years: 5, frequency: 'monthly');
       final daily = service.calculateCompoundInterest(
-        principal: 100000, rateOfReturn: 10, years: 5, frequency: 'daily');
+          principal: 100000, rateOfReturn: 10, years: 5, frequency: 'daily');
       expect(daily.totalValue, greaterThan(monthly.totalValue));
     });
 
     test('zero return equals principal', () {
       final result = service.calculateCompoundInterest(
-        principal: 500000, rateOfReturn: 0, years: 10);
+          principal: 500000, rateOfReturn: 0, years: 10);
       expect(result.totalValue, closeTo(500000, 0.5));
       expect(result.totalReturns, closeTo(0, 0.5));
     });
@@ -652,7 +671,7 @@ void main() {
         years: 10,
       );
       final expected = service.calculateLumpsum(
-        investment: 500000, rateOfReturn: 12, years: 10);
+          investment: 500000, rateOfReturn: 12, years: 10);
       expect(result.lumpsumCorpus, closeTo(expected.totalValue, 1));
     });
 
@@ -664,7 +683,7 @@ void main() {
         years: 10,
       );
       final expected = service.calculateSip(
-        monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
+          monthlyInvestment: 10000, rateOfReturn: 12, years: 10);
       expect(result.sipCorpus, closeTo(expected.totalValue, 1));
     });
   });
@@ -691,7 +710,8 @@ void main() {
         deduction80C: 0,
         deduction80D: 0,
       );
-      expect(withDeductions.totalTaxOld, lessThan(withoutDeductions.totalTaxOld));
+      expect(
+          withDeductions.totalTaxOld, lessThan(withoutDeductions.totalTaxOld));
     });
 
     test('new regime is determined correctly', () {
@@ -710,6 +730,109 @@ void main() {
         deduction80D: 25000,
       );
       expect(result.deductions, greaterThan(0));
+    });
+  });
+
+  group('Negative & Edge Inputs', () {
+    test('SIP with negative rate returns positive corpus', () {
+      final result = CalculatorService.instance.calculateSip(
+        monthlyInvestment: 5000,
+        rateOfReturn: -5,
+        years: 10,
+      );
+      expect(result.totalValue, greaterThan(0));
+      expect(result.totalValue, lessThan(result.totalInvestment));
+    });
+
+    test('SIP with zero years returns zero corpus', () {
+      final result = CalculatorService.instance.calculateSip(
+        monthlyInvestment: 5000,
+        rateOfReturn: 12,
+        years: 0,
+      );
+      expect(result.totalInvestment, closeTo(0, 0.5));
+      expect(result.totalValue, closeTo(0, 0.5));
+    });
+
+    test('SIP with extremely small target converges in findGoalSip', () {
+      double sip = CalculatorService.instance.findGoalSip(
+        targetCorpus: 10,
+        rateOfReturn: 12,
+        years: 1,
+      );
+      expect(sip, greaterThan(0));
+      expect(sip.isNaN, false);
+      expect(sip.isInfinite, false);
+    });
+
+    test('SIP with extremely large target converges in findGoalSip', () {
+      double sip = CalculatorService.instance.findGoalSip(
+        targetCorpus: 1000000000000,
+        rateOfReturn: 12,
+        years: 30,
+      );
+      expect(sip, greaterThan(0));
+      expect(sip.isNaN, false);
+      expect(sip.isInfinite, false);
+    });
+
+    test('FD with negative rate returns less than principal', () {
+      final result = CalculatorService.instance.calculateFd(
+        principal: 100000,
+        rateOfReturn: -5,
+        years: 3,
+      );
+      expect(result.totalValue, lessThan(100000));
+      expect(result.totalValue, greaterThan(0));
+    });
+
+    test('Compound Interest with zero years equals principal', () {
+      final result = CalculatorService.instance.calculateCompoundInterest(
+        principal: 500000,
+        rateOfReturn: 10,
+        years: 0,
+      );
+      expect(result.totalValue, closeTo(500000, 0.5));
+      expect(result.totalReturns, closeTo(0, 0.5));
+    });
+
+    test('SWP with years <= 0 returns full corpus', () {
+      final result = CalculatorService.instance.calculateSwp(
+        totalInvestment: 100000,
+        monthlyWithdraw: 5000,
+        rateOfReturn: 8,
+        years: 0,
+      );
+      expect(result.totalValue, closeTo(100000, 0.5));
+      expect(result.totalReturns, closeTo(0, 0.5));
+    });
+
+    test('EMI with zero principal returns zero', () {
+      final result = CalculatorService.instance.calculateEmi(
+        principal: 0,
+        annualRate: 10,
+        years: 5,
+      );
+      expect(result.totalValue, closeTo(0, 0.5));
+    });
+
+    test('Goal Mode with zero years returns zero', () {
+      double sip = CalculatorService.instance.findGoalSip(
+        targetCorpus: 100000,
+        rateOfReturn: 12,
+        years: 0,
+      );
+      expect(sip, closeTo(0, 0.5));
+    });
+
+    test('Tax with zero income returns zero tax', () {
+      final result = CalculatorService.instance.calculateTax(
+        grossIncome: 0,
+        deduction80C: 0,
+        deduction80D: 0,
+      );
+      expect(result.totalTaxOld, closeTo(0, 0.5));
+      expect(result.totalTaxNew, closeTo(0, 0.5));
     });
   });
 
